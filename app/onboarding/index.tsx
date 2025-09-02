@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
@@ -23,7 +24,10 @@ const Onboarding = () => {
       </Text>
 
       {/* Primary CTA */}
-      <TouchableOpacity style={styles.primaryBtn}>
+      <TouchableOpacity
+        style={styles.primaryBtn}
+        onPress={() => router.push("/(protected)/(drawer)")}
+      >
         <Text style={styles.primaryBtnText}>Get Started</Text>
       </TouchableOpacity>
 
