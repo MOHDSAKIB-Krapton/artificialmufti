@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# Artificial Mufti App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Artificial Mufti** is an intelligent chat-based app that provides Islamic guidance and answers user queries based on AI. Developed using **Expo**, this app delivers a smooth and interactive experience for users seeking religious knowledge.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- **AI-Powered Guidance**: Ask religious questions and receive accurate, context-aware responses.
+- **Multi-Language Support**: Supports multiple languages for wider accessibility.
+- **User-Friendly Interface**: Clean, responsive UI built with **React Native** and **Tailwind CSS**.
+- **Secure Authentication**: Users can sign in securely via Supabase Authentication.
+- **Interactive Chat**: Real-time chat interface with message history.
+- **Offline Capabilities**: Certain features accessible offline for uninterrupted usage.
+- **Notifications**: Alerts for important responses or updates.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Screenshots
 
-In the output, you'll find options to open the app in a
+_(Add screenshots of your app here to showcase the UI)_
+later...
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Tech Stack
 
-## Get a fresh project
+- **Frontend**: React Native, Expo, Tailwind CSS
+- **Backend**: Supabase Realtime Database / Nestjs
+- **Authentication**: Supabase Auth
+- **State Management**: Zustand
+- **AI Engine**: (Mention the AI service/library used, e.g., OpenAI API)
 
-When you're ready, run:
+---
+
+## Getting Started
+
+Follow these steps to run the project locally:
+
+### 1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/mohdsakib-KRAPTON/artificialmufti.git
+cd artificial-mufti
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
