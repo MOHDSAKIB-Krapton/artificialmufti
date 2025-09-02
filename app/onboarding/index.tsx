@@ -29,10 +29,10 @@ const Onboarding = () => {
 
       {/* Secondary CTA */}
       <TouchableOpacity style={styles.secondaryBtn}>
-        <Image
-          source={require("../../assets/images/google.png")}
-          style={styles.googleIcon}
-        />
+        {/* <Image
+            source={require("../../assets/images/google.png")}
+            style={styles.googleIcon}
+          /> */}
         <Text style={styles.secondaryBtnText}>Continue with Google</Text>
       </TouchableOpacity>
 
@@ -53,8 +53,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 28,
-    borderColor: "red",
-    borderWidth: 6,
   },
   logo: {
     width: 96,
