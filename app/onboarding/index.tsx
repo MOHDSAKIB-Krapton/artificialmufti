@@ -1,127 +1,66 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Image, Text, TouchableOpacity } from "react-native";
 
 const Onboarding = () => {
   return (
     <LinearGradient
-      colors={["#F9FAFB", "#E0F2FE", "#F9FAFB"]}
-      style={styles.container}
+      colors={["#000000", "#1A202C", "#000000"]}
+      className="flex-1 justify-center items-center px-7"
     >
       {/* Logo */}
       <Image
         source={require("../../assets/images/react-logo.png")}
-        style={styles.logo}
+        className="w-24 h-24 mb-8"
+        style={{ tintColor: "#4A90E2" }}
       />
 
       {/* Heading */}
-      <Text style={styles.heading}>Welcome to Artificial Mufti</Text>
+      <Text className="text-2xl font-bold text-sky-100 text-center mb-3">
+        Welcome to Artificial Mufti
+      </Text>
 
       {/* Tagline */}
-      <Text style={styles.description}>
-        Your AI-powered companion for insights, clarity, and smarter answers.
+      <Text className="text-base text-slate-300 text-center leading-6 mb-10">
+        Your AI-powered companion for a new era of intelligence.
       </Text>
 
       {/* Primary CTA */}
       <TouchableOpacity
-        style={styles.primaryBtn}
+        className="bg-sky-500 py-4 rounded-xl w-full mb-4 shadow-lg"
+        style={{
+          shadowColor: "#4A90E2",
+          shadowOpacity: 0.5,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 6 },
+        }}
         onPress={() => router.push("/(protected)/(drawer)")}
       >
-        <Text style={styles.primaryBtnText}>Get Started</Text>
+        <Text className="text-white text-base font-semibold text-center">
+          Initiate Protocol
+        </Text>
       </TouchableOpacity>
 
       {/* Secondary CTA */}
-      <TouchableOpacity style={styles.secondaryBtn}>
+      <TouchableOpacity className="flex-row items-center border border-sky-500 py-3 rounded-xl w-full mb-7 justify-center">
         {/* <Image
-            source={require("../../assets/images/google.png")}
-            style={styles.googleIcon}
-          /> */}
-        <Text style={styles.secondaryBtnText}>Continue with Google</Text>
+          source={require("../../assets/images/google.png")}
+          className="w-5 h-5 mr-2"
+        /> */}
+        <Text className="text-base font-medium text-sky-100">
+          Continue with Google
+        </Text>
       </TouchableOpacity>
 
       {/* Footer */}
-      <Text style={styles.footerText}>
-        By continuing you agree to our <Text style={styles.link}>Terms</Text> &{" "}
-        <Text style={styles.link}>Privacy Policy</Text>
+      <Text className="text-xs text-slate-300 text-center">
+        By continuing you agree to our{" "}
+        <Text className="text-sky-500 font-semibold">Terms</Text> &{" "}
+        <Text className="text-sky-500 font-semibold">Privacy Policy</Text>
       </Text>
     </LinearGradient>
   );
 };
 
 export default Onboarding;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 28,
-  },
-  logo: {
-    width: 96,
-    height: 96,
-    marginBottom: 32,
-  },
-  heading: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#0F172A",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 16,
-    color: "#475569",
-    textAlign: "center",
-    lineHeight: 24,
-    marginBottom: 40,
-  },
-  primaryBtn: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 16,
-    borderRadius: 14,
-    width: "100%",
-    marginBottom: 16,
-    shadowColor: "#2563EB",
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  primaryBtnText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  secondaryBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    paddingVertical: 14,
-    borderRadius: 14,
-    width: "100%",
-    marginBottom: 28,
-    justifyContent: "center",
-  },
-  googleIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 8,
-  },
-  secondaryBtnText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#0F172A",
-  },
-  footerText: {
-    fontSize: 12,
-    color: "#64748B",
-    textAlign: "center",
-  },
-  link: {
-    color: "#2563EB",
-    fontWeight: "600",
-  },
-});

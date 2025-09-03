@@ -1,44 +1,18 @@
+import { MOCK_CONVERSATIONS } from "@/constants/mock";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, Image, Pressable, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Conversation from "./conversation";
-
-const MOCK_CONVERSATIONS = [
-  // ... (Your mock data)
-  { id: "1", name: "Jane Smith" },
-  { id: "2", name: "Mohd Sakib" },
-  { id: "3", name: "React Native Project" },
-  { id: "4", name: "Expo Setup Help" },
-  { id: "5", name: "Zustand vs Redux" },
-  { id: "6", name: "Tailwind Styling" },
-  { id: "7", name: "Firebase Auth" },
-  { id: "8", name: "Next.js Migration" },
-  { id: "9", name: "UI Polish Ideas" },
-  { id: "10", name: "Chatbot Flow" },
-  { id: "11", name: "Payment Gateway" },
-  { id: "12", name: "Dark Mode Toggle" },
-  { id: "13", name: "React Context Demo" },
-  { id: "14", name: "Expo EAS Build" },
-  { id: "15", name: "Redux Toolkit Setup" },
-  { id: "16", name: "Animation Testing" },
-  { id: "17", name: "Bug Report #12" },
-  { id: "18", name: "Profile Page UI" },
-  { id: "19", name: "Settings Refactor" },
-  { id: "20", name: "Realtime Chat" },
-  { id: "21", name: "Friends List Feature" },
-  { id: "22", name: "Notifications" },
-  { id: "23", name: "Push Tokens" },
-  { id: "24", name: "Image Upload" },
-  { id: "25", name: "Optimizing Lists" },
-  { id: "26", name: "Database Rules" },
-  { id: "27", name: "Auth Persistence" },
-  { id: "28", name: "Testing Suite" },
-  { id: "29", name: "Deployment Guide" },
-  { id: "30", name: "Final Demo Prep" },
-];
 
 const CustomDrawerContent = (props: any) => {
   const [chats, setChats] = useState(MOCK_CONVERSATIONS);
@@ -98,22 +72,19 @@ const CustomDrawerContent = (props: any) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>
-      {/* Fixed Header with SafeAreaInsets */}
       <View
         style={{
-          paddingTop: insets.top + 16, // Use insets for dynamic safe area padding
+          paddingTop: insets.top + 16,
           paddingHorizontal: 16,
-          backgroundColor: "black",
+          paddingBottom: 16,
         }}
       >
-        <Pressable
+        <TouchableOpacity
           className="bg-[#2e2e2e] p-3 rounded-lg items-center"
-          onPress={() => {
-            console.log("New chat pressed!");
-          }}
+          onPress={() => console.log("New chat pressed!")}
         >
           <Text className="text-white text-base font-bold">New Chat +</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <DrawerContentScrollView

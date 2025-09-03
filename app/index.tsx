@@ -1,27 +1,20 @@
 import { router } from "expo-router";
-import React from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import React, { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 const RootScreen = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push("/onboarding");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>RootScreen</Text>
-      <Button title="Press me" onPress={() => router.push("/onboarding")} />
+    <View className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+      <ActivityIndicator size={"large"} color={"white"} />
     </View>
   );
 };
 
 export default RootScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-});
