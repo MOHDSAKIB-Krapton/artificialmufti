@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -9,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type OptionItem = {
   label: string;
@@ -30,6 +32,9 @@ const OptionModal = ({
   onPress,
   triggerStyle,
 }: OptionModalProps) => {
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
@@ -69,16 +74,27 @@ const OptionModal = ({
         onRequestClose={closeMenu}
       >
         {/* Background overlay */}
-        <TouchableWithoutFeedback onPress={closeMenu}>
+        {/* <TouchableWithoutFeedback onPress={closeMenu}>
           <View className="flex-1 bg-black/40" />
+        </TouchableWithoutFeedback> */}
+        <TouchableWithoutFeedback onPress={closeMenu}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.4)",
+              marginTop: -insets.top, // Apply negative margin
+              marginBottom: -insets.bottom, // Apply negative margin
+            }}
+          />
         </TouchableWithoutFeedback>
 
         <View
-          className="absolute bg-neutral-900 rounded-xl shadow-lg overflow-hidden"
+          className="absolute rounded-xl shadow-lg overflow-hidden"
           style={{
             top: menuPosition.top - 30,
             left: menuPosition.left + 30,
             width: 200,
+            backgroundColor: theme.background,
           }}
         >
           {options.map((opt, idx) => {
@@ -86,22 +102,26 @@ const OptionModal = ({
             return (
               <TouchableOpacity
                 key={idx}
-                className={`flex-row items-center gap-2 p-3 ${isLast ? "" : "border-b border-black"}`}
+                className={`flex-row items-center gap-2 p-3`}
                 onPress={() => {
                   closeMenu();
                   opt.onPress();
+                }}
+                style={{
+                  borderBottomWidth: !isLast ? 1 : 0,
+                  borderBottomColor: !isLast ? theme.card : undefined,
                 }}
               >
                 {opt.icon && (
                   <Ionicons
                     name={opt.icon}
                     size={12}
-                    color={opt.textColor || "#ffffff"}
+                    color={opt.textColor || theme.text}
                   />
                 )}
                 <Text
                   className="text-base"
-                  style={{ color: opt.textColor || "#ffffff" }}
+                  style={{ color: opt.textColor || theme.text }}
                 >
                   {opt.label}
                 </Text>

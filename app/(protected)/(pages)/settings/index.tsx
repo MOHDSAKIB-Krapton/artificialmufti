@@ -1,11 +1,16 @@
 import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
+import { useTheme } from "@/hooks/useTheme";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
-  const [selectedTheme, setSelectedTheme] = useState("dark");
+  const {
+    theme,
+    themeKey: selectedTheme,
+    setThemeKey: setSelectedTheme,
+  } = useTheme();
   const [incognito, setIncognito] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
 
@@ -19,9 +24,9 @@ export default function Settings() {
     { name: "Light", icon: "sunny-sharp", value: "light" },
     { name: "Dark", icon: "moon-sharp", value: "dark" },
     {
-      name: "For You",
+      name: "Fancy",
       icon: "heart-outline",
-      value: "for-you",
+      value: "fancy",
       type: "feather",
     },
   ];
@@ -151,27 +156,31 @@ export default function Settings() {
   return (
     <ScrollView
       className="flex-1 bg-[#0d0d0d] px-5 py-6"
+      style={{ backgroundColor: theme.background }}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
       <View className="items-center mb-8">
         <View className="w-24 h-24 rounded-full border-2 border-[#3a3a3c] overflow-hidden"></View>
-        <Text className="text-white font-bold text-xl mt-4">Mohd. Sakib</Text>
-        <Text className="text-gray-400 text-sm">
+        <Text className=" font-bold text-xl mt-4" style={{ color: theme.text }}>
+          Mohd. Sakib
+        </Text>
+        <Text className=" text-sm" style={{ color: theme.textSecondary }}>
           danishkhan9886283@gmail.com
         </Text>
       </View>
 
       <TouchableOpacity
         onPress={() => console.log("Upgrade pressed")}
-        className="flex-row items-center justify-between bg-[#1c1c1e] p-4 rounded-xl mb-6"
+        className="flex-row items-center justify-between p-4 rounded-xl mb-6"
+        style={{ backgroundColor: theme.card }}
       >
         <View className="flex-row items-center">
           <Feather name="zap" size={24} color="#FFD700" />
           <View className="ml-4">
-            <Text className="text-white font-bold text-lg">
+            <Text className="font-bold text-lg" style={{ color: theme.text }}>
               Upgrade to Super ArtificialMufti
             </Text>
-            <Text className="text-gray-400 text-sm">
+            <Text className=" text-sm" style={{ color: theme.textSecondary }}>
               Unlock advanced features
             </Text>
           </View>

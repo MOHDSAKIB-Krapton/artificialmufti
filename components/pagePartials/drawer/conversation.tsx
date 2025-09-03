@@ -1,4 +1,5 @@
 import OptionModal, { OptionItem } from "@/components/common/optionModal";
+import { useTheme } from "@/hooks/useTheme";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -17,6 +18,8 @@ const Conversation = ({
   onArchive,
   onDelete,
 }: ChatItemProps) => {
+  const { theme } = useTheme();
+
   const options: OptionItem[] = [
     { label: "Rename", onPress: onRename, icon: "pencil-outline" },
     { label: "Archive", onPress: onArchive, icon: "archive-outline" },
@@ -32,7 +35,9 @@ const Conversation = ({
     <OptionModal
       triggerElement={
         <View className="py-4">
-          <Text className="text-base text-white">{name}</Text>
+          <Text className="text-base" style={{ color: theme.text }}>
+            {name}
+          </Text>
         </View>
       }
       options={options}

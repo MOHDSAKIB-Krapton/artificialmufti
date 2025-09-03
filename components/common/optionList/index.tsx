@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Switch, Text, TouchableOpacity, View } from "react-native";
@@ -36,12 +37,19 @@ export interface OptionListProps {
 }
 
 const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
+  const { theme } = useTheme();
   return (
     <View className="mb-6">
-      <Text className="text-gray-400 text-sm font-medium mb-2 px-4">
+      <Text
+        className=" text-sm font-semibold mb-3 ml-2"
+        style={{ color: theme.text }}
+      >
         {header}
       </Text>
-      <View className="bg-[#1a1a1a] rounded-2xl overflow-hidden">
+      <View
+        className=" rounded-2xl overflow-hidden"
+        style={{ backgroundColor: theme.card }}
+      >
         {options.map((opt, idx) => {
           const isLast = idx === options.length - 1;
 
@@ -50,28 +58,32 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
               <TouchableOpacity
                 key={idx}
                 onPress={() => opt.onToggle(!opt.value)}
-                className={`flex-row justify-between items-center px-4 py-4 ${
-                  !isLast ? "border-b border-[#0d0d0d]" : ""
-                }`}
+                className={`flex-row justify-between items-center px-4 py-4 `}
+                style={{
+                  borderBottomColor: !isLast ? theme.background : undefined,
+                  borderBottomWidth: !isLast ? 1 : undefined,
+                }}
               >
                 <View className="flex-row items-center">
                   {opt.icon && (
                     <Ionicons
                       name={opt.icon}
                       size={20}
-                      color="#FFD700"
+                      color={theme.primary}
                       className="mr-4"
                     />
                   )}
-                  <Text className="text-white text-base">{opt.label}</Text>
+                  <Text className="text-base" style={{ color: theme.text }}>
+                    {opt.label}
+                  </Text>
                 </View>
 
                 <View style={{ transform: [{ scale: 0.8 }] }}>
                   <Switch
                     value={opt.value}
                     onValueChange={opt.onToggle}
-                    thumbColor={opt.value ? "#22c55e" : "#888"}
-                    trackColor={{ true: "#bbf7d0", false: "#444" }}
+                    thumbColor={opt.value ? theme.primary : "#888"}
+                    trackColor={{ true: theme.background, false: "#444" }}
                   />
                 </View>
               </TouchableOpacity>
@@ -82,10 +94,12 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
             return (
               <TouchableOpacity
                 key={idx}
-                className={`flex-row justify-between items-center px-4 py-4 ${
-                  !isLast ? "border-b border-[#0d0d0d]" : ""
-                }`}
+                className={`flex-row justify-between items-center px-4 py-4 `}
                 onPress={opt.onPress}
+                style={{
+                  borderBottomColor: !isLast ? theme.background : undefined,
+                  borderBottomWidth: !isLast ? 1 : undefined,
+                }}
               >
                 {" "}
                 <View className="flex-row items-center">
@@ -93,13 +107,19 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                     <Ionicons
                       name={opt.icon}
                       size={20}
-                      color="#FFD700"
+                      color={theme.primary}
                       className="mr-4"
                     />
                   )}
-                  <Text className="text-white text-base">{opt.label}</Text>
+                  <Text className="text-base" style={{ color: theme.text }}>
+                    {opt.label}
+                  </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#888" />
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={theme.primary}
+                />
               </TouchableOpacity>
             );
           }
@@ -108,22 +128,28 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
             return (
               <View
                 key={idx}
-                className={`flex-row justify-between items-center px-4 py-4 ${
-                  !isLast ? "border-b border-[#0d0d0d]" : ""
-                }`}
+                className={`flex-row justify-between items-center px-4 py-4`}
+                style={{
+                  borderBottomColor: !isLast ? theme.background : undefined,
+                  borderBottomWidth: !isLast ? 1 : undefined,
+                }}
               >
                 <View className="flex-row items-center">
                   {opt.icon && (
                     <Ionicons
                       name={opt.icon}
                       size={20}
-                      color="#FFD700"
+                      color={theme.primary}
                       className="mr-4"
                     />
                   )}
                   <View className="flex-col">
-                    <Text className="text-white text-base">{opt.label}</Text>
-                    <Text className="text-gray-400">{opt.value}</Text>
+                    <Text className="text-base" style={{ color: theme.text }}>
+                      {opt.label}
+                    </Text>
+                    <Text className="" style={{ color: theme.textSecondary }}>
+                      {opt.value}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -134,10 +160,12 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
             return (
               <TouchableOpacity
                 key={idx}
-                className={`flex-col justify-between items-start px-4 py-4 ${
-                  // make this item-center and see the magic...!!!! implement it atleast for version i love this.
-                  !isLast ? "border-b border-[#0d0d0d]" : ""
-                }`}
+                // make this item-center and see the magic...!!!! implement it atleast for version i love this.
+                className={`flex-col justify-between items-start px-4 py-4 `}
+                style={{
+                  borderBottomColor: !isLast ? theme.background : undefined,
+                  borderBottomWidth: !isLast ? 1 : undefined,
+                }}
                 onPress={opt.onPress}
               >
                 <View className="flex-row items-center">
@@ -145,13 +173,17 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                     <Ionicons
                       name={opt.icon}
                       size={20}
-                      color="#FFD700"
+                      color={theme.primary}
                       className="mr-4"
                     />
                   )}
                   <View className="flex-col">
-                    <Text className="text-white text-base">{opt.label}</Text>
-                    <Text className="text-gray-400">{opt.value}</Text>
+                    <Text className="text-base" style={{ color: theme.text }}>
+                      {opt.label}
+                    </Text>
+                    <Text className="" style={{ color: theme.textSecondary }}>
+                      {opt.value}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>

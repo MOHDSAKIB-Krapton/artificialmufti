@@ -1,4 +1,5 @@
 import { mockChat } from "@/constants/mock";
+import { useTheme } from "@/hooks/useTheme";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -12,6 +13,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Chat = () => {
+  const { theme } = useTheme();
+
   const [messages, setMessages] = useState(mockChat);
   const [input, setInput] = useState("");
   const flatListRef = useRef<FlatList>(null);
@@ -34,14 +37,29 @@ const Chat = () => {
   const renderItem = ({ item }: { item: (typeof mockChat)[0] }) => {
     if (item.sender === "user") {
       return (
-        <View className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-[#2e2e2e] px-4 py-3 shadow-sm">
-          <Text className="text-base text-white">{item.message}</Text>
+        <View
+          className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm"
+          style={{
+            backgroundColor: theme.card,
+          }}
+        >
+          <Text
+            className="text-base"
+            style={{
+              color: theme.text,
+            }}
+          >
+            {item.message}
+          </Text>
         </View>
       );
     } else {
       return (
         <View className="my-3">
-          <Text className="text-base text-gray-200 leading-relaxed">
+          <Text
+            className="text-base leading-relaxed"
+            style={{ color: theme.text }}
+          >
             {item.message}
           </Text>
         </View>
@@ -49,7 +67,11 @@ const Chat = () => {
     }
   };
   return (
-    <SafeAreaView className="flex-1 bg-black" edges={["bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["bottom"]}
+      style={{ backgroundColor: theme.background }}
+    >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"} // fix for Android
@@ -67,26 +89,31 @@ const Chat = () => {
 
         {/* Input Bar */}
         <View
-          className="flex-row items-center bg-black p-3"
+          className="flex-row items-center p-3"
           style={{
             borderTopWidth: 1,
-            borderTopColor: "#2e2e2e",
+            borderTopColor: theme.card,
+            backgroundColor: theme.background,
           }}
         >
           <TextInput
-            className="mr-3 flex-1 rounded-full bg-[#2e2e2e] p-4 text-base text-white"
+            className="mr-3 flex-1 rounded-full p-4 text-base"
+            style={{ backgroundColor: theme.card, color: theme.text }}
             placeholder="Type your message..."
-            placeholderTextColor="#888"
+            placeholderTextColor={theme.textSecondary}
             value={input}
             onChangeText={setInput}
             returnKeyType="send"
             onSubmitEditing={handleSend}
           />
           <Pressable
-            className="rounded-full bg-[#2e2e2e] py-4 px-6"
+            className="rounded-full py-4 px-6"
+            style={{ backgroundColor: theme.card }}
             onPress={handleSend}
           >
-            <Text className="text-base font-bold text-white">Send</Text>
+            <Text className="text-base font-bold" style={{ color: theme.text }}>
+              Send
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

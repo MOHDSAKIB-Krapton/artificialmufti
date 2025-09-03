@@ -1,15 +1,18 @@
 import CustomDrawerContent from "@/components/pagePartials/drawer/drawerContent";
+import { useTheme } from "@/hooks/useTheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { TouchableOpacity } from "react-native";
 
 const DrawerLayout = () => {
+  const { theme } = useTheme();
+
   return (
     <Drawer
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
-        headerStyle: { backgroundColor: "black" },
+        headerStyle: { backgroundColor: theme.background },
         drawerStyle: { width: "75%" },
       }}
     >
@@ -18,6 +21,8 @@ const DrawerLayout = () => {
         options={{
           headerTitle: "",
           swipeEnabled: true,
+          headerShadowVisible: false,
+          headerTintColor: theme.text,
           swipeEdgeWidth: 500,
           drawerType: "slide",
           headerRight: () => (
@@ -27,7 +32,7 @@ const DrawerLayout = () => {
               <MaterialCommunityIcons
                 name="incognito"
                 size={24}
-                color="white"
+                color={theme.text}
               />
             </TouchableOpacity>
           ),

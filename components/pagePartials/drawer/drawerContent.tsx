@@ -1,4 +1,5 @@
 import { MOCK_CONVERSATIONS } from "@/constants/mock";
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { router } from "expo-router";
@@ -15,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Conversation from "./conversation";
 
 const CustomDrawerContent = (props: any) => {
+  const { theme } = useTheme();
   const [chats, setChats] = useState(MOCK_CONVERSATIONS);
   const insets = useSafeAreaInsets();
 
@@ -43,7 +45,7 @@ const CustomDrawerContent = (props: any) => {
     return (
       <View>
         <Pressable
-          className="flex-row items-center py-3"
+          className="flex-row items-center py-2.5"
           onPress={() => router.push("/(protected)/(pages)/settings")}
         >
           {/* Avatar */}
@@ -53,25 +55,31 @@ const CustomDrawerContent = (props: any) => {
               className="w-10 h-10 rounded-full"
             />
           ) : (
-            <View className="w-10 h-10 rounded-full bg-gray-700 items-center justify-center">
-              <Ionicons name="person" size={22} color="white" />
+            <View
+              className="w-10 h-10 rounded-full  items-center justify-center"
+              style={{ backgroundColor: theme.card }}
+            >
+              <Ionicons name="person" size={22} color={theme.text} />
             </View>
           )}
 
           {/* Name */}
-          <Text className="ml-3 text-base font-bold text-white flex-1">
+          <Text
+            className="ml-3 text-base font-bold flex-1"
+            style={{ color: theme.text }}
+          >
             {userName || "Guest"}
           </Text>
 
           {/* Trailing Icon */}
-          <Ionicons name="chevron-forward" size={20} color="white" />
+          <Ionicons name="chevron-forward" size={20} color={theme.text} />
         </Pressable>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View style={{ flex: 1, backgroundColor: theme.card }}>
       <View
         style={{
           paddingTop: insets.top + 16,
@@ -80,10 +88,13 @@ const CustomDrawerContent = (props: any) => {
         }}
       >
         <TouchableOpacity
-          className="bg-[#2e2e2e] p-3 rounded-lg items-center"
+          className="p-3 rounded-lg items-center"
+          style={{ backgroundColor: theme.background }}
           onPress={() => console.log("New chat pressed!")}
         >
-          <Text className="text-white text-base font-bold">New Chat +</Text>
+          <Text className="text-base font-bold" style={{ color: theme.text }}>
+            New Chat +
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -92,7 +103,9 @@ const CustomDrawerContent = (props: any) => {
         contentContainerStyle={{ flexGrow: 1 }}
         style={{ paddingHorizontal: 16 }}
       >
-        <Text className="text-sm text-gray-500 mb-2 font-bold">Chats</Text>
+        <Text className="text-sm mb-2 font-bold" style={{ color: theme.text }}>
+          Chats
+        </Text>
         <FlatList
           data={chats}
           keyExtractor={(item) => item.id}
@@ -113,7 +126,7 @@ const CustomDrawerContent = (props: any) => {
         style={{
           paddingBottom: insets.bottom + 16, // Use insets for dynamic safe area padding
           paddingHorizontal: 16,
-          backgroundColor: "black",
+          backgroundColor: theme.background,
         }}
       >
         <ProfileRow userName="John Doe" />

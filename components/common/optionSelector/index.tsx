@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -22,14 +23,22 @@ const OptionSelector: React.FC<OptionSelectorProps> = ({
   onSelect,
   title,
 }) => {
+  const { theme } = useTheme();
+
   return (
     <View className="mb-6">
       {title && (
-        <Text className="text-gray-400 text-sm font-semibold mb-3 ml-2">
+        <Text
+          className=" text-sm font-semibold mb-3 ml-2"
+          style={{ color: theme.text }}
+        >
           {title.toUpperCase()}
         </Text>
       )}
-      <View className="flex-row justify-around bg-[#1c1c1e] rounded-xl p-2">
+      <View
+        className="flex-row justify-around rounded-xl p-2"
+        style={{ backgroundColor: theme.card }}
+      >
         {options.map((option) => {
           const isSelected = selectedValue === option.value;
 
@@ -37,19 +46,19 @@ const OptionSelector: React.FC<OptionSelectorProps> = ({
             <TouchableOpacity
               key={option.value}
               onPress={() => onSelect(option.value)}
-              className={`flex-1 items-center py-2 rounded-lg ${
-                isSelected ? "bg-[#3a3a3c]" : ""
-              }`}
+              className={`flex-1 items-center py-2 rounded-lg`}
+              style={{
+                backgroundColor: isSelected ? theme.background : undefined,
+              }}
             >
               <Ionicons
                 name={option.icon}
                 size={24}
-                color={isSelected ? "#fff" : "gray"}
+                style={{ color: isSelected ? theme.text : theme.textSecondary }}
               />
               <Text
-                className={`mt-1 text-xs font-medium ${
-                  isSelected ? "text-white" : "text-gray-400"
-                }`}
+                className={`mt-1 text-xs font-medium`}
+                style={{ color: isSelected ? theme.text : theme.textSecondary }}
               >
                 {option.name}
               </Text>

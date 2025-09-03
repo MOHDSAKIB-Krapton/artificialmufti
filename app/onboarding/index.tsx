@@ -1,66 +1,64 @@
-import { LinearGradient } from "expo-linear-gradient";
+import FancyButton from "@/components/common/button";
+import LayoutContainer from "@/components/common/layout/container";
 import { router } from "expo-router";
-import React from "react";
-import { Image, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { Image, Text, View } from "react-native";
 
-const Onboarding = () => {
+const OnboardingScreen: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleGetStarted = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      router.push("/(auth)");
+    }, 1000);
+  };
+
+  const slide = {
+    title: "Your Intelligent Companion, Driven by Advanced AI Innovation",
+    description:
+      "Always ready to support you with daily hadith, providing smart and authentic solutions that simplify life and boost your Iman.",
+
+    astronautImage: require("../../assets/images/aimufti.png"),
+  };
+
   return (
-    <LinearGradient
-      colors={["#000000", "#1A202C", "#000000"]}
-      className="flex-1 justify-center items-center px-7"
-    >
-      {/* Logo */}
-      <Image
-        source={require("../../assets/images/react-logo.png")}
-        className="w-24 h-24 mb-8"
-        style={{ tintColor: "#4A90E2" }}
-      />
+    <LayoutContainer>
+      <View className="flex-1 items-center">
+        <View className="flex-1 justify-center items-center relative">
+          <Text
+            className="absolute text-6xl font-extrabold text-white opacity-10 top-[22%]"
+            style={{ zIndex: -1 }}
+          >
+            Artificial Mufti
+          </Text>
 
-      {/* Heading */}
-      <Text className="text-2xl font-bold text-sky-100 text-center mb-3">
-        Welcome to Artificial Mufti
-      </Text>
+          <View className="mb-12 overflow-hidden w-56 h-56">
+            <Image
+              source={slide.astronautImage}
+              className="w-full h-full object-contain"
+            />
+          </View>
 
-      {/* Tagline */}
-      <Text className="text-base text-slate-300 text-center leading-6 mb-10">
-        Your AI-powered companion for a new era of intelligence.
-      </Text>
+          <Text className="text-black text-4xl font-extrabold text-center leading-tight">
+            {slide.title}
+          </Text>
 
-      {/* Primary CTA */}
-      <TouchableOpacity
-        className="bg-sky-500 py-4 rounded-xl w-full mb-4 shadow-lg"
-        style={{
-          shadowColor: "#4A90E2",
-          shadowOpacity: 0.5,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 6 },
-        }}
-        onPress={() => router.push("/(protected)/(drawer)")}
-      >
-        <Text className="text-white text-base font-semibold text-center">
-          Initiate Protocol
-        </Text>
-      </TouchableOpacity>
+          <Text className="text-black text-lg text-center leading-7">
+            {slide.description}
+          </Text>
+        </View>
 
-      {/* Secondary CTA */}
-      <TouchableOpacity className="flex-row items-center border border-sky-500 py-3 rounded-xl w-full mb-7 justify-center">
-        {/* <Image
-          source={require("../../assets/images/google.png")}
-          className="w-5 h-5 mr-2"
-        /> */}
-        <Text className="text-base font-medium text-sky-100">
-          Continue with Google
-        </Text>
-      </TouchableOpacity>
-
-      {/* Footer */}
-      <Text className="text-xs text-slate-300 text-center">
-        By continuing you agree to our{" "}
-        <Text className="text-sky-500 font-semibold">Terms</Text> &{" "}
-        <Text className="text-sky-500 font-semibold">Privacy Policy</Text>
-      </Text>
-    </LinearGradient>
+        <FancyButton
+          onPress={handleGetStarted}
+          text="Get Started"
+          iconName="arrow-forward"
+          loading={loading}
+        />
+      </View>
+    </LayoutContainer>
   );
 };
 
-export default Onboarding;
+export default OnboardingScreen;
