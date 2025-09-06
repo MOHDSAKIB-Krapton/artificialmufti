@@ -17,6 +17,7 @@ const PagesLayout = () => {
             backgroundColor: theme.background,
           },
           headerTintColor: theme.text,
+          headerTitleStyle: { fontFamily: "SpaceMonoBold" },
         }}
       />
     </Stack>

@@ -2,6 +2,7 @@ import SVGDiscord from "@/assets/svg/discord";
 import SVGGoogle from "@/assets/svg/google";
 import FancyButton from "@/components/common/button";
 import LayoutContainer from "@/components/common/layout/container";
+import { APP_NAME } from "@/constants";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
@@ -28,13 +29,13 @@ const Auth = () => {
               className="w-24 h-24 mb-6"
               style={{ tintColor: "#ffffff" }}
             />
-            <Text className="text-4xl font-extrabold text-black tracking-wide">
-              Artificial Mufti
+            <Text className="text-4xl font-pixel text-black tracking-wide">
+              {APP_NAME}
             </Text>
           </View>
 
           {/* Tagline */}
-          <Text className="text-base text-black text-center leading-6 mb-12 px-6">
+          <Text className="text-base text-black text-center leading-6 mb-12 px-6 font-space">
             Unlock knowledge and guidance through intelligent, authentic, and
             reliable insights.
           </Text>
@@ -55,10 +56,13 @@ const Auth = () => {
           </View>
         </View>
 
-        <Text className="text-xs text-black text-center leading-5">
+        <Text className="text-xs text-black text-center font-space leading-5">
           By continuing you agree to our{" "}
-          <Text className="text-black font-semibold underline">Terms</Text> &{" "}
-          <Text className="text-black font-semibold underline">
+          <Text className="text-black font-space-bolditalic underline">
+            Terms
+          </Text>{" "}
+          &{" "}
+          <Text className="text-black font-space-bolditalic underline">
             Privacy Policy
           </Text>
         </Text>

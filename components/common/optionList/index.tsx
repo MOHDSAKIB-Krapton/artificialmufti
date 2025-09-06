@@ -41,7 +41,7 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
   return (
     <View className="mb-6">
       <Text
-        className=" text-sm font-semibold mb-3 ml-2"
+        className=" text-sm font-space-bold mb-3 ml-2"
         style={{ color: theme.text }}
       >
         {header}
@@ -73,7 +73,10 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                       className="mr-4"
                     />
                   )}
-                  <Text className="text-base" style={{ color: theme.text }}>
+                  <Text
+                    className="text-base font-space-bold"
+                    style={{ color: theme.text }}
+                  >
                     {opt.label}
                   </Text>
                 </View>
@@ -111,7 +114,10 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                       className="mr-4"
                     />
                   )}
-                  <Text className="text-base" style={{ color: theme.text }}>
+                  <Text
+                    className="text-base font-space-bold"
+                    style={{ color: theme.text }}
+                  >
                     {opt.label}
                   </Text>
                 </View>
@@ -144,10 +150,16 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                     />
                   )}
                   <View className="flex-col">
-                    <Text className="text-base" style={{ color: theme.text }}>
+                    <Text
+                      className="text-base font-space-bold"
+                      style={{ color: theme.text }}
+                    >
                       {opt.label}
                     </Text>
-                    <Text className="" style={{ color: theme.textSecondary }}>
+                    <Text
+                      className="font-space"
+                      style={{ color: theme.textSecondary }}
+                    >
                       {opt.value}
                     </Text>
                   </View>
@@ -178,10 +190,16 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
                     />
                   )}
                   <View className="flex-col">
-                    <Text className="text-base" style={{ color: theme.text }}>
+                    <Text
+                      className="text-base font-space-bold"
+                      style={{ color: theme.text }}
+                    >
                       {opt.label}
                     </Text>
-                    <Text className="" style={{ color: theme.textSecondary }}>
+                    <Text
+                      className="font-space"
+                      style={{ color: theme.textSecondary }}
+                    >
                       {opt.value}
                     </Text>
                   </View>

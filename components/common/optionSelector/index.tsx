@@ -29,7 +29,7 @@ const OptionSelector: React.FC<OptionSelectorProps> = ({
     <View className="mb-6">
       {title && (
         <Text
-          className=" text-sm font-semibold mb-3 ml-2"
+          className=" text-sm font-space-bold mb-3 ml-2"
           style={{ color: theme.text }}
         >
           {title.toUpperCase()}
@@ -57,7 +57,7 @@ const OptionSelector: React.FC<OptionSelectorProps> = ({
                 style={{ color: isSelected ? theme.text : theme.textSecondary }}
               />
               <Text
-                className={`mt-1 text-xs font-medium`}
+                className={`mt-1 text-xs font-space`}
                 style={{ color: isSelected ? theme.text : theme.textSecondary }}
               >
                 {option.name}

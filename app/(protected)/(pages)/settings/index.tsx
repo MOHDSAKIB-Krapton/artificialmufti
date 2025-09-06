@@ -161,10 +161,16 @@ export default function Settings() {
     >
       <View className="items-center mb-8">
         <View className="w-24 h-24 rounded-full border-2 border-[#3a3a3c] overflow-hidden"></View>
-        <Text className=" font-bold text-xl mt-4" style={{ color: theme.text }}>
+        <Text
+          className=" font-pixel text-xl mt-4"
+          style={{ color: theme.text }}
+        >
           Mohd. Sakib
         </Text>
-        <Text className=" text-sm" style={{ color: theme.textSecondary }}>
+        <Text
+          className=" text-sm font-space"
+          style={{ color: theme.textSecondary }}
+        >
           danishkhan9886283@gmail.com
         </Text>
       </View>
@@ -177,10 +183,18 @@ export default function Settings() {
         <View className="flex-row items-center">
           <Feather name="zap" size={24} color="#FFD700" />
           <View className="ml-4">
-            <Text className="font-bold text-lg" style={{ color: theme.text }}>
+            <Text
+              className="font-space-bold text-lg"
+              style={{ color: theme.text }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               Upgrade to Super ArtificialMufti
             </Text>
-            <Text className=" text-sm" style={{ color: theme.textSecondary }}>
+            <Text
+              className=" text-sm font-space"
+              style={{ color: theme.textSecondary }}
+            >
               Unlock advanced features
             </Text>
           </View>

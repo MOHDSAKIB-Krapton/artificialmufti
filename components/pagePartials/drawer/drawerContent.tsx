@@ -65,7 +65,7 @@ const CustomDrawerContent = (props: any) => {
 
           {/* Name */}
           <Text
-            className="ml-3 text-base font-bold flex-1"
+            className="ml-3 text-base font-space-bold flex-1"
             style={{ color: theme.text }}
           >
             {userName || "Guest"}
@@ -79,7 +79,7 @@ const CustomDrawerContent = (props: any) => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.card }}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View
         style={{
           paddingTop: insets.top + 16,
@@ -89,10 +89,13 @@ const CustomDrawerContent = (props: any) => {
       >
         <TouchableOpacity
           className="p-3 rounded-lg items-center"
-          style={{ backgroundColor: theme.background }}
+          style={{ backgroundColor: theme.accent }}
           onPress={() => console.log("New chat pressed!")}
         >
-          <Text className="text-base font-bold" style={{ color: theme.text }}>
+          <Text
+            className="text-base font-space-bold"
+            style={{ color: theme.textLight || theme.text }}
+          >
             New Chat +
           </Text>
         </TouchableOpacity>
@@ -100,10 +103,15 @@ const CustomDrawerContent = (props: any) => {
 
       <DrawerContentScrollView
         {...props}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
         style={{ paddingHorizontal: 16 }}
       >
-        <Text className="text-sm mb-2 font-bold" style={{ color: theme.text }}>
+        <Text
+          className="text-sm mb-2 font-space-bold"
+          style={{ color: theme.text }}
+        >
           Chats
         </Text>
         <FlatList

@@ -2,6 +2,7 @@ export type Theme = {
   background: string;
   card: string;
   text: string;
+  textLight?: string;
   textSecondary: string;
   primary: string;
   primaryLight?: string;
@@ -39,6 +40,7 @@ export const themes: Record<string, Theme> = {
     background: "#FCF4EC", // gold
     card: "#F0F4E8", // olive/greenish
     text: "#000000", // black
+    textLight: "#ffffff", // white
     textSecondary: "#333333",
     primary: "#C29B61",
     primaryLight: "#FCF4EC",

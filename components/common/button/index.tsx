@@ -22,7 +22,7 @@ const FancyButton: React.FC<Props> = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      className="w-full"
+      className="w-full max-w-md mx-auto"
       disabled={loading}
     >
       <BlurView
@@ -31,7 +31,9 @@ const FancyButton: React.FC<Props> = ({
         className="flex-row items-center justify-between rounded-full p-1 overflow-hidden"
       >
         {/* Text */}
-        <Text className="text-black text-xl font-bold flex-1 mx-5">{text}</Text>
+        <Text className="text-black text-xl flex-1 mx-5 font-space-bold tracking-wide">
+          {text}
+        </Text>
 
         {/* Icon wrapper */}
         <TouchableOpacity

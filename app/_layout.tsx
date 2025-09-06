@@ -8,6 +8,10 @@ import "../global.css";
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMonoItalic: require("../assets/fonts/SpaceMono-Italic.ttf"),
+    SpaceMonoBold: require("../assets/fonts/SpaceMono-Bold.ttf"),
+    SpaceMonoBoldItalic: require("../assets/fonts/SpaceMono-BoldItalic.ttf"),
+    PixelatedElegance: require("../assets/fonts/PixelatedElegance-Regular.ttf"),
   });
 
   if (!loaded) {

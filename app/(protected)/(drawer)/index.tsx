@@ -40,13 +40,13 @@ const Chat = () => {
         <View
           className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm"
           style={{
-            backgroundColor: theme.card,
+            backgroundColor: theme.accent || theme.card,
           }}
         >
           <Text
-            className="text-base"
+            className="text-base font-space"
             style={{
-              color: theme.text,
+              color: theme.textLight || theme.text,
             }}
           >
             {item.message}
@@ -57,7 +57,7 @@ const Chat = () => {
       return (
         <View className="my-3">
           <Text
-            className="text-base leading-relaxed"
+            className="text-base leading-relaxed font-space"
             style={{ color: theme.text }}
           >
             {item.message}
@@ -97,7 +97,7 @@ const Chat = () => {
           }}
         >
           <TextInput
-            className="mr-3 flex-1 rounded-full p-4 text-base"
+            className="mr-3 flex-1 rounded-full p-4 text-base font-space"
             style={{ backgroundColor: theme.card, color: theme.text }}
             placeholder="Type your message..."
             placeholderTextColor={theme.textSecondary}
@@ -108,10 +108,13 @@ const Chat = () => {
           />
           <Pressable
             className="rounded-full py-4 px-6"
-            style={{ backgroundColor: theme.card }}
+            style={{ backgroundColor: theme.accent || theme.card }}
             onPress={handleSend}
           >
-            <Text className="text-base font-bold" style={{ color: theme.text }}>
+            <Text
+              className="text-base font-space-bold"
+              style={{ color: theme.textLight || theme.text }}
+            >
               Send
             </Text>
           </Pressable>

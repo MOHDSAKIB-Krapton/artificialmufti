@@ -120,7 +120,7 @@ const OptionModal = ({
                   />
                 )}
                 <Text
-                  className="text-base"
+                  className="text-base font-space"
                   style={{ color: opt.textColor || theme.text }}
                 >
                   {opt.label}

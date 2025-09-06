@@ -35,7 +35,7 @@ const Conversation = ({
     <OptionModal
       triggerElement={
         <View className="py-4">
-          <Text className="text-base" style={{ color: theme.text }}>
+          <Text className="text-base font-space" style={{ color: theme.text }}>
             {name}
           </Text>
         </View>
