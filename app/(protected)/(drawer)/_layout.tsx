@@ -11,9 +11,15 @@ const DrawerLayout = () => {
   return (
     <Drawer
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      detachInactiveScreens={true}
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
         drawerStyle: { width: "75%" },
+        drawerContentContainerStyle: {
+          backgroundColor: "#000",
+          flex: 1,
+        },
+        headerTitle: "TITLE",
       }}
     >
       <Drawer.Screen

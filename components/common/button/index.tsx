@@ -1,7 +1,14 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React from "react";
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import {
+  ActivityIndicator,
+  StyleProp,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+} from "react-native";
 
 type Props = {
   text: string;
@@ -9,6 +16,9 @@ type Props = {
   iconName?: keyof typeof Ionicons.glyphMap; // for Ionicons
   SvgIcon?: React.ReactNode; // for custom SVG
   loading?: boolean;
+  accessibilityLabel?: string;
+  size?: "sm" | "normal";
+  buttonStyles?: StyleProp<TextStyle>;
 };
 
 const FancyButton: React.FC<Props> = ({
@@ -17,13 +27,19 @@ const FancyButton: React.FC<Props> = ({
   iconName,
   SvgIcon,
   loading,
+  accessibilityLabel,
+  size = "normal",
+  buttonStyles,
 }) => {
+  const { theme } = useTheme();
+
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
       className="w-full max-w-md mx-auto"
       disabled={loading}
+      accessibilityLabel={accessibilityLabel}
     >
       <BlurView
         intensity={40}
@@ -31,7 +47,10 @@ const FancyButton: React.FC<Props> = ({
         className="flex-row items-center justify-between rounded-full p-1 overflow-hidden"
       >
         {/* Text */}
-        <Text className="text-black text-xl flex-1 mx-5 font-space-bold tracking-wide">
+        <Text
+          className="text-xl flex-1 mx-5 font-space-bold tracking-wide"
+          style={[{ color: theme.textLight || theme.text }, buttonStyles]}
+        >
           {text}
         </Text>
 

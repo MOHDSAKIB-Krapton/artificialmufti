@@ -1,29 +1,23 @@
 import { mockChat } from "@/constants/mock";
 import { useTheme } from "@/hooks/useTheme";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
-  FlatList,
   KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+  KeyboardProvider,
+} from "react-native-keyboard-controller";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 const Chat = () => {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [messages, setMessages] = useState(mockChat);
   const [input, setInput] = useState("");
   const flatListRef = useRef<FlatList>(null);
-
-  useEffect(() => {
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: false });
-    }, 50);
-  }, []);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -32,13 +26,16 @@ const Chat = () => {
       { id: prev.length + 1, sender: "user", message: input },
     ]);
     setInput("");
+    // requestAnimationFrame(() => {
+    //   flatListRef.current?.scrollToEnd({ animated: true });
+    // });
   };
 
   const renderItem = ({ item }: { item: (typeof mockChat)[0] }) => {
     if (item.sender === "user") {
       return (
         <View
-          className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm"
+          className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow"
           style={{
             backgroundColor: theme.accent || theme.card,
           }}
@@ -55,7 +52,7 @@ const Chat = () => {
       );
     } else {
       return (
-        <View className="my-3">
+        <View className="my-2">
           <Text
             className="text-base leading-relaxed font-space"
             style={{ color: theme.text }}
@@ -67,17 +64,18 @@ const Chat = () => {
     }
   };
   return (
-    <SafeAreaView
-      className="flex-1"
-      edges={["bottom"]}
-      style={{ backgroundColor: theme.background }}
-    >
-      <KeyboardAvoidingView
+    <KeyboardProvider>
+      <SafeAreaView
+        className="flex-1 border-4 border-blue-500"
+        edges={["bottom"]}
+        style={{ backgroundColor: theme.background }}
+      >
+        {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"} // fix for Android
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 100} // adjust as needed
-      >
-        {/* Chat Area */}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 100} // adjust as needed
+        className="border border-red-500"
+      > */}
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -85,42 +83,66 @@ const Chat = () => {
           keyExtractor={(item) => item.id.toString()}
           className="flex-1 px-4 py-3"
           keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
+          inverted
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          ListFooterComponent={() => <View className="h-6" />}
+          keyboardDismissMode="on-drag"
         />
 
-        {/* Input Bar */}
-        <View
-          className="flex-row items-center p-3"
-          style={{
-            borderTopWidth: 1,
-            borderTopColor: theme.card,
-            backgroundColor: theme.background,
-          }}
+        <KeyboardAvoidingView
+          style={{ padding: 10, backgroundColor: theme.background }}
         >
-          <TextInput
-            className="mr-3 flex-1 rounded-full p-4 text-base font-space"
-            style={{ backgroundColor: theme.card, color: theme.text }}
-            placeholder="Type your message..."
-            placeholderTextColor={theme.textSecondary}
-            value={input}
-            onChangeText={setInput}
-            returnKeyType="send"
-            onSubmitEditing={handleSend}
-          />
-          <Pressable
-            className="rounded-full py-4 px-6"
-            style={{ backgroundColor: theme.accent || theme.card }}
-            onPress={handleSend}
+          {/* Input Bar */}
+          <View
+            className="flex-row items-center p-3 border border-red-500"
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: theme.card,
+              backgroundColor: theme.background,
+            }}
           >
-            <Text
-              className="text-base font-space-bold"
-              style={{ color: theme.textLight || theme.text }}
+            <TextInput
+              className="mr-3 flex-1 rounded-full p-4 text-base font-space"
+              style={{
+                backgroundColor: theme.card,
+                color: theme.text,
+                borderRadius: 20, // rounded rectangle, not full pill
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                minHeight: 40,
+                maxHeight: 120,
+                flexGrow: 1,
+              }}
+              placeholder="Type your message..."
+              placeholderTextColor={theme.textSecondary}
+              value={input}
+              onChangeText={setInput}
+              multiline
+              submitBehavior={"newline"}
+              onSubmitEditing={handleSend}
+            />
+            <Pressable
+              className="rounded-full py-4 px-6"
+              style={{ backgroundColor: theme.accent || theme.card }}
+              onPress={handleSend}
+              accessibilityLabel="Send message"
+              disabled={!input.trim()}
             >
-              Send
-            </Text>
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+              <Text
+                className="text-base font-space-bold"
+                style={{ color: theme.textLight || theme.text }}
+              >
+                Send
+              </Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </KeyboardProvider>
   );
 };
 

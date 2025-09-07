@@ -1,7 +1,6 @@
 import { MOCK_CONVERSATIONS } from "@/constants/mock";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -78,6 +77,17 @@ const CustomDrawerContent = (props: any) => {
     );
   }
 
+  const DrawerListHeader = () => {
+    return (
+      <Text
+        className="text-sm mb-2 font-space-bold"
+        style={{ color: theme.text }}
+      >
+        Chats
+      </Text>
+    );
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View
@@ -101,23 +111,10 @@ const CustomDrawerContent = (props: any) => {
         </TouchableOpacity>
       </View>
 
-      <DrawerContentScrollView
-        {...props}
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-        style={{ paddingHorizontal: 16 }}
-      >
-        <Text
-          className="text-sm mb-2 font-space-bold"
-          style={{ color: theme.text }}
-        >
-          Chats
-        </Text>
+      <View style={{ paddingHorizontal: 16 }} className="flex-1">
         <FlatList
           data={chats}
           keyExtractor={(item) => item.id}
-          scrollEnabled={false}
           renderItem={({ item }) => (
             <Conversation
               name={item.name}
@@ -127,8 +124,12 @@ const CustomDrawerContent = (props: any) => {
               onDelete={() => handleDelete(item.id)}
             />
           )}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          ListHeaderComponent={<DrawerListHeader />}
+          ListFooterComponent={<View className="h-6" />}
         />
-      </DrawerContentScrollView>
+      </View>
 
       <View
         style={{

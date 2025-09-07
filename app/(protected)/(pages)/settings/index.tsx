@@ -2,6 +2,7 @@ import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
 import { useTheme } from "@/hooks/useTheme";
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
@@ -45,6 +46,24 @@ export default function Settings() {
         label: "Data Usage",
         value: "See network usage",
         onPress: () => console.log("Data Usage pressed"),
+      },
+    ],
+  };
+
+  const AdditionalFeatures: OptionListProps = {
+    header: "ADDITIONAL FEATURES",
+    options: [
+      {
+        type: "display",
+        label: "Qibla Direction",
+        value: "See Qibla direction",
+        onPress: () => router.push("/(protected)/(pages)/kaaba"),
+      },
+      {
+        type: "display",
+        label: "Prayer Times",
+        value: "See Prayer Times",
+        onPress: () => router.push("/(protected)/(pages)/prayer-times"),
       },
     ],
   };
@@ -209,6 +228,7 @@ export default function Settings() {
         title="Appearance"
       />
 
+      <OptionList {...AdditionalFeatures} />
       <OptionList {...AccountSection} />
       <OptionList {...GeneralSection} />
       <OptionList {...PrivacySection} />

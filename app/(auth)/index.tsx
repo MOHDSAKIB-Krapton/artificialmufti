@@ -2,12 +2,14 @@ import SVGDiscord from "@/assets/svg/discord";
 import SVGGoogle from "@/assets/svg/google";
 import FancyButton from "@/components/common/button";
 import LayoutContainer from "@/components/common/layout/container";
-import { APP_NAME } from "@/constants";
+import MuftiWithText from "@/components/common/mufti";
+import { useTheme } from "@/hooks/useTheme";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const Auth = () => {
+  const { theme } = useTheme();
   const [provider, setProvider] = useState("");
 
   const continueWithOAuth = (provider: string) => {
@@ -19,26 +21,13 @@ const Auth = () => {
     }, 1000);
   };
 
+  const artificialMufti = require("../../assets/images/aimufti3.png");
+
   return (
     <LayoutContainer>
       <View className="flex-1 justify-between items-center">
         <View className="flex-1 items-center justify-center w-full">
-          <View className="mb-10 items-center">
-            <Image
-              source={require("../../assets/images/react-logo.png")}
-              className="w-24 h-24 mb-6"
-              style={{ tintColor: "#ffffff" }}
-            />
-            <Text className="text-4xl font-pixel text-black tracking-wide">
-              {APP_NAME}
-            </Text>
-          </View>
-
-          {/* Tagline */}
-          <Text className="text-base text-black text-center leading-6 mb-12 px-6 font-space">
-            Unlock knowledge and guidance through intelligent, authentic, and
-            reliable insights.
-          </Text>
+          <MuftiWithText text="Welcome Back!" imageSource={artificialMufti} />
 
           <View className="gap-y-4 w-full">
             <FancyButton
@@ -46,12 +35,14 @@ const Auth = () => {
               text="Continue with Google"
               SvgIcon={<SVGGoogle width={22} height={22} />}
               loading={provider === "google"}
+              buttonStyles={{ color: theme.text }}
             />
             <FancyButton
               onPress={() => continueWithOAuth("discord")}
               text="Continue with Discord"
               SvgIcon={<SVGDiscord width={22} height={22} />}
               loading={provider === "discord"}
+              buttonStyles={{ color: theme.text }}
             />
           </View>
         </View>

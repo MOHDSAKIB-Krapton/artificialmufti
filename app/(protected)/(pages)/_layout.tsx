@@ -6,18 +6,38 @@ const PagesLayout = () => {
   const { theme } = useTheme();
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "fade",
+        animationDuration: 500,
+        animationMatchesGesture: true,
+        gestureEnabled: true,
+        headerShown: true,
+        headerShadowVisible: false,
+        headerStyle: {
+          backgroundColor: theme.background,
+        },
+        headerTintColor: theme.text,
+        headerTitleStyle: { fontFamily: "SpaceMonoBold" },
+        contentStyle: { backgroundColor: theme.background },
+      }}
+    >
       <Stack.Screen
         name="settings/index"
         options={{
-          headerShown: true,
           headerTitle: "Settings",
-          headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor: theme.background,
-          },
-          headerTintColor: theme.text,
-          headerTitleStyle: { fontFamily: "SpaceMonoBold" },
+        }}
+      />
+      <Stack.Screen
+        name="kaaba/index"
+        options={{
+          headerTitle: "Kaaba Direction",
+        }}
+      />
+      <Stack.Screen
+        name="prayer-times/index"
+        options={{
+          headerTitle: "Prayer Times",
         }}
       />
     </Stack>
