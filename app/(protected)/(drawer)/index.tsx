@@ -1,20 +1,13 @@
+import ChatComposer from "@/components/chat/composer";
 import { mockChat } from "@/constants/mock";
 import { useTheme } from "@/hooks/useTheme";
 import React, { useRef, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
-import {
-  KeyboardAvoidingView,
-  KeyboardProvider,
-} from "react-native-keyboard-controller";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { FlatList, Platform, Text, View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Chat = () => {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
-
   const [messages, setMessages] = useState(mockChat);
   const [input, setInput] = useState("");
   const flatListRef = useRef<FlatList>(null);
@@ -26,9 +19,9 @@ const Chat = () => {
       { id: prev.length + 1, sender: "user", message: input },
     ]);
     setInput("");
-    // requestAnimationFrame(() => {
-    //   flatListRef.current?.scrollToEnd({ animated: true });
-    // });
+    requestAnimationFrame(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    });
   };
 
   const renderItem = ({ item }: { item: (typeof mockChat)[0] }) => {
@@ -64,24 +57,27 @@ const Chat = () => {
     }
   };
   return (
-    <KeyboardProvider>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "translate-with-padding"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 80}
+    >
       <SafeAreaView
-        className="flex-1 border-4 border-blue-500"
+        className="flex-1"
         edges={["bottom"]}
         style={{ backgroundColor: theme.background }}
       >
-        {/* <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"} // fix for Android
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 100} // adjust as needed
-        className="border border-red-500"
-      > */}
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
-          className="flex-1 px-4 py-3"
+          initialNumToRender={10} // how many to render initially
+          maxToRenderPerBatch={10} // batch render size
+          windowSize={5} // number of screens worth to render
+          updateCellsBatchingPeriod={50}
+          removeClippedSubviews={true}
+          className="flex-1 px-4 pt-3"
           keyboardShouldPersistTaps="handled"
           onContentSizeChange={() =>
             flatListRef.current?.scrollToEnd({ animated: true })
@@ -90,59 +86,68 @@ const Chat = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           ListFooterComponent={() => <View className="h-6" />}
-          keyboardDismissMode="on-drag"
+          // keyboardDismissMode="on-drag"
         />
 
-        <KeyboardAvoidingView
-          style={{ padding: 10, backgroundColor: theme.background }}
+        {/* Input Bar */}
+        {/* <View
+          className="flex-row items-center p-3"
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: theme.card,
+            backgroundColor: theme.background,
+          }}
         >
-          {/* Input Bar */}
-          <View
-            className="flex-row items-center p-3 border border-red-500"
+          <TextInput
+            className="mr-3 flex-1 rounded-full p-4 text-base font-space"
             style={{
-              borderTopWidth: 1,
-              borderTopColor: theme.card,
-              backgroundColor: theme.background,
+              backgroundColor: theme.card,
+              color: theme.text,
+              borderRadius: 20, // rounded rectangle, not full pill
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              minHeight: 40,
+              maxHeight: 120,
+              flexGrow: 1,
             }}
+            placeholder="Type your message..."
+            placeholderTextColor={theme.textSecondary}
+            value={input}
+            onChangeText={setInput}
+            multiline
+            submitBehavior={"newline"}
+            onSubmitEditing={handleSend}
+          />
+          <Pressable
+            className="rounded-full py-4 px-6"
+            style={{ backgroundColor: theme.accent || theme.card }}
+            onPress={handleSend}
+            accessibilityLabel="Send message"
+            disabled={!input.trim()}
           >
-            <TextInput
-              className="mr-3 flex-1 rounded-full p-4 text-base font-space"
-              style={{
-                backgroundColor: theme.card,
-                color: theme.text,
-                borderRadius: 20, // rounded rectangle, not full pill
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                minHeight: 40,
-                maxHeight: 120,
-                flexGrow: 1,
-              }}
-              placeholder="Type your message..."
-              placeholderTextColor={theme.textSecondary}
-              value={input}
-              onChangeText={setInput}
-              multiline
-              submitBehavior={"newline"}
-              onSubmitEditing={handleSend}
-            />
-            <Pressable
-              className="rounded-full py-4 px-6"
-              style={{ backgroundColor: theme.accent || theme.card }}
-              onPress={handleSend}
-              accessibilityLabel="Send message"
-              disabled={!input.trim()}
+            <Text
+              className="text-base font-space-bold"
+              style={{ color: theme.textLight || theme.text }}
             >
-              <Text
-                className="text-base font-space-bold"
-                style={{ color: theme.textLight || theme.text }}
-              >
-                Send
-              </Text>
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
+              Send
+            </Text>
+          </Pressable>
+        </View> */}
+        <ChatComposer
+          enableAttachments={false}
+          onSendText={handleSend}
+          onSendImages={(arr) => {
+            // upload images
+          }}
+          onSendFiles={(arr) => {
+            // upload docs
+          }}
+          onSendVoice={(audio) => {
+            // upload voice file
+          }}
+        />
       </SafeAreaView>
-    </KeyboardProvider>
+    </KeyboardAvoidingView>
   );
 };
 

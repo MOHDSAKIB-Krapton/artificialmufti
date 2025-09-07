@@ -19,7 +19,6 @@ const DrawerLayout = () => {
           backgroundColor: "#000",
           flex: 1,
         },
-        headerTitle: "TITLE",
       }}
     >
       <Drawer.Screen
