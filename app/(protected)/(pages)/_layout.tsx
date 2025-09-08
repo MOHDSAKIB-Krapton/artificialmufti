@@ -40,6 +40,18 @@ const PagesLayout = () => {
           headerTitle: "Prayer Times",
         }}
       />
+      <Stack.Screen
+        name="donation/index"
+        options={{
+          headerTitle: "Support Us",
+        }}
+      />
+      <Stack.Screen
+        name="support/index"
+        options={{
+          headerTitle: "Customer Support",
+        }}
+      />
     </Stack>
   );
 };

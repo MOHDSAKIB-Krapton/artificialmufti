@@ -14,6 +14,7 @@ type OptionType =
   | {
       type: "navigation";
       label: string;
+      value?: string;
       onPress: () => void;
       icon?: keyof typeof Ionicons.glyphMap;
     }
@@ -36,8 +37,78 @@ export interface OptionListProps {
   options: OptionType[];
 }
 
+// --------------------
+// Reusable Row
+// --------------------
+interface OptionRowProps {
+  label: string;
+  value?: string | boolean;
+  icon?: keyof typeof Ionicons.glyphMap;
+  isLast: boolean;
+  RightComponent?: React.ReactNode;
+  onPress?: () => void;
+}
+
+const OptionRow: React.FC<OptionRowProps> = ({
+  label,
+  value,
+  icon,
+  isLast,
+  RightComponent,
+  onPress,
+}) => {
+  const { theme } = useTheme();
+
+  const Container = onPress ? TouchableOpacity : View;
+
+  return (
+    <Container
+      onPress={onPress}
+      className="flex-row items-center flex-1"
+      activeOpacity={0.7}
+      style={{
+        borderBottomColor: !isLast ? theme.background : undefined,
+        borderBottomWidth: !isLast ? 1 : undefined,
+      }}
+    >
+      {icon && (
+        <View className="p-3">
+          <Ionicons name={icon} size={28} color={theme.primary} />
+        </View>
+      )}
+
+      <View className="flex-col flex-1 px-4 py-2">
+        <Text
+          className="text-base font-space-bold"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={{ color: theme.text }}
+        >
+          {label}
+        </Text>
+        {typeof value === "string" && (
+          <Text
+            className="font-space"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ color: theme.textSecondary }}
+          >
+            {value}
+          </Text>
+        )}
+      </View>
+
+      {RightComponent}
+    </Container>
+  );
+};
+
+// --------------------
+// Main List
+// --------------------
 const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
   const { theme } = useTheme();
+
   return (
     <View className="mb-6">
       <Text
@@ -46,6 +117,7 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
       >
         {header}
       </Text>
+
       <View
         className=" rounded-2xl overflow-hidden"
         style={{ backgroundColor: theme.card }}
@@ -53,162 +125,76 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
         {options.map((opt, idx) => {
           const isLast = idx === options.length - 1;
 
-          if (opt.type === "switch") {
-            return (
-              <TouchableOpacity
-                key={idx}
-                onPress={() => opt.onToggle(!opt.value)}
-                className={`flex-row justify-between items-center px-4 py-4 `}
-                style={{
-                  borderBottomColor: !isLast ? theme.background : undefined,
-                  borderBottomWidth: !isLast ? 1 : undefined,
-                }}
-              >
-                <View className="flex-row items-center">
-                  {opt.icon && (
-                    <Ionicons
-                      name={opt.icon}
-                      size={20}
-                      color={theme.primary}
-                      className="mr-4"
-                    />
-                  )}
-                  <Text
-                    className="text-base font-space-bold"
-                    style={{ color: theme.text }}
-                  >
-                    {opt.label}
-                  </Text>
-                </View>
-
-                <View style={{ transform: [{ scale: 0.8 }] }}>
-                  <Switch
-                    value={opt.value}
-                    onValueChange={opt.onToggle}
-                    thumbColor={opt.value ? theme.primary : "#888"}
-                    trackColor={{ true: theme.background, false: "#444" }}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
-          }
-
-          if (opt.type === "navigation") {
-            return (
-              <TouchableOpacity
-                key={idx}
-                className={`flex-row justify-between items-center px-4 py-4 `}
-                onPress={opt.onPress}
-                style={{
-                  borderBottomColor: !isLast ? theme.background : undefined,
-                  borderBottomWidth: !isLast ? 1 : undefined,
-                }}
-              >
-                {" "}
-                <View className="flex-row items-center">
-                  {opt.icon && (
-                    <Ionicons
-                      name={opt.icon}
-                      size={20}
-                      color={theme.primary}
-                      className="mr-4"
-                    />
-                  )}
-                  <Text
-                    className="text-base font-space-bold"
-                    style={{ color: theme.text }}
-                  >
-                    {opt.label}
-                  </Text>
-                </View>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={theme.primary}
+          switch (opt.type) {
+            case "switch":
+              return (
+                <OptionRow
+                  key={idx}
+                  label={opt.label}
+                  value={opt.value}
+                  icon={opt.icon}
+                  isLast={isLast}
+                  onPress={() => opt.onToggle(!opt.value)}
+                  RightComponent={
+                    <View style={{ transform: [{ scale: 1 }] }} className="p-4">
+                      <Switch
+                        value={opt.value}
+                        onValueChange={opt.onToggle}
+                        thumbColor={opt.value ? theme.primary : "#888"}
+                        trackColor={{ true: theme.background, false: "#444" }}
+                      />
+                    </View>
+                  }
                 />
-              </TouchableOpacity>
-            );
-          }
+              );
 
-          if (opt.type === "info") {
-            return (
-              <View
-                key={idx}
-                className={`flex-row justify-between items-center px-4 py-4`}
-                style={{
-                  borderBottomColor: !isLast ? theme.background : undefined,
-                  borderBottomWidth: !isLast ? 1 : undefined,
-                }}
-              >
-                <View className="flex-row items-center">
-                  {opt.icon && (
-                    <Ionicons
-                      name={opt.icon}
-                      size={20}
-                      color={theme.primary}
-                      className="mr-4"
-                    />
-                  )}
-                  <View className="flex-col">
-                    <Text
-                      className="text-base font-space-bold"
-                      style={{ color: theme.text }}
-                    >
-                      {opt.label}
-                    </Text>
-                    <Text
-                      className="font-space"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      {opt.value}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            );
-          }
+            case "navigation":
+              return (
+                <OptionRow
+                  key={idx}
+                  label={opt.label}
+                  value={opt.value}
+                  icon={opt.icon}
+                  isLast={isLast}
+                  onPress={opt.onPress}
+                  RightComponent={
+                    <View className="px-4 py-4">
+                      <Ionicons
+                        name="chevron-forward"
+                        size={20}
+                        color={theme.primary}
+                      />
+                    </View>
+                  }
+                />
+              );
 
-          if (opt.type === "display") {
-            return (
-              <TouchableOpacity
-                key={idx}
-                // make this item-center and see the magic...!!!! implement it atleast for version i love this.
-                className={`flex-col justify-between items-start px-4 py-4 `}
-                style={{
-                  borderBottomColor: !isLast ? theme.background : undefined,
-                  borderBottomWidth: !isLast ? 1 : undefined,
-                }}
-                onPress={opt.onPress}
-              >
-                <View className="flex-row items-center">
-                  {opt.icon && (
-                    <Ionicons
-                      name={opt.icon}
-                      size={20}
-                      color={theme.primary}
-                      className="mr-4"
-                    />
-                  )}
-                  <View className="flex-col">
-                    <Text
-                      className="text-base font-space-bold"
-                      style={{ color: theme.text }}
-                    >
-                      {opt.label}
-                    </Text>
-                    <Text
-                      className="font-space"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      {opt.value}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          }
+            case "info":
+              return (
+                <OptionRow
+                  key={idx}
+                  label={opt.label}
+                  value={opt.value}
+                  icon={opt.icon}
+                  isLast={isLast}
+                />
+              );
 
-          return null;
+            case "display":
+              return (
+                <OptionRow
+                  key={idx}
+                  label={opt.label}
+                  value={opt.value}
+                  icon={opt.icon}
+                  isLast={isLast}
+                  onPress={opt.onPress}
+                />
+              );
+
+            default:
+              return null;
+          }
         })}
       </View>
     </View>

@@ -71,6 +71,8 @@ const OptionModal = ({
         transparent
         visible={menuVisible}
         animationType="fade"
+        statusBarTranslucent
+        navigationBarTranslucent
         onRequestClose={closeMenu}
       >
         {/* Background overlay */}

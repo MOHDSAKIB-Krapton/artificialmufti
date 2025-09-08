@@ -128,6 +128,9 @@ const CustomDrawerContent = (props: any) => {
           showsHorizontalScrollIndicator={false}
           ListHeaderComponent={<DrawerListHeader />}
           ListFooterComponent={<View className="h-6" />}
+          initialNumToRender={5} // how many to render initially
+          maxToRenderPerBatch={10} // batch render size
+          windowSize={5} // number of screens worth to render
         />
       </View>
 

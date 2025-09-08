@@ -34,7 +34,7 @@ const Chat = () => {
           }}
         >
           <Text
-            className="text-base font-space"
+            className="text-base"
             style={{
               color: theme.textLight || theme.text,
             }}
@@ -47,7 +47,7 @@ const Chat = () => {
       return (
         <View className="my-2">
           <Text
-            className="text-base leading-relaxed font-space"
+            className="text-base leading-relaxed"
             style={{ color: theme.text }}
           >
             {item.message}
@@ -56,6 +56,7 @@ const Chat = () => {
       );
     }
   };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

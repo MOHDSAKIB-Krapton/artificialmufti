@@ -34,7 +34,7 @@ const FancyButton: React.FC<Props> = ({
   onPress,
   iconName,
   SvgIcon,
-  loading,
+  loading = false,
   accessibilityLabel,
   size = "normal",
   type = "primary",
@@ -96,7 +96,31 @@ const FancyButton: React.FC<Props> = ({
   }
 
   if (type === "secondary") {
-    return null;
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.8}
+        className="w-full max-w-md mx-auto flex-row p-3 rounded-xl justify-center items-center gap-x-2"
+        disabled={loading}
+        style={{ backgroundColor: theme.primary }}
+        accessibilityLabel={accessibilityLabel}
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color={iconColor || "#ffffff"} />
+        ) : SvgIcon ? (
+          SvgIcon
+        ) : iconName ? (
+          <Ionicons name={iconName} size={20} color={iconColor || "white"} />
+        ) : null}
+
+        <Text
+          className="text-xl mx-5 font-space-bold tracking-wide"
+          style={[{ color: theme.textLight || theme.text }, buttonStyles]}
+        >
+          {text}
+        </Text>
+      </TouchableOpacity>
+    );
   }
 
   if (type === "tertiary") {

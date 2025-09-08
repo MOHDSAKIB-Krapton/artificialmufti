@@ -4,7 +4,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
   const {
@@ -57,13 +57,22 @@ export default function Settings() {
         type: "display",
         label: "Qibla Direction",
         value: "See Qibla direction",
+        icon: "compass-outline",
         onPress: () => router.push("/(protected)/(pages)/kaaba"),
       },
       {
-        type: "display",
+        type: "navigation",
         label: "Prayer Times",
         value: "See Prayer Times",
+        icon: "time-outline",
         onPress: () => router.push("/(protected)/(pages)/prayer-times"),
+      },
+      {
+        type: "info",
+        label: "Prayer Times",
+        value: "See Prayer Times",
+        icon: "time-outline",
+        // onPress: () => router.push("/(protected)/(pages)/prayer-times"),
       },
     ],
   };
@@ -172,6 +181,9 @@ export default function Settings() {
     ],
   };
 
+  const [bottomVisible, setBottomVisible] = useState(false);
+  const [centerVisible, setCenterVisible] = useState(false);
+
   return (
     <ScrollView
       className="flex-1 bg-[#0d0d0d] px-5 py-6"
@@ -221,6 +233,33 @@ export default function Settings() {
         <Feather name="chevron-right" size={24} color="gray" />
       </TouchableOpacity>
 
+      <TouchableOpacity
+        onPress={() => router.push("/(protected)/(pages)/donation")}
+        className="flex-row items-center justify-between p-4 rounded-xl mb-6"
+        style={{ backgroundColor: theme.card }}
+      >
+        <View className="flex-row items-center">
+          <Feather name="zap" size={24} color="#FFD700" />
+          <View className="ml-4">
+            <Text
+              className="font-space-bold text-lg"
+              style={{ color: theme.text }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              Donate / Support Us
+            </Text>
+            <Text
+              className=" text-sm font-space"
+              style={{ color: theme.textSecondary }}
+            >
+              Your contributions help us improve the app
+            </Text>
+          </View>
+        </View>
+        <Feather name="chevron-right" size={24} color="gray" />
+      </TouchableOpacity>
+
       <OptionSelector
         options={themeOptions}
         selectedValue={selectedTheme}
@@ -234,6 +273,63 @@ export default function Settings() {
       <OptionList {...PrivacySection} />
       <OptionList {...SecuritySection} />
       <OptionList {...HelpSupportSection} />
+
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <Button
+          title="Open Bottom Modal"
+          onPress={() => setBottomVisible(true)}
+        />
+        <Button
+          title="Open Center Modal"
+          onPress={() => setCenterVisible(true)}
+        />
+
+        {/* Bottom Sheet Example */}
+        {/* <Modal
+          visible={bottomVisible}
+          onClose={() => setBottomVisible(false)}
+          isBottom={true}
+          // title="Bottom Modal"
+          // description="This modal slides up from the bottom and can be dragged down to close."
+          // breakpoints={[0.3, 0.6, 0.9]} // optional
+        >
+          <View>
+            <Text style={{ marginBottom: 10 }}>
+              👉 Scrollable content goes here
+            </Text>
+            <Text>Item 1</Text>
+            <Text>Item 2</Text>
+            <Text>Item 3</Text>
+            <Text>Item 4</Text>
+            <Text>Item 5</Text>
+            <Text>Item 6</Text>
+            <Text>Item 7</Text>
+          </View>
+        </Modal> */}
+
+        {/* Center Modal Example */}
+        {/* <Modal
+          visible={centerVisible}
+          onClose={() => setCenterVisible(false)}
+          // mode="center"
+          // title="Center Modal"
+          // description="This modal fades in the middle with scale animation."
+        >
+          <View>
+            <Text style={{ marginBottom: 10 }}>
+              👋 Hello from the center modal
+            </Text>
+            <Button title="Close Me" onPress={() => setCenterVisible(false)} />
+          </View>
+        </Modal> */}
+      </View>
 
       {/* Danger Zone */}
       <OptionList {...DangerZone} />
