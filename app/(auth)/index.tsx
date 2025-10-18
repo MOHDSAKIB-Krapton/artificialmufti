@@ -4,7 +4,7 @@ import FancyButton from "@/components/common/button";
 import LayoutContainer from "@/components/common/layout/container";
 import MuftiWithText from "@/components/common/mufti";
 import { useTheme } from "@/hooks/useTheme";
-import { router } from "expo-router";
+import { signInWithProvider } from "@/lib/oauth";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 
@@ -12,13 +12,15 @@ const Auth = () => {
   const { theme } = useTheme();
   const [provider, setProvider] = useState("");
 
-  const continueWithOAuth = (provider: string) => {
-    setProvider(provider);
-
-    setTimeout(() => {
+  const continueWithOAuth = async (prov: "google" | "discord") => {
+    try {
+      setProvider(prov);
+      await signInWithProvider(prov);
+    } catch (e: any) {
+      console.error("OAuth error:", e?.message || e);
+    } finally {
       setProvider("");
-      router.push("/(protected)/(drawer)");
-    }, 1000);
+    }
   };
 
   const artificialMufti = require("../../assets/images/aimufti3.png");

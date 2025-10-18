@@ -1,6 +1,7 @@
 import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuthStore } from "@/store/auth.store";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -14,6 +15,11 @@ export default function Settings() {
   } = useTheme();
   const [incognito, setIncognito] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
+
+  const [bottomVisible, setBottomVisible] = useState(false);
+  const [centerVisible, setCenterVisible] = useState(false);
+
+  const signOut = useAuthStore((s) => s.signOut);
 
   const themeOptions: Option[] = [
     {
@@ -170,7 +176,10 @@ export default function Settings() {
         type: "display",
         label: "Logout",
         value: "Logout session from this device",
-        onPress: () => console.log("Logout pressed"),
+        onPress: () => {
+          console.log("Signout called");
+          signOut();
+        },
       },
       {
         type: "display",
@@ -180,9 +189,6 @@ export default function Settings() {
       },
     ],
   };
-
-  const [bottomVisible, setBottomVisible] = useState(false);
-  const [centerVisible, setCenterVisible] = useState(false);
 
   return (
     <ScrollView

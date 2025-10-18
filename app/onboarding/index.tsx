@@ -16,7 +16,7 @@ const OnboardingScreen: React.FC = () => {
     setTimeout(() => {
       setLoading(false);
       router.push("/(auth)");
-    }, 1000);
+    }, 200);
   };
 
   const slide = {

@@ -6,6 +6,10 @@ const AuthLayout = () => {
   return (
     <Stack initialRouteName="index">
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="auth-callback/index"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 };
