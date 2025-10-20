@@ -35,7 +35,12 @@ const Conversation = ({
     <OptionModal
       triggerElement={
         <View className="py-4">
-          <Text className="text-base font-space" style={{ color: theme.text }}>
+          <Text
+            className="text-base font-space w-[80%] "
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ color: theme.text }}
+          >
             {name}
           </Text>
         </View>

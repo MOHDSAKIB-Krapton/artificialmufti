@@ -8,9 +8,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Chat = () => {
   const { theme } = useTheme();
+  const flatListRef = useRef<FlatList>(null);
+
   const [messages, setMessages] = useState(mockChat);
   const [input, setInput] = useState("");
-  const flatListRef = useRef<FlatList>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -61,11 +62,11 @@ const Chat = () => {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "translate-with-padding"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 80}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -20}
     >
       <SafeAreaView
         className="flex-1"
-        edges={["bottom"]}
+        edges={["bottom", "top"]}
         style={{ backgroundColor: theme.background }}
       >
         <FlatList
@@ -90,62 +91,10 @@ const Chat = () => {
           // keyboardDismissMode="on-drag"
         />
 
-        {/* Input Bar */}
-        {/* <View
-          className="flex-row items-center p-3"
-          style={{
-            borderTopWidth: 1,
-            borderTopColor: theme.card,
-            backgroundColor: theme.background,
-          }}
-        >
-          <TextInput
-            className="mr-3 flex-1 rounded-full p-4 text-base font-space"
-            style={{
-              backgroundColor: theme.card,
-              color: theme.text,
-              borderRadius: 20, // rounded rectangle, not full pill
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              minHeight: 40,
-              maxHeight: 120,
-              flexGrow: 1,
-            }}
-            placeholder="Type your message..."
-            placeholderTextColor={theme.textSecondary}
-            value={input}
-            onChangeText={setInput}
-            multiline
-            submitBehavior={"newline"}
-            onSubmitEditing={handleSend}
-          />
-          <Pressable
-            className="rounded-full py-4 px-6"
-            style={{ backgroundColor: theme.accent || theme.card }}
-            onPress={handleSend}
-            accessibilityLabel="Send message"
-            disabled={!input.trim()}
-          >
-            <Text
-              className="text-base font-space-bold"
-              style={{ color: theme.textLight || theme.text }}
-            >
-              Send
-            </Text>
-          </Pressable>
-        </View> */}
         <ChatComposer
           enableAttachments={false}
           onSendText={handleSend}
-          onSendImages={(arr) => {
-            // upload images
-          }}
-          onSendFiles={(arr) => {
-            // upload docs
-          }}
-          onSendVoice={(audio) => {
-            // upload voice file
-          }}
+          enableVoice={false}
         />
       </SafeAreaView>
     </KeyboardAvoidingView>

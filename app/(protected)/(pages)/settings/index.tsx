@@ -2,10 +2,17 @@ import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthStore } from "@/store/auth.store";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Settings() {
   const {
@@ -13,13 +20,15 @@ export default function Settings() {
     themeKey: selectedTheme,
     setThemeKey: setSelectedTheme,
   } = useTheme();
+
+  const signOut = useAuthStore((s) => s.signOut);
+  const user = useAuthStore((s) => s.user);
+
   const [incognito, setIncognito] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
 
   const [bottomVisible, setBottomVisible] = useState(false);
   const [centerVisible, setCenterVisible] = useState(false);
-
-  const signOut = useAuthStore((s) => s.signOut);
 
   const themeOptions: Option[] = [
     {
@@ -73,13 +82,6 @@ export default function Settings() {
         icon: "time-outline",
         onPress: () => router.push("/(protected)/(pages)/prayer-times"),
       },
-      {
-        type: "info",
-        label: "Prayer Times",
-        value: "See Prayer Times",
-        icon: "time-outline",
-        // onPress: () => router.push("/(protected)/(pages)/prayer-times"),
-      },
     ],
   };
 
@@ -87,19 +89,7 @@ export default function Settings() {
     header: "ACCOUNT",
     options: [
       {
-        type: "display",
-        label: "Profile",
-        value: "Manage your profile details",
-        onPress: () => console.log("Profile pressed"),
-      },
-      {
-        type: "display",
-        label: "Change Password",
-        value: "Update your login credentials",
-        onPress: () => console.log("Change Password pressed"),
-      },
-      {
-        type: "display",
+        type: "navigation",
         label: "Upgrade to SuperGrok",
         value: "Unlock advanced features",
         onPress: () => console.log("Upgrade pressed"),
@@ -116,31 +106,6 @@ export default function Settings() {
         label: "Incognito Mode",
         value: incognito,
         onToggle: setIncognito,
-      },
-    ],
-  };
-
-  const SecuritySection: OptionListProps = {
-    header: "SECURITY",
-    options: [
-      {
-        type: "switch",
-        label: "Two-Factor Authentication",
-        value: twoFactor,
-        onToggle: setTwoFactor,
-        icon: "shield-checkmark",
-      },
-      {
-        type: "display",
-        label: "Manage Devices",
-        value: "See logged-in sessions",
-        onPress: () => console.log("Manage Devices pressed"),
-      },
-      {
-        type: "display",
-        label: "Face ID / Touch ID",
-        value: "Unlock with biometrics",
-        onPress: () => console.log("Biometrics pressed"),
       },
     ],
   };
@@ -197,18 +162,31 @@ export default function Settings() {
       contentContainerStyle={{ paddingBottom: 100 }}
     >
       <View className="items-center mb-8">
-        <View className="w-24 h-24 rounded-full border-2 border-[#3a3a3c] overflow-hidden"></View>
+        {/* Avatar */}
+        {user?.user_metadata.avatar_url ? (
+          <Image
+            source={{ uri: user?.user_metadata.avatar_url }}
+            className="w-24 h-24 rounded-full"
+          />
+        ) : (
+          <View
+            className="w-24 h-24 rounded-full  items-center justify-center"
+            style={{ backgroundColor: theme.card }}
+          >
+            <Ionicons name="person" size={56} color={theme.text} />
+          </View>
+        )}
         <Text
           className=" font-pixel text-xl mt-4"
           style={{ color: theme.text }}
         >
-          Mohd. Sakib
+          {user?.user_metadata.full_name}
         </Text>
         <Text
           className=" text-sm font-space"
           style={{ color: theme.textSecondary }}
         >
-          danishkhan9886283@gmail.com
+          {user?.email}
         </Text>
       </View>
 
@@ -226,7 +204,7 @@ export default function Settings() {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              Upgrade to Super ArtificialMufti
+              Upgrade to Super AI Mufti
             </Text>
             <Text
               className=" text-sm font-space"
@@ -277,7 +255,6 @@ export default function Settings() {
       <OptionList {...AccountSection} />
       <OptionList {...GeneralSection} />
       <OptionList {...PrivacySection} />
-      <OptionList {...SecuritySection} />
       <OptionList {...HelpSupportSection} />
 
       <View

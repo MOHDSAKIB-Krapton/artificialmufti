@@ -1,12 +1,16 @@
-import { MOCK_CONVERSATIONS } from "@/constants/mock";
+import ConversationSkeleton from "@/components/skeletonLoaders/conversations";
 import { useTheme } from "@/hooks/useTheme";
+import { ConversationServices } from "@/services/conversation/conversation.service";
+import { Conversation as ConversationType } from "@/services/conversation/types";
+import { useAuthStore } from "@/store/auth.store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -16,8 +20,12 @@ import Conversation from "./conversation";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useTheme();
-  const [chats, setChats] = useState(MOCK_CONVERSATIONS);
   const insets = useSafeAreaInsets();
+  const user = useAuthStore((s) => s.user);
+
+  const [chats, setChats] = useState<ConversationType[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRename = (id: string) => {
     console.log(`Rename chat ${id}`);
@@ -88,6 +96,31 @@ const CustomDrawerContent = (props: any) => {
     );
   };
 
+  useEffect(() => {
+    getAllConversations();
+  }, []);
+
+  const getAllConversations = async () => {
+    try {
+      setLoading(true);
+      const response = await ConversationServices.getAllConversations();
+      setChats(response);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await getAllConversations();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View
@@ -112,18 +145,33 @@ const CustomDrawerContent = (props: any) => {
       </View>
 
       <View style={{ paddingHorizontal: 16 }} className="flex-1">
-        <FlatList
-          data={chats}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Conversation
-              name={item.name}
-              onOpen={() => console.log(`Open chat ${item.id}`)}
-              onRename={() => handleRename(item.id)}
-              onArchive={() => handleArchive(item.id)}
-              onDelete={() => handleDelete(item.id)}
+        <FlatList<ConversationType>
+          data={loading ? Array.from({ length: 6 }) : chats}
+          keyExtractor={(item, index) =>
+            loading ? `skeleton-${index}` : item.id
+          }
+          renderItem={({ item, index }) =>
+            loading ? (
+              <ConversationSkeleton />
+            ) : (
+              <Conversation
+                name={item.title}
+                onOpen={() => console.log(`Open chat ${item.id}`)}
+                onRename={() => handleRename(item.id)}
+                onArchive={() => handleArchive(item.id)}
+                onDelete={() => handleDelete(item.id)}
+              />
+            )
+          }
+          refreshing={refreshing}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh} // your refresh function
+              colors={[theme.accent]} // optional: Android indicator color
+              tintColor={theme.accent} // optional: iOS indicator color
             />
-          )}
+          }
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           ListHeaderComponent={<DrawerListHeader />}
@@ -141,7 +189,10 @@ const CustomDrawerContent = (props: any) => {
           backgroundColor: theme.background,
         }}
       >
-        <ProfileRow userName="John Doe" />
+        <ProfileRow
+          userName={user?.user_metadata.full_name}
+          profilePic={user?.user_metadata.avatar_url}
+        />
       </View>
     </View>
   );

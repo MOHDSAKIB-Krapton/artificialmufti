@@ -122,8 +122,8 @@ const ChatComposer: React.FC<Props> = ({
   const contentHeightRef = useRef(MIN_INPUT_HEIGHT);
 
   // ATTACHMENTS
-  const [images, setImages] = useState<PickedImage[]>(demoImages);
-  const [files, setFiles] = useState<PickedFile[]>(demoFiles);
+  const [images, setImages] = useState<PickedImage[]>([]);
+  const [files, setFiles] = useState<PickedFile[]>([]);
 
   // PREVIEW ANIMATIONS
   const previewOpacity = useRef(new Animated.Value(0)).current;

@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/context/theme";
+import AuthBootstrap from "@/providers/AuthBootstrap";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -27,25 +28,27 @@ export default function RootLayout() {
       <BottomSheetModalProvider>
         <ThemeProvider>
           <KeyboardProvider>
-            <Stack
-              initialRouteName="index"
-              screenOptions={{
-                animation: "fade",
-                contentStyle: { backgroundColor: "#000" },
-              }}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="onboarding/index"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(protected)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <AuthBootstrap>
+              <Stack
+                initialRouteName="index"
+                screenOptions={{
+                  animation: "fade",
+                  contentStyle: { backgroundColor: "#000" },
+                }}
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="onboarding/index"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(protected)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </AuthBootstrap>
           </KeyboardProvider>
           <StatusBar style="auto" />
         </ThemeProvider>

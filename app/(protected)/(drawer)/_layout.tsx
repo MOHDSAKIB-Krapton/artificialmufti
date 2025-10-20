@@ -1,9 +1,7 @@
 import CustomDrawerContent from "@/components/pagePartials/drawer/drawerContent";
 import { useTheme } from "@/hooks/useTheme";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
-import { TouchableOpacity } from "react-native";
 
 const DrawerLayout = () => {
   const { theme } = useTheme();
@@ -14,6 +12,7 @@ const DrawerLayout = () => {
       detachInactiveScreens={true}
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
+        headerTransparent: true,
         drawerStyle: { width: "75%" },
         drawerContentContainerStyle: {
           backgroundColor: "#000",
@@ -27,22 +26,37 @@ const DrawerLayout = () => {
           headerTitle: "",
           swipeEnabled: true,
           headerShadowVisible: false,
+          headerShown: true,
+          headerStyle: { backgroundColor: "transparent" },
           headerTintColor: theme.text,
           swipeEdgeWidth: 500,
           drawerType: "slide",
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => console.log("Header right pressed")}
-            >
-              <MaterialCommunityIcons
-                name="incognito"
-                size={24}
-                color={theme.text}
-              />
-            </TouchableOpacity>
-          ),
-          headerRightContainerStyle: {
-            paddingRight: 16,
+          // headerRight: () => (
+          //   <TouchableOpacity
+          //     onPress={() => console.log("Header right pressed")}
+          //     style={{
+          //       marginLeft: 16,
+          //       backgroundColor: theme.card,
+          //       borderRadius: 999,
+          //       padding: 8,
+          //     }}
+          //   >
+          //     <MaterialCommunityIcons
+          //       name="incognito"
+          //       size={24}
+          //       color={theme.text}
+          //     />
+          //   </TouchableOpacity>
+          // ),
+          // headerRightContainerStyle: {
+          //   paddingRight: 16,
+          // },
+          headerLeftContainerStyle: {
+            backgroundColor: theme.card,
+            position: "absolute",
+            left: 16,
+            top: 10,
+            borderRadius: 999,
           },
         }}
       />
