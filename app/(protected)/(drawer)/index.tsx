@@ -1,7 +1,10 @@
+import ChatEmpty from "@/components/chat/chatEmpty";
 import ChatComposer from "@/components/chat/composer";
-import { mockChat } from "@/constants/mock";
 import { useTheme } from "@/hooks/useTheme";
-import React, { useRef, useState } from "react";
+import { ConversationServices } from "@/services/conversation/conversation.service";
+import { ChatMessage } from "@/services/conversation/types";
+import { useConversationStore } from "@/store/conversation.store";
+import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Platform, Text, View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,23 +13,50 @@ const Chat = () => {
   const { theme } = useTheme();
   const flatListRef = useRef<FlatList>(null);
 
-  const [messages, setMessages] = useState(mockChat);
+  const active = useConversationStore((s) => s.active);
+  const messages = useConversationStore((s) => s.messages);
+
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const convoMessages = active?.id ? (messages[active.id] ?? []) : [];
+
+  useEffect(() => {
+    getMessagesOfConversation(active?.id);
+  }, [active?.id]);
+
+  const getMessagesOfConversation = async (
+    conversation_id: string | undefined
+  ) => {
+    if (!conversation_id) return;
+    try {
+      setLoading(true);
+      const response =
+        await ConversationServices.getMessagesOfConversation(conversation_id);
+      console.log("Conversation messages => ", response);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages((prev) => [
-      ...prev,
-      { id: prev.length + 1, sender: "user", message: input },
-    ]);
+    // setMessages((prev) => [
+    //   // ...prev,
+
+    //   // { id: prev.length + 1, sender: "user", message: input },
+
+    // ]);
     setInput("");
     requestAnimationFrame(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
     });
   };
 
-  const renderItem = ({ item }: { item: (typeof mockChat)[0] }) => {
-    if (item.sender === "user") {
+  const renderItem = ({ item }: { item: ChatMessage }) => {
+    if (item.role === "user") {
       return (
         <View
           className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow"
@@ -40,7 +70,7 @@ const Chat = () => {
               color: theme.textLight || theme.text,
             }}
           >
-            {item.message}
+            {item.content}
           </Text>
         </View>
       );
@@ -51,7 +81,7 @@ const Chat = () => {
             className="text-base leading-relaxed"
             style={{ color: theme.text }}
           >
-            {item.message}
+            {item.content}
           </Text>
         </View>
       );
@@ -71,7 +101,7 @@ const Chat = () => {
       >
         <FlatList
           ref={flatListRef}
-          data={messages}
+          data={convoMessages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           initialNumToRender={10} // how many to render initially
@@ -81,14 +111,22 @@ const Chat = () => {
           removeClippedSubviews={true}
           className="flex-1 px-4 pt-3"
           keyboardShouldPersistTaps="handled"
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-          inverted
+          // onContentSizeChange={() =>
+          //   flatListRef.current?.scrollToEnd({ animated: true })
+          // }
+          // inverted
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           ListFooterComponent={() => <View className="h-6" />}
-          // keyboardDismissMode="on-drag"
+          ListEmptyComponent={() => (
+            <ChatEmpty
+              onNewMessage={() => {}}
+              onSuggestionPress={() => {}}
+              isOnline={false}
+            />
+          )}
+          keyboardDismissMode="interactive"
         />
 
         <ChatComposer

@@ -30,7 +30,7 @@ const DrawerLayout = () => {
           headerStyle: { backgroundColor: "transparent" },
           headerTintColor: theme.text,
           swipeEdgeWidth: 500,
-          drawerType: "slide",
+          drawerType: "front",
           // headerRight: () => (
           //   <TouchableOpacity
           //     onPress={() => console.log("Header right pressed")}

@@ -3,9 +3,11 @@ import { useTheme } from "@/hooks/useTheme";
 import { ConversationServices } from "@/services/conversation/conversation.service";
 import { Conversation as ConversationType } from "@/services/conversation/types";
 import { useAuthStore } from "@/store/auth.store";
+import { useConversationStore } from "@/store/conversation.store";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { DrawerActions } from "@react-navigation/native";
+import { router, useNavigation } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -20,27 +22,16 @@ import Conversation from "./conversation";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useTheme();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
+  const setActive = useConversationStore((s) => s.setActive);
+  const clearActive = useConversationStore((s) => s.clearActive);
+  const active = useConversationStore((s) => s.active);
 
   const [chats, setChats] = useState<ConversationType[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleRename = (id: string) => {
-    console.log(`Rename chat ${id}`);
-    // open rename modal + update state
-  };
-
-  const handleArchive = (id: string) => {
-    console.log(`Archive chat ${id}`);
-    // move to archive state
-  };
-
-  const handleDelete = (id: string) => {
-    console.log(`Delete chat ${id}`);
-    setChats((prev) => prev.filter((chat) => chat.id !== id));
-  };
 
   function ProfileRow({
     userName,
@@ -89,7 +80,7 @@ const CustomDrawerContent = (props: any) => {
     return (
       <Text
         className="text-sm mb-2 font-space-bold"
-        style={{ color: theme.text }}
+        style={{ color: theme.text, paddingHorizontal: 16 }}
       >
         Chats
       </Text>
@@ -121,6 +112,27 @@ const CustomDrawerContent = (props: any) => {
     }
   };
 
+  const handleOpen = useCallback(
+    (item: ConversationType) => {
+      setActive(item);
+      // navigation.dispatch(DrawerActions.closeDrawer());
+    },
+    [setActive, navigation]
+  );
+
+  const handleRename = useCallback(
+    (id: string) => console.log(`Rename chat ${id}`),
+    []
+  );
+  const handleArchive = useCallback(
+    (id: string) => console.log(`Archive chat ${id}`),
+    []
+  );
+  const handleDelete = useCallback(
+    (id: string) => setChats((prev) => prev.filter((chat) => chat.id !== id)),
+    []
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View
@@ -133,7 +145,11 @@ const CustomDrawerContent = (props: any) => {
         <TouchableOpacity
           className="p-3 rounded-lg items-center"
           style={{ backgroundColor: theme.accent }}
-          onPress={() => console.log("New chat pressed!")}
+          onPress={() => {
+            clearActive();
+            // @ts-ignore
+            navigation.dispatch(DrawerActions.closeDrawer());
+          }}
         >
           <Text
             className="text-base font-space-bold"
@@ -144,7 +160,7 @@ const CustomDrawerContent = (props: any) => {
         </TouchableOpacity>
       </View>
 
-      <View style={{ paddingHorizontal: 16 }} className="flex-1">
+      <View className="flex-1">
         <FlatList<ConversationType>
           data={loading ? Array.from({ length: 6 }) : chats}
           keyExtractor={(item, index) =>
@@ -155,8 +171,10 @@ const CustomDrawerContent = (props: any) => {
               <ConversationSkeleton />
             ) : (
               <Conversation
+                id={item.id}
                 name={item.title}
-                onOpen={() => console.log(`Open chat ${item.id}`)}
+                activeId={active?.id}
+                onOpen={() => handleOpen(item)}
                 onRename={() => handleRename(item.id)}
                 onArchive={() => handleArchive(item.id)}
                 onDelete={() => handleDelete(item.id)}
