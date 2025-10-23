@@ -22,7 +22,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     AsyncStorage.getItem("themeKey").then((saved) => {
       if (saved && saved in themes) {
-        console.log("Saved key => ", saved);
         setThemeKey(saved as ThemeKey);
       }
     });

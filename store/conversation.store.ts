@@ -21,7 +21,7 @@ export const useConversationStore = create<State>((set) => ({
     set((s) => ({
       messages: {
         ...s.messages,
-        [id]: [...(s.messages[id] ?? []), msg],
+        [id]: [msg, ...(s.messages[id] ?? [])],
       },
     })),
 }));

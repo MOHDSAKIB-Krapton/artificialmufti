@@ -5,7 +5,6 @@ import { Conversation as ConversationType } from "@/services/conversation/types"
 import { useAuthStore } from "@/store/auth.store";
 import { useConversationStore } from "@/store/conversation.store";
 import { Ionicons } from "@expo/vector-icons";
-import { DrawerActions } from "@react-navigation/native";
 import { router, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -143,12 +142,13 @@ const CustomDrawerContent = (props: any) => {
         }}
       >
         <TouchableOpacity
+          activeOpacity={0.6}
           className="p-3 rounded-lg items-center"
           style={{ backgroundColor: theme.accent }}
           onPress={() => {
             clearActive();
             // @ts-ignore
-            navigation.dispatch(DrawerActions.closeDrawer());
+            // navigation.dispatch(DrawerActions.closeDrawer());
           }}
         >
           <Text

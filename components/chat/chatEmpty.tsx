@@ -29,7 +29,10 @@ const ChatEmpty: React.FC<Props> = ({
   return (
     <View
       className="px-6 py-8  justify-center flex-1"
-      style={{ backgroundColor: theme.background }}
+      style={{
+        backgroundColor: theme.background,
+        transform: [{ rotate: "180deg" }],
+      }}
     >
       {/* Top icon + header */}
       <View className="items-center ">

@@ -15,8 +15,6 @@ class HttpClient {
     this.axiosInstance.interceptors.request.use(
       async (config) => {
         const token = await getStoredToken();
-        console.log("Base url => ", process.env.EXPO_PUBLIC_BACKEND_BASE_URL);
-        console.log("Retrieved token:", token);
         if (token) {
           config.headers["Authorization"] = `Bearer ${token}`;
         }

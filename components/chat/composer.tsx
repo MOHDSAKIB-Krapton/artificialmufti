@@ -98,6 +98,9 @@ type Props = {
   enableVoice?: boolean;
   enableAttachments?: boolean;
   maxLength?: number; // max length for text input
+  text: string;
+  onChangeText: (text: string) => void;
+  textSending: boolean;
 };
 
 const MAX_INPUT_HEIGHT = 140; // keeps it elegant
@@ -112,12 +115,14 @@ const ChatComposer: React.FC<Props> = ({
   enableVoice = true,
   enableAttachments = true,
   maxLength = 1000,
+  text,
+  onChangeText,
+  textSending = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
 
   // TEXT
-  const [text, setText] = useState("");
   const inputHeight = useRef(new Animated.Value(MIN_INPUT_HEIGHT)).current;
   const contentHeightRef = useRef(MIN_INPUT_HEIGHT);
 
@@ -337,8 +342,7 @@ const ChatComposer: React.FC<Props> = ({
     if (sendTextNow) onSendText!(trimmed);
 
     // reset local state only if anything was sent
-    if (sendImagesNow || sendFilesNow || sendTextNow) {
-      setText("");
+    if (sendImagesNow || sendFilesNow) {
       setImages([]);
       setFiles([]);
       animateInputHeight(MIN_INPUT_HEIGHT);
@@ -356,12 +360,12 @@ const ChatComposer: React.FC<Props> = ({
 
   /** Icons */
   const MicOrSendButton = useMemo(() => {
-    if (hasSomethingToSend) {
+    if (hasSomethingToSend || textSending) {
       return (
         <FancyButton
           onPress={handleSend}
           iconName="arrow-up"
-          loading={false}
+          loading={textSending}
           size="sm"
           accessibilityLabel="Send"
           type="tertiary"
@@ -531,12 +535,13 @@ const ChatComposer: React.FC<Props> = ({
           >
             <TextInput
               value={text}
-              onChangeText={setText}
+              onChangeText={onChangeText}
               placeholder={placeholder}
               placeholderTextColor={theme.textSecondary}
               multiline
-              className="flex-1 text-base font-space mx-1 ml-4"
+              className="flex-1 text-base mx-1 ml-4"
               style={{ color: theme.text, paddingVertical: 8 }}
+              selectionColor={theme.accent}
               onContentSizeChange={(e) => {
                 const h = e.nativeEvent.contentSize.height + 16; // padding buffer
                 contentHeightRef.current = h;

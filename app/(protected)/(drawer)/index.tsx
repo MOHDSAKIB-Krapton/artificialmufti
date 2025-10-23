@@ -1,11 +1,17 @@
 import ChatEmpty from "@/components/chat/chatEmpty";
 import ChatComposer from "@/components/chat/composer";
+import ChatMessage from "@/components/pagePartials/drawer/chatMessage";
+import ChatMessageSkeleton from "@/components/skeletonLoaders/chatMessage";
 import { useTheme } from "@/hooks/useTheme";
 import { ConversationServices } from "@/services/conversation/conversation.service";
-import { ChatMessage } from "@/services/conversation/types";
+import {
+  ChatMessage as ChatMessageType,
+  Role,
+} from "@/services/conversation/types";
+import { useAuthStore } from "@/store/auth.store";
 import { useConversationStore } from "@/store/conversation.store";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Platform, Text, View } from "react-native";
+import { FlatList, Platform, ToastAndroid, View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,11 +19,15 @@ const Chat = () => {
   const { theme } = useTheme();
   const flatListRef = useRef<FlatList>(null);
 
+  const user = useAuthStore((s) => s.user);
   const active = useConversationStore((s) => s.active);
   const messages = useConversationStore((s) => s.messages);
+  const setMessages = useConversationStore((s) => s.setMessages);
+  const appendMessage = useConversationStore((s) => s.appendMessage);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const convoMessages = active?.id ? (messages[active.id] ?? []) : [];
 
@@ -33,7 +43,11 @@ const Chat = () => {
       setLoading(true);
       const response =
         await ConversationServices.getMessagesOfConversation(conversation_id);
-      console.log("Conversation messages => ", response);
+      console.log(
+        "Conversation messages => ",
+        JSON.stringify(response, null, 2)
+      );
+      setMessages(conversation_id, response);
     } catch (err) {
       console.log(err);
     } finally {
@@ -42,51 +56,33 @@ const Chat = () => {
   };
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    // setMessages((prev) => [
-    //   // ...prev,
-
-    //   // { id: prev.length + 1, sender: "user", message: input },
-
-    // ]);
-    setInput("");
-    requestAnimationFrame(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    });
-  };
-
-  const renderItem = ({ item }: { item: ChatMessage }) => {
-    if (item.role === "user") {
-      return (
-        <View
-          className="my-2 ml-auto max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 shadow"
-          style={{
-            backgroundColor: theme.accent || theme.card,
-          }}
-        >
-          <Text
-            className="text-base"
-            style={{
-              color: theme.textLight || theme.text,
-            }}
-          >
-            {item.content}
-          </Text>
-        </View>
-      );
-    } else {
-      return (
-        <View className="my-2">
-          <Text
-            className="text-base leading-relaxed"
-            style={{ color: theme.text }}
-          >
-            {item.content}
-          </Text>
-        </View>
-      );
+    if (!input.trim()) {
+      ToastAndroid.show("Comeon write something..", ToastAndroid.SHORT);
+      return;
     }
+    if (!active?.id) {
+      ToastAndroid.show("No Active Convo Found", ToastAndroid.SHORT);
+      return;
+    }
+
+    // Create the new message object
+    const newMessage: ChatMessageType = {
+      id: `${Date.now()}`,
+      role: "user" as Role,
+      content: input.trim(),
+      created_at: new Date().toISOString(),
+    };
+
+    setSending(true);
+    // Append message via Zustand
+    setTimeout(() => {
+      setSending(false);
+      appendMessage(active.id, newMessage);
+      setInput("");
+    }, 3000);
   };
+
+  const skeletonItems = Array.from({ length: 1 });
 
   return (
     <KeyboardAvoidingView
@@ -101,9 +97,18 @@ const Chat = () => {
       >
         <FlatList
           ref={flatListRef}
-          data={convoMessages}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          data={loading ? skeletonItems : convoMessages}
+          keyExtractor={(item, index) =>
+            loading ? `skeleton-${index}` : item.id.toString()
+          }
+          renderItem={({ item, index }) =>
+            loading ? (
+              <ChatMessageSkeleton key={index} />
+            ) : (
+              <ChatMessage message={item} />
+            )
+          }
+          inverted
           initialNumToRender={10} // how many to render initially
           maxToRenderPerBatch={10} // batch render size
           windowSize={5} // number of screens worth to render
@@ -111,14 +116,11 @@ const Chat = () => {
           removeClippedSubviews={true}
           className="flex-1 px-4 pt-3"
           keyboardShouldPersistTaps="handled"
-          // onContentSizeChange={() =>
-          //   flatListRef.current?.scrollToEnd({ animated: true })
-          // }
-          // inverted
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           ListFooterComponent={() => <View className="h-6" />}
+          ListHeaderComponent={() => <View className="h-10" />}
           ListEmptyComponent={() => (
             <ChatEmpty
               onNewMessage={() => {}}
@@ -133,6 +135,9 @@ const Chat = () => {
           enableAttachments={false}
           onSendText={handleSend}
           enableVoice={false}
+          onChangeText={(text: string) => setInput(text)}
+          text={input}
+          textSending={sending}
         />
       </SafeAreaView>
     </KeyboardAvoidingView>
