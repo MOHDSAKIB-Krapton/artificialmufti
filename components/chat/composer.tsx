@@ -98,8 +98,6 @@ type Props = {
   enableVoice?: boolean;
   enableAttachments?: boolean;
   maxLength?: number; // max length for text input
-  text: string;
-  onChangeText: (text: string) => void;
   textSending: boolean;
 };
 
@@ -115,8 +113,6 @@ const ChatComposer: React.FC<Props> = ({
   enableVoice = true,
   enableAttachments = true,
   maxLength = 1000,
-  text,
-  onChangeText,
   textSending = false,
 }) => {
   const insets = useSafeAreaInsets();
@@ -125,6 +121,7 @@ const ChatComposer: React.FC<Props> = ({
   // TEXT
   const inputHeight = useRef(new Animated.Value(MIN_INPUT_HEIGHT)).current;
   const contentHeightRef = useRef(MIN_INPUT_HEIGHT);
+  const [text, setText] = useState("");
 
   // ATTACHMENTS
   const [images, setImages] = useState<PickedImage[]>([]);
@@ -342,7 +339,8 @@ const ChatComposer: React.FC<Props> = ({
     if (sendTextNow) onSendText!(trimmed);
 
     // reset local state only if anything was sent
-    if (sendImagesNow || sendFilesNow) {
+    if (sendImagesNow || sendFilesNow || sendTextNow) {
+      setText("");
       setImages([]);
       setFiles([]);
       animateInputHeight(MIN_INPUT_HEIGHT);
@@ -429,11 +427,9 @@ const ChatComposer: React.FC<Props> = ({
 
   return (
     <View
-      className="border-t pt-2"
+      className="pt-2"
       style={{
-        borderTopColor: theme.card,
         paddingBottom: Math.max(insets.bottom - 6, 6),
-        backgroundColor: theme.background,
       }}
     >
       {/* Attachments Preview */}
@@ -535,7 +531,7 @@ const ChatComposer: React.FC<Props> = ({
           >
             <TextInput
               value={text}
-              onChangeText={onChangeText}
+              onChangeText={(text: string) => setText(text)}
               placeholder={placeholder}
               placeholderTextColor={theme.textSecondary}
               multiline

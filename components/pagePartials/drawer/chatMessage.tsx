@@ -1,3 +1,4 @@
+import MarkdownMessage from "@/components/common/markdown/markdownMessage";
 import { useTheme } from "@/hooks/useTheme";
 import { formatTime } from "@/utils/time";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,12 +45,16 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           backgroundColor: isUser ? theme.accent : theme.card,
         }}
       >
-        <Text
-          className="text-base leading-relaxed"
-          style={{ color: isUser ? theme.textLight || theme.text : theme.text }}
-        >
-          {message.content || "…"}
-        </Text>
+        {isUser ? (
+          <Text
+            className="text-lg leading-relaxed"
+            style={{ color: theme.textLight }}
+          >
+            {message.content || "…"}
+          </Text>
+        ) : (
+          <MarkdownMessage content={message.content || "…"} />
+        )}
 
         {/* Optional metadata info */}
         {message.token_usage !== undefined && message.token_usage > 0 && (

@@ -1,9 +1,8 @@
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
-  onNewMessage: () => void;
   onSuggestionPress: (text: string) => void;
   onRetryConnection?: () => void;
   onImportHistory?: () => void;
@@ -12,16 +11,15 @@ type Props = {
 };
 
 const ChatEmpty: React.FC<Props> = ({
-  onNewMessage,
   onSuggestionPress,
   onRetryConnection,
   onImportHistory,
   isOnline = true,
   suggestions = [
-    "Hey! 👋",
-    "Tell me a joke 😄",
-    "Summarize my day 📝",
-    "Draft a reply ✍️",
+    "नमाज़ में हाथ कहां रखें?", // Hindi: Where should hands be during Salah?
+    "رمضان میں روزہ کب شروع ہوتا ہے؟", // Urdu: When does fasting start in Ramadan?
+    "قرض کو کیسے ادا کیا جائے؟", // Arabic: How to pay off a debt correctly?
+    "Is it halal to eat frozen seafood?", // English: Practical halal question
   ],
 }) => {
   const { theme } = useTheme();
@@ -55,26 +53,27 @@ const ChatEmpty: React.FC<Props> = ({
       </View>
 
       {/* Quick suggestions */}
-      <View className="mt-6 flex-row flex-wrap gap-2">
+      <View className="mt-6 flex-row flex-wrap gap-2 justify-between w-full">
         {suggestions.map((s) => (
-          <Pressable
+          <TouchableOpacity
             key={s}
+            activeOpacity={0.6}
             onPress={() => onSuggestionPress(s)}
-            className="rounded-full border px-3 py-2"
+            className="rounded-full border px-3 py-4 w-full"
             style={{
               borderColor: theme.background,
               backgroundColor: theme.card,
             }}
           >
-            <Text className="text-sm" style={{ color: theme.text }}>
+            <Text className="text-center" style={{ color: theme.text }}>
               {s}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         ))}
       </View>
 
       {/* Connection helper */}
-      {!isOnline && (
+      {/* {!isOnline && (
         <View
           className="mt-6 flex-row items-center justify-between rounded-2xl border px-4 py-3"
           style={{
@@ -108,7 +107,7 @@ const ChatEmpty: React.FC<Props> = ({
             </Pressable>
           )}
         </View>
-      )}
+      )} */}
 
       {/* Tips */}
       <View
@@ -120,10 +119,10 @@ const ChatEmpty: React.FC<Props> = ({
         </Text>
         <View className="gap-2">
           <Text className="text-sm opacity-80" style={{ color: theme.text }}>
-            • Long-press a message to copy.
+            • Slide to open sidebar.
           </Text>
           <Text className="text-sm opacity-80" style={{ color: theme.text }}>
-            • Swipe down to dismiss the keyboard.
+            • Tap to dismiss the keyboard.
           </Text>
         </View>
       </View>

@@ -25,7 +25,6 @@ const Chat = () => {
   const setMessages = useConversationStore((s) => s.setMessages);
   const appendMessage = useConversationStore((s) => s.appendMessage);
 
-  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -55,8 +54,8 @@ const Chat = () => {
     }
   };
 
-  const handleSend = () => {
-    if (!input.trim()) {
+  const handleSend = (text: string) => {
+    if (!text.trim()) {
       ToastAndroid.show("Comeon write something..", ToastAndroid.SHORT);
       return;
     }
@@ -69,16 +68,15 @@ const Chat = () => {
     const newMessage: ChatMessageType = {
       id: `${Date.now()}`,
       role: "user" as Role,
-      content: input.trim(),
+      content: text.trim(),
       created_at: new Date().toISOString(),
     };
 
     setSending(true);
+    appendMessage(active.id, newMessage);
     // Append message via Zustand
     setTimeout(() => {
       setSending(false);
-      appendMessage(active.id, newMessage);
-      setInput("");
     }, 3000);
   };
 
@@ -91,7 +89,7 @@ const Chat = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -20}
     >
       <SafeAreaView
-        className="flex-1"
+        className="flex-1 relative"
         edges={["bottom", "top"]}
         style={{ backgroundColor: theme.background }}
       >
@@ -119,26 +117,30 @@ const Chat = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          ListFooterComponent={() => <View className="h-6" />}
-          ListHeaderComponent={() => <View className="h-10" />}
+          ListFooterComponent={() => <View className="h-20" />}
+          ListHeaderComponent={() => <View className="h-28" />}
           ListEmptyComponent={() => (
-            <ChatEmpty
-              onNewMessage={() => {}}
-              onSuggestionPress={() => {}}
-              isOnline={false}
-            />
+            <ChatEmpty onSuggestionPress={handleSend} isOnline={false} />
           )}
           keyboardDismissMode="interactive"
         />
 
-        <ChatComposer
-          enableAttachments={false}
-          onSendText={handleSend}
-          enableVoice={false}
-          onChangeText={(text: string) => setInput(text)}
-          text={input}
-          textSending={sending}
-        />
+        <View
+          className="absolute bottom-[20px] left-0 right-0"
+          style={{
+            // margin: 10,
+            borderRadius: 20,
+            overflow: "hidden",
+            backgroundColor: theme.background,
+          }}
+        >
+          <ChatComposer
+            enableAttachments={false}
+            onSendText={handleSend}
+            enableVoice={false}
+            textSending={sending}
+          />
+        </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
