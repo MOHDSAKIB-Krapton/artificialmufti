@@ -62,7 +62,7 @@ const CustomDrawerContent = (props: any) => {
 
           {/* Name */}
           <Text
-            className="ml-3 text-base font-space-bold flex-1"
+            className="ml-3 text-base font-bold flex-1"
             style={{ color: theme.text }}
           >
             {userName || "Guest"}
@@ -78,7 +78,7 @@ const CustomDrawerContent = (props: any) => {
   const DrawerListHeader = () => {
     return (
       <Text
-        className="text-sm mb-2 font-space-bold"
+        className="text-sm mb-2 font-semibold"
         style={{ color: theme.text, paddingHorizontal: 16 }}
       >
         Chats
@@ -93,6 +93,7 @@ const CustomDrawerContent = (props: any) => {
   const getAllConversations = async () => {
     try {
       setLoading(true);
+      console.log("MAking reuest for convo");
       const response = await ConversationServices.getAllConversations();
       setChats(response);
     } catch (err) {
@@ -113,7 +114,7 @@ const CustomDrawerContent = (props: any) => {
 
   const handleOpen = useCallback(
     (item: ConversationType) => {
-      setActive(item);
+      setActive(item.id);
       // navigation.dispatch(DrawerActions.closeDrawer());
     },
     [setActive, navigation]
@@ -152,7 +153,7 @@ const CustomDrawerContent = (props: any) => {
           }}
         >
           <Text
-            className="text-base font-space-bold"
+            className="text-base font-semibold"
             style={{ color: theme.textLight || theme.text }}
           >
             New Chat +
@@ -173,7 +174,7 @@ const CustomDrawerContent = (props: any) => {
               <Conversation
                 id={item.id}
                 name={item.title}
-                activeId={active?.id}
+                activeId={active ?? undefined}
                 onOpen={() => handleOpen(item)}
                 onRename={() => handleRename(item.id)}
                 onArchive={() => handleArchive(item.id)}

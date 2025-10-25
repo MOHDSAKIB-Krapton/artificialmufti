@@ -52,7 +52,7 @@ const Conversation = memo(
             }}
           >
             <Text
-              className="text-base font-space w-[80%] "
+              className="text-base w-[80%] "
               numberOfLines={1}
               ellipsizeMode="tail"
               style={{ color: theme.text }}
