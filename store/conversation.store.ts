@@ -56,15 +56,16 @@ export const useConversationStore = create<State>((set, get) => ({
 
   streamAssistantMessage: (chunk) => {
     const { messages } = get();
+    const lastMessage = messages[0];
+
     let updatedMessages = [...messages];
 
-    // Find the last assistant message
-    const lastMsgIndex = updatedMessages
-      .map((m) => m.role)
-      .indexOf("assistant");
-
-    if (lastMsgIndex === -1) {
-      // No assistant message yet, create a new one
+    if (lastMessage?.role === "assistant") {
+      updatedMessages[0] = {
+        ...lastMessage,
+        content: lastMessage.content + chunk,
+      };
+    } else {
       const newMsg: ChatMessage = {
         id: `${Date.now()}`,
         role: "assistant",
@@ -72,12 +73,6 @@ export const useConversationStore = create<State>((set, get) => ({
         created_at: new Date().toISOString(),
       };
       updatedMessages = [newMsg, ...updatedMessages];
-    } else {
-      const target = updatedMessages[lastMsgIndex];
-      updatedMessages[lastMsgIndex] = {
-        ...target,
-        content: target.content + chunk,
-      };
     }
 
     set({ messages: updatedMessages });

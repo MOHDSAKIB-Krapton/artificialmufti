@@ -4,7 +4,14 @@ import { Role } from "@/services/conversation/types";
 import { formatTime } from "@/utils/time";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Clipboard, Pressable, Text, ToastAndroid, View } from "react-native";
+import {
+  ActivityIndicator,
+  Clipboard,
+  Pressable,
+  Text,
+  ToastAndroid,
+  View,
+} from "react-native";
 
 export interface ChatMessageProps {
   message: {
@@ -16,9 +23,18 @@ export interface ChatMessageProps {
     metadata?: any;
   };
   activeId?: string;
+  isTyping?: boolean;
 }
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
+const TypingIndicator = () => {
+  return (
+    <View style={{ flexDirection: "row", gap: 6, height: 20 }}>
+      <ActivityIndicator size={"small"} />
+    </View>
+  );
+};
+
+const ChatMessage = ({ message, isTyping }: ChatMessageProps) => {
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
 
@@ -79,6 +95,19 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         ) : (
           <MarkdownMessage content={message.content || "…"} />
         )}
+
+        {/* {isUser ? (
+          <Text
+            className="text-lg leading-relaxed"
+            style={{ color: theme.textLight }}
+          >
+            {message.content || (isTyping ? "" : "…")}
+          </Text>
+        ) : isTyping ? (
+          <TypingIndicator />
+        ) : (
+          <MarkdownMessage content={message.content || "…"} />
+        )} */}
 
         {/* Optional metadata info */}
         {message.token_usage !== undefined && message.token_usage > 0 && (

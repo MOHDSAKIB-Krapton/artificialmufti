@@ -7,7 +7,7 @@ import { ConversationServices } from "@/services/conversation/conversation.servi
 import { useAuthStore } from "@/store/auth.store";
 import { useConversationStore } from "@/store/conversation.store";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Platform, View } from "react-native";
+import { FlatList, Platform, ToastAndroid, View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -49,110 +49,41 @@ const Chat = () => {
     }
   };
 
-  // const handleSend = async (text: string) => {
-  //   if (!text.trim()) {
-  //     ToastAndroid.show("Comeon write something..", ToastAndroid.SHORT);
-  //     return;
-  //   }
-
-  //   setSending(true);
-  //   appendMessage("user", text.trim());
-
-  //   const es = await ConversationServices.streamChat(
-  //     text,
-  //     active || undefined,
-  //     (conversation_id: string) => {
-  //       if (!active) {
-  //         setActive(conversation_id);
-  //         setSending(false);
-  //         setIsTyping(true);
-  //       }
-  //     },
-  //     (chunk) => {
-  //       setSending(false);
-  //       setIsTyping(true);
-  //       streamAssistantMessage(chunk.content);
-  //     },
-  //     (fullText) => {
-  //       setSending(false);
-  //       setIsTyping(false);
-  //       appendMessage("assistant", fullText);
-  //     },
-  //     (errorMsg) => {
-  //       console.log("ON ERROR");
-  //       setSending(false);
-  //       setIsTyping(false);
-  //       appendMessage("system", errorMsg);
-  //     }
-  //   );
-  // };
-
   const handleSend = async (text: string) => {
     if (!text.trim()) {
-      appendMessage("system", "Come on, write something!");
+      ToastAndroid.show("Comeon write something..", ToastAndroid.SHORT);
       return;
     }
 
     setSending(true);
     appendMessage("user", text.trim());
 
-    // Simulate network delay before starting stream
-    await new Promise((r) => setTimeout(r, 1000));
-
-    // Fake conversation id creation
-    const fakeConversationId = "conv-" + Math.floor(Math.random() * 1000);
-    if (!active) {
-      setActive(fakeConversationId);
-      setSending(false);
-      setIsTyping(true);
-    }
-
-    const chunks = [
-      "# Welcome to Your AI Assistant\n\n", // heading
-
-      "In this session, we'll explore **Markdown formatting** and see how it renders progressively.\n\n", // bold
-
-      "> Knowledge is power – Francis Bacon\n\n", // quote
-
-      "Let's start with an unordered list:\n- Item 1\n", // first part of list
-      "- Item 2\n", // second list item
-      "- Item 3\n\n", // third list item
-
-      "Now an ordered list:\n1. First step\n", // first ordered item
-      "2. Second step\n", // second ordered item
-      "3. Third step\n\n", // third ordered item
-
-      "Inline code is great for small examples: `const x = 42;`\n", // inline code
-
-      "Now let's try a **JavaScript code block**:\n```js\nfunction greet(name) {\n", // code start
-      "  return `Hello, ${name}!`;\n", // code mid
-      "}\nconsole.log(greet('World'));\n```\n\n", // code end
-
-      "Tables are very useful, let's break them down:\n| Name  | Age | Role       |\n", // table header
-      "|-------|-----|------------|\n", // table separator
-      "| Alice | 25  | Developer  |\n", // first row
-      "| Bob   | 30  | Designer   |\n", // second row
-      "| Carol | 28  | Tester     |\n\n", // third row
-
-      "Links can be embedded like this: [OpenAI](https://openai.com) ", // link
-      "or [React Native](https://reactnative.dev) for mobile development.\n\n", // another link
-
-      "Emphasizing text is also important: *italics*, **bold**, or ***bold italics***.\n", // emphasis
-
-      "Finally, a short summary of what we've done:\n- Markdown headings\n- Lists\n- Quotes\n- Code (inline & block)\n- Tables\n- Links\n- Text formatting\n\n", // summary
-
-      "This concludes our mock streaming AI response. Each chunk simulates the AI typing in real-time! ✅", // closing
-    ];
-
-    for (let i = 0; i < chunks.length; i++) {
-      await new Promise((r) => setTimeout(r, 1000)); // simulate 1s delay per chunk
-      setSending(false);
-      setIsTyping(true);
-      streamAssistantMessage(chunks[i]); // stream chunk
-    }
-
-    setSending(false);
-    setIsTyping(false);
+    const es = await ConversationServices.streamChat(
+      text,
+      active || undefined,
+      (conversation_id: string) => {
+        if (!active) {
+          setActive(conversation_id);
+          setSending(false);
+          setIsTyping(true);
+        }
+      },
+      (chunk) => {
+        setSending(false);
+        setIsTyping(true);
+        streamAssistantMessage(chunk.content);
+      },
+      (fullText) => {
+        setSending(false);
+        setIsTyping(false);
+        // appendMessage("assistant", fullText);
+      },
+      (errorMsg) => {
+        setSending(false);
+        setIsTyping(false);
+        appendMessage("system", errorMsg);
+      }
+    );
   };
 
   const skeletonItems = Array.from({ length: 1 });
@@ -174,13 +105,17 @@ const Chat = () => {
           keyExtractor={(item, index) =>
             loading ? `skeleton-${index}` : item.id.toString()
           }
-          renderItem={({ item, index }) =>
-            loading ? (
-              <ChatMessageSkeleton key={index} />
-            ) : (
-              <ChatMessage message={item} />
-            )
-          }
+          renderItem={({ item, index }) => {
+            if (loading) return <ChatMessageSkeleton key={index} />;
+
+            // Only last assistant message shows typing
+            const isLastAssistantMessage =
+              index === 0 && item.role === "assistant" && isTyping;
+
+            return (
+              <ChatMessage message={item} isTyping={isLastAssistantMessage} />
+            );
+          }}
           inverted
           initialNumToRender={10} // how many to render initially
           maxToRenderPerBatch={10} // batch render size
