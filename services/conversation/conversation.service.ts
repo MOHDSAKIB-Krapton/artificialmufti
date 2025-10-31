@@ -97,4 +97,18 @@ export class ConversationServices {
 
     return es;
   }
+
+  static async deleteConversation(conversation_id: string) {
+    try {
+      const response = await Http.delete(`/chat/${conversation_id}`);
+
+      if (!response.success) {
+        throw new Error(response.error || "Somethinw went wrong");
+      }
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

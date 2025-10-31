@@ -18,7 +18,11 @@ type State = {
 export const useConversationStore = create<State>((set, get) => ({
   active: null,
   messages: [],
-  setActive: (c) => set({ active: c, messages: [] }),
+  setActive: (c) => {
+    const current = get().active;
+    if (current === c) return;
+    set({ active: c, messages: [] });
+  },
   clearActive: () => set({ active: null }),
   setMessages: (msgs) => set({ messages: msgs }),
   appendMessage: (role, content) => {

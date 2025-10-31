@@ -1,7 +1,8 @@
 import OptionModal, { OptionItem } from "@/components/common/optionModal";
 import { useTheme } from "@/hooks/useTheme";
-import React, { memo } from "react";
-import { Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import React, { memo, useRef } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type ChatItemProps = {
   id: string;
@@ -24,10 +25,11 @@ const Conversation = memo(
     onDelete,
   }: ChatItemProps) => {
     const { theme } = useTheme();
+    const modalRef = useRef<{ openMenu: () => void }>(null);
 
     const options: OptionItem[] = [
-      { label: "Rename", onPress: onRename, icon: "pencil-outline" },
-      { label: "Archive", onPress: onArchive, icon: "archive-outline" },
+      // { label: "Rename", onPress: onRename, icon: "pencil-outline" },
+      // { label: "Archive", onPress: onArchive, icon: "archive-outline" },
       {
         label: "Delete",
         onPress: onDelete,
@@ -36,11 +38,14 @@ const Conversation = memo(
       },
     ];
 
+    const handleOpenOptionModal = () => modalRef.current?.openMenu();
+
     return (
       <OptionModal
+        ref={modalRef}
         triggerElement={
           <View
-            className="py-4"
+            className="py-4 flex-row gap-x-2"
             style={{
               backgroundColor:
                 activeId == undefined
@@ -48,17 +53,26 @@ const Conversation = memo(
                   : activeId == id
                     ? theme.accentLight
                     : theme.background,
-              paddingHorizontal: 16,
+              paddingRight: 8,
+              paddingLeft: 16,
             }}
           >
             <Text
-              className="text-base w-[80%] "
+              className="text-base flex-1"
               numberOfLines={1}
               ellipsizeMode="tail"
               style={{ color: theme.text }}
             >
               {name}
             </Text>
+
+            <TouchableOpacity onPress={handleOpenOptionModal}>
+              <Ionicons
+                name="ellipsis-vertical-sharp"
+                size={22}
+                color={theme.primary}
+              />
+            </TouchableOpacity>
           </View>
         }
         options={options}

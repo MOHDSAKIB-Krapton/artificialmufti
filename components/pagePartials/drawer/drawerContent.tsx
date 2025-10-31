@@ -13,6 +13,7 @@ import {
   Pressable,
   RefreshControl,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -93,7 +94,6 @@ const CustomDrawerContent = (props: any) => {
   const getAllConversations = async () => {
     try {
       setLoading(true);
-      console.log("MAking reuest for convo");
       const response = await ConversationServices.getAllConversations();
       setChats(response);
     } catch (err) {
@@ -119,7 +119,6 @@ const CustomDrawerContent = (props: any) => {
     },
     [setActive, navigation]
   );
-
   const handleRename = useCallback(
     (id: string) => console.log(`Rename chat ${id}`),
     []
@@ -129,8 +128,21 @@ const CustomDrawerContent = (props: any) => {
     []
   );
   const handleDelete = useCallback(
-    (id: string) => setChats((prev) => prev.filter((chat) => chat.id !== id)),
-    []
+    async (id: string) => {
+      try {
+        await ConversationServices.deleteConversation(id);
+
+        // Clearing Local state and store.
+        if (active === id) {
+          clearActive();
+        }
+        setChats((prev) => prev.filter((chat) => chat.id !== id));
+      } catch (err: any) {
+        console.error(err);
+        ToastAndroid.show(err.message, 2000);
+      }
+    },
+    [active]
   );
 
   return (
