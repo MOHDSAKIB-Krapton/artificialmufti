@@ -1,0 +1,123 @@
+
+      Make this in settings to update the method and asar.
+      
+        {/* <CustomModal
+          visible={showMethodModal}
+          variant="bottom"
+          heading="Calculation Method"
+          description="Choose a method based on your region or preference"
+          onClose={() => setShowMethodModal(false)}
+        >
+          <View style={{ gap: 8 }}>
+            {METHOD_KEYS.map((key) => {
+              const isActive = key === methodKey;
+              const label = key === "UmmAlQura" ? "Umm Al-Qura (Default)" : key;
+              const subtitle =
+                key === "UmmAlQura" ? "Used widely in Saudi Arabia" : "";
+
+              return (
+                <TouchableOpacity
+                  key={key}
+                  onPress={() => {
+                    setMethodKey(key);
+                    setShowMethodModal(false);
+                  }}
+                  style={{
+                    paddingVertical: 14,
+                    paddingHorizontal: 12,
+                    borderRadius: 12,
+                    backgroundColor: isActive ? theme.primary : theme.card,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "600",
+                        color: isActive ? theme.card : theme.text,
+                      }}
+                    >
+                      {label}
+                    </Text>
+                    {!!subtitle && (
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: isActive
+                            ? theme.background
+                            : theme.textSecondary,
+                        }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {subtitle}
+                      </Text>
+                    )}
+                  </View>
+
+                  {isActive && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={22}
+                      color={theme.card}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </CustomModal>
+
+        <CustomModal
+          visible={showMadhabModal}
+          variant="bottom"
+          heading="Asr Method"
+          description="Choose how Asr is calculated"
+          onClose={() => setShowMadhabModal(false)}
+        >
+          <View style={{ gap: 8 }}>
+            {MADHAB.map(({ key, label, recommended }) => {
+              const isActive = key === madhab;
+              return (
+                <TouchableOpacity
+                  key={label}
+                  onPress={() => {
+                    setMadhab(key);
+                    setShowMadhabModal(false);
+                  }}
+                  style={{
+                    paddingVertical: 14,
+                    paddingHorizontal: 12,
+                    borderRadius: 12,
+                    backgroundColor: isActive ? theme.primary : theme.card,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View className="flex-1 flex-row gap-x-2">
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "600",
+                        color: isActive ? theme.card : theme.text,
+                      }}
+                    >
+                      {label}
+                    </Text>
+                  </View>
+                  {isActive && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={22}
+                      color={theme.card}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </CustomModal> */}

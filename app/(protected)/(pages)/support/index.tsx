@@ -1,91 +1,85 @@
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
   Alert,
-  Linking,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const FAQ_DATA = [
-  {
-    question: "How are the prayer times calculated?",
-    answer:
-      "The prayer times are calculated locally on your device using the 'adhan' astronomical library. It's a precise, offline calculation based on your location and the selected method (e.g., Umm Al-Qura, ISNA).",
-  },
-  {
-    question: "Why do I need to enable location services?",
-    answer:
-      "Your location is essential for accurate prayer time calculations. The app uses your latitude and longitude to determine the times for your specific area.",
-  },
-  {
-    question: "Can I use the app without location access?",
-    answer:
-      "No. Accurate prayer times require your location. If you deny location permission, the app cannot calculate the times correctly. You must grant the permission to use the prayer times feature.",
-  },
-  {
-    question: "What is the difference between the calculation methods?",
-    answer:
-      "Different Islamic organizations and regions use slightly different parameters for prayer time calculations. The app provides various methods (like ISNA, Egyptian, etc.) so you can choose the one that matches your local community or preference.",
-  },
-];
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SupportPage = () => {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSendEmail = () => {
+  const handleSendWhatsApp = async () => {
     if (!subject || !message) {
       Alert.alert(
         "Missing Information",
-        "Please enter a subject and a message to send."
+        "Please enter a subject and a message before sending."
       );
       return;
     }
 
-    const recipient = "support@yourapp.com"; // Replace with your support email address
-    const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(message)}`;
+    const phoneNumber = process.env.EXPO_PUBLIC_SUPPORT_NUMBER;
 
-    Linking.openURL(mailtoUrl)
-      .then(() => {
-        // Clear the form after a successful attempt to open the email app
-        setSubject("");
-        setMessage("");
-        Alert.alert(
-          "Email App Opened",
-          "Your email app has been opened. Please send your message from there."
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to open email client:", err);
-        Alert.alert(
-          "Error",
-          "Could not open your email client. Please email us directly at support@yourapp.com"
-        );
-      });
+    // Build structured message
+    const formattedMessage = `
+Artificial Mufti — Support Request
+----------------------------------------
+Subject : ${subject}
+
+Message :
+${message}
+
+----------------------------------------
+Source : Artificial Mufti Mobile App
+Date   : ${new Date().toLocaleString()}
+----------------------------------------
+`;
+
+    const encodedMessage = encodeURIComponent(formattedMessage.trim());
+    const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+    setMessage("");
+    setSubject("");
+    try {
+      await Linking.openURL(url);
+    } catch (err) {
+      Alert.alert("Error", "WhatsApp may not be installed.");
+    }
   };
 
-  const handleOpenWebsite = () => {
-    const url = "https://your-app-website.com/help"; // Replace with your support website/FAQ page
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open URL:", err)
-    );
+  const handleOpenWebsite = async () => {
+    const url = process.env.EXPO_PUBLIC_SUPPORT_WEBSITE_URL!;
+    try {
+      await WebBrowser.openBrowserAsync(url, {
+        enableBarCollapsing: true,
+        showInRecents: true,
+        readerMode: false,
+      });
+    } catch (err) {
+      console.error("Failed to open in-app browser:", err);
+    }
   };
 
   return (
-    <SafeAreaView
+    <View
       className="flex-1"
-      style={{ backgroundColor: theme.background }}
+      style={{
+        backgroundColor: theme.background,
+        paddingBottom: Math.max(insets.bottom - 6, 6),
+      }}
     >
-      <ScrollView className="flex-1 px-6 pt-4">
+      <ScrollView className="flex-1 px-6 py-8">
         {/* Header Section */}
         <View className="items-center mb-8">
           <Ionicons name="help-circle" size={64} color={theme.primary} />
@@ -103,52 +97,13 @@ const SupportPage = () => {
           </Text>
         </View>
 
-        {/* FAQ Section */}
-        <View className="mb-8">
-          <Text
-            className="text-base font-space-bold mb-3"
-            style={{ color: theme.text }}
-          >
-            Frequently Asked Questions
-          </Text>
-          <View
-            className="rounded-2xl border overflow-hidden"
-            style={{ borderColor: theme.card }}
-          >
-            {FAQ_DATA.map((faq, index) => (
-              <View
-                key={index}
-                className="p-4"
-                style={{
-                  backgroundColor: theme.card,
-                  borderBottomWidth: index < FAQ_DATA.length - 1 ? 1 : 0,
-                  borderBottomColor: theme.card,
-                }}
-              >
-                <Text
-                  className="font-space-bold text-base"
-                  style={{ color: theme.text }}
-                >
-                  {faq.question}
-                </Text>
-                <Text
-                  className="mt-1 text-sm"
-                  style={{ color: theme.textSecondary }}
-                >
-                  {faq.answer}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
         {/* Contact Form Section */}
         <View className="mb-8">
           <Text
             className="text-base font-space-bold mb-3"
             style={{ color: theme.text }}
           >
-            Can't Find Your Answer?
+            Have something in mind?
           </Text>
           <View className="gap-y-4">
             <TextInput
@@ -181,13 +136,13 @@ const SupportPage = () => {
             <TouchableOpacity
               className="p-4 rounded-lg items-center"
               style={{ backgroundColor: theme.accent }}
-              onPress={handleSendEmail}
+              onPress={handleSendWhatsApp}
             >
               <Text
                 className="text-base font-space-bold"
                 style={{ color: theme.textLight }}
               >
-                Send Message via Email
+                Send Message over whatsapp
               </Text>
             </TouchableOpacity>
           </View>
@@ -218,8 +173,10 @@ const SupportPage = () => {
             </Text>
           </TouchableOpacity>
         </View>
+
+        <View className="h-12" />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

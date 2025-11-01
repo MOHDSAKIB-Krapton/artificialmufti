@@ -2,9 +2,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { Stack } from "expo-router";
 import React from "react";
 
-const PagesLayout = () => {
+const FeaturesLayout = () => {
   const { theme } = useTheme();
-
   return (
     <Stack
       screenOptions={{
@@ -23,35 +22,25 @@ const PagesLayout = () => {
       }}
     >
       <Stack.Screen
-        name="settings/index"
+        name="index"
         options={{
-          headerTitle: "Settings",
+          headerTitle: "Explore",
         }}
       />
       <Stack.Screen
-        name="donation/index"
+        name="kaaba-direction/index"
         options={{
-          headerTitle: "Support Us",
+          headerTitle: "Kaaba Direction",
         }}
       />
       <Stack.Screen
-        name="support/index"
+        name="prayer-times/index"
         options={{
-          headerTitle: "Customer Support",
+          headerTitle: "Prayer Times",
         }}
-      />
-      <Stack.Screen
-        name="faq/index"
-        options={{
-          headerTitle: "FAQs",
-        }}
-      />
-      <Stack.Screen
-        name="additional-features"
-        options={{ headerShown: false }}
       />
     </Stack>
   );
 };
 
-export default PagesLayout;
+export default FeaturesLayout;

@@ -2,17 +2,10 @@ import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthStore } from "@/store/auth.store";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  Button,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 
 export default function Settings() {
   const {
@@ -56,12 +49,12 @@ export default function Settings() {
         value: "English (US)",
         onPress: () => console.log("Language pressed"),
       },
-      {
-        type: "display",
-        label: "Data Usage",
-        value: "See network usage",
-        onPress: () => console.log("Data Usage pressed"),
-      },
+      // {
+      //   type: "display",
+      //   label: "Data Usage",
+      //   value: "See network usage",
+      //   onPress: () => console.log("Data Usage pressed"),
+      // },
     ],
   };
 
@@ -117,20 +110,20 @@ export default function Settings() {
         type: "display",
         label: "Contact Support",
         value: "Get help with your account",
-        onPress: () => console.log("Contact Support pressed"),
+        onPress: () => router.push("/(protected)/(pages)/support"),
       },
       {
         type: "display",
         label: "FAQs",
         value: "Find answers to common questions",
-        onPress: () => console.log("FAQs pressed"),
+        onPress: () => router.push("/(protected)/(pages)/faq"),
       },
-      {
-        type: "display",
-        label: "Legal",
-        value: "Terms of Service, Privacy Policy",
-        onPress: () => console.log("Legal pressed"),
-      },
+      // {
+      //   type: "display",
+      //   label: "Legal",
+      //   value: "Terms of Service, Privacy Policy",
+      //   onPress: () => console.log("Legal pressed"),
+      // },
     ],
   };
 
@@ -190,7 +183,7 @@ export default function Settings() {
         </Text>
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => console.log("Upgrade pressed")}
         className="flex-row items-center justify-between p-4 rounded-xl mb-6"
         style={{ backgroundColor: theme.card }}
@@ -215,16 +208,16 @@ export default function Settings() {
           </View>
         </View>
         <Feather name="chevron-right" size={24} color="gray" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => router.push("/(protected)/(pages)/donation")}
         className="flex-row items-center justify-between p-4 rounded-xl mb-6"
         style={{ backgroundColor: theme.card }}
       >
-        <View className="flex-row items-center">
+        <View className="flex-row items-center flex-1 gap-x-1">
           <Feather name="zap" size={24} color="#FFD700" />
-          <View className="ml-4">
+          <View className="ml-4 flex-1">
             <Text
               className="font-space-bold text-lg"
               style={{ color: theme.text }}
@@ -234,15 +227,15 @@ export default function Settings() {
               Donate / Support Us
             </Text>
             <Text
-              className=" text-sm font-space"
+              className="text-sm font-space"
               style={{ color: theme.textSecondary }}
             >
-              Your contributions help us improve the app
+              Your contributions help us improve app
             </Text>
           </View>
         </View>
         <Feather name="chevron-right" size={24} color="gray" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <OptionSelector
         options={themeOptions}
@@ -252,12 +245,12 @@ export default function Settings() {
       />
 
       <OptionList {...AdditionalFeatures} />
-      <OptionList {...AccountSection} />
+      {/* <OptionList {...AccountSection} /> */}
       <OptionList {...GeneralSection} />
-      <OptionList {...PrivacySection} />
+      {/* <OptionList {...PrivacySection} /> */}
       <OptionList {...HelpSupportSection} />
 
-      <View
+      {/* <View
         style={{
           flex: 1,
           justifyContent: "center",
@@ -273,15 +266,10 @@ export default function Settings() {
           title="Open Center Modal"
           onPress={() => setCenterVisible(true)}
         />
-
-        {/* Bottom Sheet Example */}
-        {/* <Modal
+        <Modal
           visible={bottomVisible}
           onClose={() => setBottomVisible(false)}
           isBottom={true}
-          // title="Bottom Modal"
-          // description="This modal slides up from the bottom and can be dragged down to close."
-          // breakpoints={[0.3, 0.6, 0.9]} // optional
         >
           <View>
             <Text style={{ marginBottom: 10 }}>
@@ -295,10 +283,9 @@ export default function Settings() {
             <Text>Item 6</Text>
             <Text>Item 7</Text>
           </View>
-        </Modal> */}
+        </Modal>
 
-        {/* Center Modal Example */}
-        {/* <Modal
+        <Modal
           visible={centerVisible}
           onClose={() => setCenterVisible(false)}
           // mode="center"
@@ -311,8 +298,8 @@ export default function Settings() {
             </Text>
             <Button title="Close Me" onPress={() => setCenterVisible(false)} />
           </View>
-        </Modal> */}
-      </View>
+        </Modal>
+      </View> */}
 
       {/* Danger Zone */}
       <OptionList {...DangerZone} />
