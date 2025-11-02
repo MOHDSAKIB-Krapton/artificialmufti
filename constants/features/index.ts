@@ -53,8 +53,9 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Smart dhikr counter with haptics & custom phrases",
     icon: { name: "infinite-outline", set: "ion" },
     badge: "SOON",
+    route: "/(protected)/(pages)/additional-features/tasbeeh-counter",
     tint: "#FF7675", // pastel red
-    locked: true,
+    locked: false,
     tags: [
       "tasbeeh",
       "dhikr",

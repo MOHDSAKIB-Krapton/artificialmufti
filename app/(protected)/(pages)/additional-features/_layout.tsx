@@ -39,6 +39,12 @@ const FeaturesLayout = () => {
           headerTitle: "Prayer Times",
         }}
       />
+      <Stack.Screen
+        name="tasbeeh-counter/index"
+        options={{
+          headerTitle: "Counter",
+        }}
+      />
     </Stack>
   );
 };
