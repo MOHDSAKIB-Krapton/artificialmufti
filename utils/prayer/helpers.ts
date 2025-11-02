@@ -1,11 +1,13 @@
 /* -------------------- Helpers -------------------- */
 export type PrayerKey =
+  | "none"
   | "Fajr"
   | "Sunrise"
   | "Dhuhr"
   | "Asr"
   | "Maghrib"
   | "Isha";
+
 export const ORDER: PrayerKey[] = [
   "Fajr",
   "Sunrise",

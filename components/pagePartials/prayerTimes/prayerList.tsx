@@ -1,16 +1,18 @@
 import { fmtTime, ORDER, PrayerKey } from "@/utils/prayer/helpers";
 import { Ionicons } from "@expo/vector-icons";
-import { PrayerTimes } from "adhan";
+import { PrayerTimes, SunnahTimes } from "adhan";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
 
 const PrayerList = ({
   theme,
   prayerTimes,
+  sunnahTimes,
   next,
 }: {
   theme: any;
   prayerTimes: PrayerTimes | null;
+  sunnahTimes: SunnahTimes | null;
   next: PrayerKey | null;
 }) => {
   const rows = useMemo(
