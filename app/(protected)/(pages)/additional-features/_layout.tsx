@@ -4,6 +4,37 @@ import React from "react";
 
 const FeaturesLayout = () => {
   const { theme } = useTheme();
+
+  const FeaturesScreens = [
+    {
+      name: "index",
+      title: "Explore",
+    },
+    {
+      name: "kaaba-direction/index",
+      title: "Kaaba Direction",
+    },
+    {
+      name: "prayer-times/index",
+      title: "Prayer Times",
+    },
+    {
+      name: "tasbeeh-counter/index",
+      title: "Counter",
+    },
+    {
+      name: "zakaat-calculator/index",
+      title: "Counter",
+    },
+    {
+      name: "fiqh-cards/index",
+      title: "Fiqh Cards",
+    },
+    {
+      name: "hijri-gregorian/index",
+      title: "Date Convertor",
+    },
+  ];
   return (
     <Stack
       screenOptions={{
@@ -21,30 +52,17 @@ const FeaturesLayout = () => {
         contentStyle: { backgroundColor: theme.background },
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerTitle: "Explore",
-        }}
-      />
-      <Stack.Screen
-        name="kaaba-direction/index"
-        options={{
-          headerTitle: "Kaaba Direction",
-        }}
-      />
-      <Stack.Screen
-        name="prayer-times/index"
-        options={{
-          headerTitle: "Prayer Times",
-        }}
-      />
-      <Stack.Screen
-        name="tasbeeh-counter/index"
-        options={{
-          headerTitle: "Counter",
-        }}
-      />
+      {FeaturesScreens.map((screen, idx) => {
+        return (
+          <Stack.Screen
+            key={idx}
+            name={screen.name}
+            options={{
+              headerTitle: screen.title,
+            }}
+          />
+        );
+      })}
     </Stack>
   );
 };

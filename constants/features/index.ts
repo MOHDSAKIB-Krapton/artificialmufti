@@ -8,7 +8,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     route: "/(protected)/(pages)/additional-features/kaaba-direction",
     icon: { name: "compass-outline", set: "ion" },
     badge: "NEW",
-    tint: "#00B894", // emerald green
+    tint: "#00B894",
     highlight: true,
     locked: false,
     tags: [
@@ -31,7 +31,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     route: "/(protected)/(pages)/additional-features/prayer-times",
     icon: { name: "time-outline", set: "ion" },
     badge: "BETA",
-    tint: "#6C5CE7", // vibrant purple
+    tint: "#6C5CE7",
     highlight: true,
     locked: false,
     tags: [
@@ -54,7 +54,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     icon: { name: "infinite-outline", set: "ion" },
     badge: "SOON",
     route: "/(protected)/(pages)/additional-features/tasbeeh-counter",
-    tint: "#FF7675", // pastel red
+    tint: "#FF7675",
     locked: false,
     tags: [
       "tasbeeh",
@@ -75,7 +75,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Bookmark, tag, and revisit authentic Hadith",
     icon: { name: "book-outline", set: "ion" },
     badge: "SOON",
-    tint: "#0984E3", // electric blue
+    tint: "#0984E3",
     locked: true,
     tags: [
       "hadith",
@@ -95,7 +95,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     label: "Nearby Mosques",
     subtitle: "Find masjids near you, with map and distance",
     icon: { name: "mosque", set: "mci" },
-    tint: "#55EFC4", // mint green
+    tint: "#55EFC4",
     badge: "SOON",
     locked: true,
     tags: [
@@ -109,6 +109,157 @@ export const RAW_FEATURES: FeatureItem[] = [
       "map",
       "distance",
       "community",
+    ],
+  },
+
+  // 🔒 New Offline Features Below
+  {
+    id: "hijri-calendar",
+    label: "Hijri Calendar",
+    subtitle: "Islamic calendar with key events & today's Hijri date",
+    icon: { name: "calendar-outline", set: "ion" },
+    tint: "#FDCB6E", // warm gold
+    locked: true,
+    tags: [
+      "hijri",
+      "calendar",
+      "islamic date",
+      "events",
+      "ramadan",
+      "eid",
+      "offline",
+      "lunar",
+    ],
+  },
+  {
+    id: "verse-of-the-day",
+    label: "Verse of the Day",
+    subtitle: "Daily Ayah and Tafsir from offline Quran data",
+    icon: { name: "book", set: "ion" },
+    tint: "#74B9FF", // light blue
+    locked: true,
+    tags: [
+      "quran",
+      "ayah",
+      "verse",
+      "tafsir",
+      "spirituality",
+      "reflection",
+      "offline",
+      "knowledge",
+    ],
+  },
+  {
+    id: "zakat-calculator",
+    label: "Zakat Calculator",
+    subtitle: "Calculate zakat anonymously, even offline",
+    icon: { name: "calculator-outline", set: "ion" },
+    tint: "#A29BFE", // light lavender
+    badge: "BETA",
+    route: "/(protected)/(pages)/additional-features/zakaat-calculator",
+    highlight: true,
+    tags: [
+      "zakat",
+      "charity",
+      "islam",
+      "calculation",
+      "nisab",
+      "offline",
+      "gold",
+      "wealth",
+    ],
+  },
+  {
+    id: "fasting-tracker",
+    label: "Fasting Tracker",
+    subtitle: "Track Ramadan, Qadha and Sunnah fasts",
+    icon: { name: "checkmark-done-outline", set: "ion" },
+    tint: "#00CEC9", // tropical sea
+    locked: true,
+    tags: [
+      "fasting",
+      "ramadan",
+      "qadha",
+      "sunnah",
+      "tracker",
+      "streaks",
+      "offline",
+      "islam",
+    ],
+  },
+  {
+    id: "fiqh-cards",
+    label: "Fiqh Quick Cards",
+    subtitle: "Swipe through essential Islamic rulings in seconds",
+    icon: { name: "layers-outline", set: "ion" },
+    route: "/(protected)/(pages)/additional-features/fiqh-cards",
+    badge: "SOON",
+    tint: "#81ECEC", // bright aqua
+    locked: false,
+    highlight: false,
+    tags: [
+      "fiqh",
+      "rulings",
+      "islamic law",
+      "quick answers",
+      "cards",
+      "offline",
+      "learning",
+      "new muslim",
+      "faq",
+      "guidance",
+    ],
+  },
+  {
+    id: "islamic-names",
+    label: "Islamic Names",
+    subtitle: "5,000+ names with meanings and origins",
+    icon: { name: "person-outline", set: "ion" },
+    tint: "#FAB1A0", // peach
+    locked: true,
+    tags: [
+      "names",
+      "meaning",
+      "baby names",
+      "islamic",
+      "reference",
+      "offline",
+      "roots",
+    ],
+  },
+  {
+    id: "sunnah-checklist",
+    label: "Sunnah Checklist",
+    subtitle: "Track daily Sunnah habits and personal growth",
+    icon: { name: "checkbox-outline", set: "ion" },
+    tint: "#FFEAA7", // soft yellow
+    locked: true,
+    tags: [
+      "sunnah",
+      "habit",
+      "prophet",
+      "practice",
+      "tracker",
+      "offline",
+      "self improvement",
+    ],
+  },
+  {
+    id: "hijri-gregorian",
+    label: "Date Converter",
+    subtitle: "Convert dates between Hijri & Gregorian instantly",
+    icon: { name: "repeat-outline", set: "ion" },
+    tint: "#55EFC4", // mint green
+    locked: false,
+    route: "/(protected)/(pages)/additional-features/hijri-gregorian",
+    tags: [
+      "date",
+      "hijri",
+      "gregorian",
+      "convert",
+      "islamic calendar",
+      "offline",
+      "utility",
     ],
   },
 ];
