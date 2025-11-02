@@ -10,7 +10,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "NEW",
     tint: "#00B894", // emerald green
     highlight: true,
-    locked: false,
+    locked: true,
     tags: [
       "qibla",
       "kaaba",
@@ -33,7 +33,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "BETA",
     tint: "#6C5CE7", // vibrant purple
     highlight: true,
-    locked: false,
+    locked: true,
     tags: [
       "prayer",
       "namaz",

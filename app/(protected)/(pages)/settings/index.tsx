@@ -58,25 +58,25 @@ export default function Settings() {
     ],
   };
 
-  const AdditionalFeatures: OptionListProps = {
-    header: "ADDITIONAL FEATURES",
-    options: [
-      {
-        type: "display",
-        label: "Qibla Direction",
-        value: "See Qibla direction",
-        icon: "compass-outline",
-        onPress: () => router.push("/(protected)/(pages)/kaaba"),
-      },
-      {
-        type: "navigation",
-        label: "Prayer Times",
-        value: "See Prayer Times",
-        icon: "time-outline",
-        onPress: () => router.push("/(protected)/(pages)/prayer-times"),
-      },
-    ],
-  };
+  // const AdditionalFeatures: OptionListProps = {
+  //   header: "ADDITIONAL FEATURES",
+  //   options: [
+  //     {
+  //       type: "display",
+  //       label: "Qibla Direction",
+  //       value: "See Qibla direction",
+  //       icon: "compass-outline",
+  //       onPress: () => router.push("/(protected)/(pages)/kaaba"),
+  //     },
+  //     {
+  //       type: "navigation",
+  //       label: "Prayer Times",
+  //       value: "See Prayer Times",
+  //       icon: "time-outline",
+  //       onPress: () => router.push("/(protected)/(pages)/prayer-times"),
+  //     },
+  //   ],
+  // };
 
   const AccountSection: OptionListProps = {
     header: "ACCOUNT",
@@ -244,7 +244,7 @@ export default function Settings() {
         title="Appearance"
       />
 
-      <OptionList {...AdditionalFeatures} />
+      {/* <OptionList {...AdditionalFeatures} /> */}
       {/* <OptionList {...AccountSection} /> */}
       <OptionList {...GeneralSection} />
       {/* <OptionList {...PrivacySection} /> */}

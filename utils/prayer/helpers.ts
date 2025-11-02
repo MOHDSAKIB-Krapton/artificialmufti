@@ -47,20 +47,6 @@ export const getHijriDate = (date = new Date()) => {
   }
 };
 
-// export const getNextPrev = (map: Record<PrayerKey, Date | null>) => {
-//   const now = Date.now();
-//   let prev: PrayerKey | null = null;
-//   for (const k of ORDER) {
-//     const t = map[k]?.getTime?.();
-//     if (t && t > now) {
-//       return { prev, next: k };
-//     }
-//     prev = k;
-//   }
-//   // Past Isha → next is null until next day (we still show prev=Isha)
-//   return { prev: "Isha" as PrayerKey, next: null as PrayerKey | null };
-// };
-
 export const getNextPrev = (
   map: Record<PrayerKey, Date | null>
 ): {
