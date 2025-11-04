@@ -1,3 +1,4 @@
+import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import {
   FontAwesome5,
@@ -5,6 +6,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -19,8 +21,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// import * as Notifications from "expo-notifications";
-import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -311,32 +311,34 @@ const SadaqahReminder = () => {
   };
 
   const setupNotifications = async () => {
-    // const { status } = await Notifications.requestPermissionsAsync();
-    // if (status === "granted") {
-    //   // Schedule reminders
-    //   reminders.forEach(reminder => {
-    //     if (reminder.isActive) {
-    //       scheduleReminder(reminder);
-    //     }
-    //   });
-    // }
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status === "granted") {
+      // Schedule reminders
+      reminders.forEach((reminder) => {
+        if (reminder.isActive) {
+          scheduleReminder(reminder);
+        }
+      });
+    }
   };
 
   const scheduleReminder = async (reminder: Reminder) => {
     const [hours, minutes] = reminder.time.split(":").map(Number);
 
-    // await Notifications.scheduleNotificationAsync({
-    //   content: {
-    //     title: "Sadaqah Reminder 🌙",
-    //     body: reminder.title,
-    //     sound: true,
-    //   },
-    //   trigger: {
-    //     hour: hours,
-    //     minute: minutes,
-    //     repeats: true,
-    //   },
-    // });
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Sadaqah Reminder 🌙",
+        body: reminder.title,
+        sound: true,
+      },
+      // trigger: {
+      //   type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+      //   hour: hours,
+      //   minute: minutes,
+      //   repeats: true,
+      // },
+      trigger: null,
+    });
   };
 
   const addEntry = async (entry: Omit<SadaqahEntry, "id">) => {
