@@ -120,15 +120,20 @@ const HijriGregorianConverter: React.FC = () => {
     useState<CalendarType>("gregorian");
   const [fadeAnim] = useState(new Animated.Value(1));
 
+  const hijriData =
+    activeCalendar === "gregorian"
+      ? gregorianToHijri(selectedDate)
+      : { year: 0, month: 0, day: 0 }; // placeholder for hijri input
+
   // Calculate both calendar dates
   const gregorianDate =
     activeCalendar === "gregorian"
       ? selectedDate
       : hijriToGregorian(hijriData.year, hijriData.month, hijriData.day);
 
-  const hijriData = useMemo(() => {
-    return gregorianToHijri(gregorianDate);
-  }, [gregorianDate]);
+  // const hijriData = useMemo(() => {
+  //   return gregorianToHijri(gregorianDate);
+  // }, [gregorianDate]);
 
   // Calendar grid data
   const calendarGrid = useMemo(() => {

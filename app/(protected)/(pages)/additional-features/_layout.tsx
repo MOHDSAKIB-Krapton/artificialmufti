@@ -34,6 +34,30 @@ const FeaturesLayout = () => {
       name: "hijri-gregorian/index",
       title: "Date Convertor",
     },
+    {
+      name: "fasting-tracker/index",
+      title: "Fasting Tracker",
+    },
+    {
+      name: "daily-verse/index",
+      title: "Daily Verse",
+    },
+    {
+      name: "wudu-guide/index",
+      title: "Wudu Guide",
+    },
+    {
+      name: "halal-scanner/index",
+      title: "Halal Scanner",
+    },
+    {
+      name: "islamic-encyclopedia/index",
+      title: "Islamic Encyclopedia",
+    },
+    {
+      name: "sadaqah-reminder/index",
+      title: "Sadaqah Reminder",
+    },
   ];
   return (
     <Stack

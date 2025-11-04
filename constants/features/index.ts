@@ -137,7 +137,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Daily Ayah and Tafsir from offline Quran data",
     icon: { name: "book", set: "ion" },
     tint: "#74B9FF", // light blue
-    locked: true,
+    route: "/(protected)/(pages)/additional-features/daily-verse",
     tags: [
       "quran",
       "ayah",
@@ -175,7 +175,8 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Track Ramadan, Qadha and Sunnah fasts",
     icon: { name: "checkmark-done-outline", set: "ion" },
     tint: "#00CEC9", // tropical sea
-    locked: true,
+    locked: false,
+    route: "/(protected)/(pages)/additional-features/fasting-tracker",
     tags: [
       "fasting",
       "ramadan",
@@ -260,6 +261,94 @@ export const RAW_FEATURES: FeatureItem[] = [
       "islamic calendar",
       "offline",
       "utility",
+    ],
+  },
+
+  // MORE
+  {
+    id: "sadaqah-reminder",
+    label: "Sadaqah Reminder",
+    subtitle: "Gentle reminder to give charity daily or weekly",
+    icon: { name: "heart-outline", set: "ion" },
+    tint: "#E17055", // warm coral
+    badge: "NEW",
+    route: "/(protected)/(pages)/additional-features/sadaqah-reminder",
+    highlight: true,
+    locked: false,
+    tags: [
+      "sadaqah",
+      "charity",
+      "reminder",
+      "donation",
+      "habit",
+      "good deeds",
+      "offline",
+      "faith",
+      "muslim",
+    ],
+  },
+  {
+    id: "wudu-guide",
+    label: "Wudu Guide",
+    subtitle: "Step-by-step visual and audio guide for ablution",
+    icon: { name: "water-outline", set: "ion" },
+    tint: "#00CEC9", // teal
+    badge: "BETA",
+    route: "/(protected)/(pages)/additional-features/wudu-guide",
+    highlight: false,
+    locked: false,
+    tags: [
+      "wudu",
+      "ablution",
+      "guide",
+      "learning",
+      "islam",
+      "new muslim",
+      "offline",
+      "purity",
+      "steps",
+    ],
+  },
+  {
+    id: "halal-food-scanner",
+    label: "Halal Food Scanner",
+    subtitle: "Scan barcodes or ingredients to check Halal status",
+    icon: { name: "barcode-outline", set: "ion" },
+    tint: "#55EFC4", // mint green
+    badge: "BETA",
+    route: "/(protected)/(pages)/additional-features/halal-scanner",
+    highlight: true,
+    locked: false,
+    tags: [
+      "halal",
+      "food",
+      "scanner",
+      "barcode",
+      "ingredients",
+      "diet",
+      "utility",
+      "online",
+      "shopping",
+    ],
+  },
+  {
+    id: "islamic-encyclopedia",
+    label: "Islamic Encyclopedia",
+    subtitle: "Offline reference for key Islamic terms and concepts",
+    icon: { name: "search-outline", set: "ion" },
+    tint: "#A3CB38", // green yellow
+    badge: "SOON",
+    route: "/(protected)/(pages)/additional-features/islamic-encyclopedia",
+    highlight: false,
+    tags: [
+      "encyclopedia",
+      "reference",
+      "learning",
+      "offline",
+      "education",
+      "islam",
+      "knowledge",
+      "terms",
     ],
   },
 ];
