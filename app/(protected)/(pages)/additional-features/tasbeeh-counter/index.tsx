@@ -36,8 +36,6 @@ const PRESETS: TasbeehPreset[] = [
   { name: "SubhanAllah", target: 33, dhikr: "سُبْحَانَ ٱللَّٰهِ" },
   { name: "Alhamdulillah", target: 33, dhikr: "ٱلْحَمْدُ لِلَّٰهِ" },
   { name: "Allahu Akbar", target: 34, dhikr: "ٱللَّٰهُ أَكْبَرُ" },
-  { name: "Custom 99", target: 99, dhikr: "Custom Dhikr" },
-  { name: "Custom 100", target: 100, dhikr: "Custom Dhikr" },
 ];
 
 const TasbeehScreen: React.FC = () => {
@@ -47,7 +45,6 @@ const TasbeehScreen: React.FC = () => {
   const [sessions, setSessions] = useState<TasbeehSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [showPresets, setShowPresets] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
   const [customTarget, setCustomTarget] = useState("");
   const [customName, setCustomName] = useState("");
 
@@ -291,13 +288,6 @@ const TasbeehScreen: React.FC = () => {
           </View>
           <View className="flex-row gap-2">
             <Pressable
-              onPress={() => setShowHistory(true)}
-              className="w-10 h-10 rounded-full items-center justify-center"
-              style={{ backgroundColor: theme.card }}
-            >
-              <Ionicons name="time-outline" size={20} color={theme.text} />
-            </Pressable>
-            <Pressable
               onPress={() => setShowPresets(true)}
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: theme.card }}
@@ -513,13 +503,14 @@ const TasbeehScreen: React.FC = () => {
         visible={showPresets}
         onClose={() => setShowPresets(false)}
         heading="New Counter"
+        description="Create a new Quick/custom Counter"
         variant="bottom"
       >
         <View>
           <ScrollView>
             {/* Presets */}
             <Text
-              className="text-sm font-semibold mb-3"
+              className="text-sm font-semibold my-3"
               style={{ color: theme.textSecondary }}
             >
               Quick Presets
@@ -528,21 +519,20 @@ const TasbeehScreen: React.FC = () => {
               <Pressable
                 key={preset.name}
                 onPress={() => createSessionFromPreset(preset)}
-                className="p-4 rounded-xl mb-2 border"
+                className="p-4 rounded-xl mb-2 border flex-row gap-x-2 justify-center items-start"
                 style={{
                   backgroundColor: theme.background,
                   borderColor: theme.accentLight ?? "#ffffff22",
                 }}
               >
-                <Text
-                  className="font-semibold mb-1"
-                  style={{ color: theme.text }}
-                >
-                  {preset.name}
-                </Text>
-                <Text className="text-xl mb-2" style={{ color: theme.text }}>
-                  {preset.dhikr}
-                </Text>
+                <View className="flex-1 gap-y-1">
+                  <Text className="font-semibold" style={{ color: theme.text }}>
+                    {preset.name}
+                  </Text>
+                  <Text className="text-xl" style={{ color: theme.text }}>
+                    {preset.dhikr}
+                  </Text>
+                </View>
                 <Text
                   className="text-xs"
                   style={{ color: theme.textSecondary }}

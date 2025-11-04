@@ -1,10 +1,10 @@
+import CustomModal from "@/components/common/customModal";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
-  Modal,
   Pressable,
   ScrollView,
   Text,
@@ -616,478 +616,420 @@ const FiqhLookupScreen: React.FC = () => {
       />
 
       {/* Card Detail Modal */}
-      <Modal
+      <CustomModal
         visible={selectedCard !== null}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setSelectedCard(null)}
+        variant="bottom"
+        onClose={() => setSelectedCard(null)}
       >
-        <View
-          className="flex-1 justify-end"
-          style={{ backgroundColor: "#00000088" }}
-        >
-          <View
-            className="rounded-t-3xl"
-            style={{ backgroundColor: theme.card, maxHeight: "90%" }}
-          >
-            {selectedCard && (
-              <>
-                {/* Modal Header */}
-                <View className="flex-row items-center justify-between p-6 pb-4">
-                  <View className="flex-1 mr-4">
-                    <View className="flex-row items-center mb-2">
-                      <View
-                        className="px-3 py-1 rounded-lg mr-2"
+        <View className="rounded-t-3xl">
+          {selectedCard && (
+            <>
+              {/* Modal Header */}
+              <View className="flex-row items-center justify-between pb-4">
+                <View className="flex-1 mr-4">
+                  <View className="flex-row items-center mb-2">
+                    <View
+                      className="px-3 py-1 rounded-lg mr-2"
+                      style={{
+                        backgroundColor:
+                          CATEGORIES[selectedCard.category].color + "22",
+                      }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
                         style={{
-                          backgroundColor:
-                            CATEGORIES[selectedCard.category].color + "22",
+                          color: CATEGORIES[selectedCard.category].color,
                         }}
                       >
-                        <Text
-                          className="text-xs font-semibold"
-                          style={{
-                            color: CATEGORIES[selectedCard.category].color,
-                          }}
-                        >
-                          {CATEGORIES[selectedCard.category].label}
-                        </Text>
-                      </View>
-                      <View
-                        className="px-3 py-1 rounded-lg"
-                        style={{
-                          backgroundColor:
-                            RULINGS[selectedCard.ruling].color + "22",
-                        }}
+                        {CATEGORIES[selectedCard.category].label}
+                      </Text>
+                    </View>
+                    <View
+                      className="px-3 py-1 rounded-lg"
+                      style={{
+                        backgroundColor:
+                          RULINGS[selectedCard.ruling].color + "22",
+                      }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{ color: RULINGS[selectedCard.ruling].color }}
                       >
-                        <Text
-                          className="text-xs font-semibold"
-                          style={{ color: RULINGS[selectedCard.ruling].color }}
-                        >
-                          {RULINGS[selectedCard.ruling].label}
-                        </Text>
-                      </View>
+                        {RULINGS[selectedCard.ruling].label}
+                      </Text>
                     </View>
                   </View>
-                  <View className="flex-row gap-2">
-                    <Pressable
-                      onPress={() => toggleBookmark(selectedCard.id)}
-                      className="w-10 h-10 rounded-full items-center justify-center"
-                      style={{ backgroundColor: theme.background }}
-                    >
-                      <Ionicons
-                        name={
-                          selectedCard.bookmarked
-                            ? "bookmark"
-                            : "bookmark-outline"
-                        }
-                        size={22}
-                        color={
-                          selectedCard.bookmarked ? theme.primary : theme.text
-                        }
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setSelectedCard(null)}
-                      className="w-10 h-10 rounded-full items-center justify-center"
-                      style={{ backgroundColor: theme.background }}
-                    >
-                      <Ionicons name="close" size={28} color={theme.text} />
-                    </Pressable>
-                  </View>
                 </View>
+                <View className="flex-row gap-2">
+                  <Pressable
+                    onPress={() => toggleBookmark(selectedCard.id)}
+                    className="w-10 h-10 rounded-full items-center justify-center"
+                    style={{ backgroundColor: theme.background }}
+                  >
+                    <Ionicons
+                      name={
+                        selectedCard.bookmarked
+                          ? "bookmark"
+                          : "bookmark-outline"
+                      }
+                      size={22}
+                      color={
+                        selectedCard.bookmarked ? theme.primary : theme.text
+                      }
+                    />
+                  </Pressable>
+                </View>
+              </View>
 
-                {/* Modal Content */}
-                <ScrollView
-                  className="px-6 pb-6"
-                  showsVerticalScrollIndicator={false}
+              {/* Modal Content */}
+              <ScrollView className="mb-2" showsVerticalScrollIndicator={false}>
+                {/* Question */}
+                <Text
+                  className="text-2xl font-bold mb-4 leading-9"
+                  style={{ color: theme.text }}
                 >
-                  {/* Question */}
+                  {selectedCard.question}
+                </Text>
+
+                {/* Answer */}
+                <View
+                  className="p-4 rounded-xl mb-4"
+                  style={{ backgroundColor: theme.background }}
+                >
                   <Text
-                    className="text-2xl font-bold mb-4 leading-9"
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Answer
+                  </Text>
+                  <Text
+                    className="leading-7 text-base"
                     style={{ color: theme.text }}
                   >
-                    {selectedCard.question}
+                    {selectedCard.answer}
                   </Text>
+                </View>
 
-                  {/* Answer */}
-                  <View
-                    className="p-4 rounded-xl mb-4"
-                    style={{ backgroundColor: theme.background }}
+                {/* Ruling Info */}
+                <View
+                  className="p-4 rounded-xl mb-4"
+                  style={{
+                    backgroundColor: RULINGS[selectedCard.ruling].color + "11",
+                  }}
+                >
+                  <Text
+                    className="text-sm font-semibold mb-1"
+                    style={{ color: RULINGS[selectedCard.ruling].color }}
                   >
+                    {RULINGS[selectedCard.ruling].label}
+                  </Text>
+                  <Text
+                    className="text-sm"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {RULINGS[selectedCard.ruling].description}
+                  </Text>
+                </View>
+
+                {/* Madhab */}
+                {selectedCard.madhab && (
+                  <View className="mb-4">
                     <Text
                       className="text-sm font-semibold mb-2"
                       style={{ color: theme.textSecondary }}
                     >
-                      Answer
+                      Madhab
                     </Text>
-                    <Text
-                      className="leading-7 text-base"
-                      style={{ color: theme.text }}
+                    <View
+                      className="p-3 rounded-xl"
+                      style={{ backgroundColor: theme.background }}
                     >
-                      {selectedCard.answer}
-                    </Text>
+                      <Text style={{ color: theme.text }}>
+                        {selectedCard.madhab}
+                      </Text>
+                    </View>
                   </View>
+                )}
 
-                  {/* Ruling Info */}
-                  <View
-                    className="p-4 rounded-xl mb-4"
-                    style={{
-                      backgroundColor:
-                        RULINGS[selectedCard.ruling].color + "11",
-                    }}
-                  >
+                {/* Evidence */}
+                {selectedCard.evidence && (
+                  <View className="mb-4">
                     <Text
-                      className="text-sm font-semibold mb-1"
-                      style={{ color: RULINGS[selectedCard.ruling].color }}
-                    >
-                      {RULINGS[selectedCard.ruling].label}
-                    </Text>
-                    <Text
-                      className="text-sm"
+                      className="text-sm font-semibold mb-2"
                       style={{ color: theme.textSecondary }}
                     >
-                      {RULINGS[selectedCard.ruling].description}
+                      Evidence
                     </Text>
-                  </View>
-
-                  {/* Madhab */}
-                  {selectedCard.madhab && (
-                    <View className="mb-4">
+                    <View
+                      className="p-4 rounded-xl border-l-4"
+                      style={{
+                        backgroundColor: theme.background,
+                        borderLeftColor: theme.primary,
+                      }}
+                    >
                       <Text
-                        className="text-sm font-semibold mb-2"
-                        style={{ color: theme.textSecondary }}
+                        className="leading-6 italic"
+                        style={{ color: theme.text }}
                       >
-                        Madhab
+                        {selectedCard.evidence}
                       </Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* Tags */}
+                <View>
+                  <Text
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Related Topics
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2">
+                    {selectedCard.tags.map((tag) => (
                       <View
-                        className="p-3 rounded-xl"
+                        key={tag}
+                        className="px-3 py-2 rounded-lg"
                         style={{ backgroundColor: theme.background }}
                       >
-                        <Text style={{ color: theme.text }}>
-                          {selectedCard.madhab}
-                        </Text>
+                        <Text style={{ color: theme.text }}>#{tag}</Text>
                       </View>
-                    </View>
-                  )}
-
-                  {/* Evidence */}
-                  {selectedCard.evidence && (
-                    <View className="mb-4">
-                      <Text
-                        className="text-sm font-semibold mb-2"
-                        style={{ color: theme.textSecondary }}
-                      >
-                        Evidence
-                      </Text>
-                      <View
-                        className="p-4 rounded-xl border-l-4"
-                        style={{
-                          backgroundColor: theme.background,
-                          borderLeftColor: theme.primary,
-                        }}
-                      >
-                        <Text
-                          className="leading-6 italic"
-                          style={{ color: theme.text }}
-                        >
-                          {selectedCard.evidence}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Tags */}
-                  <View>
-                    <Text
-                      className="text-sm font-semibold mb-2"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      Related Topics
-                    </Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {selectedCard.tags.map((tag) => (
-                        <View
-                          key={tag}
-                          className="px-3 py-2 rounded-lg"
-                          style={{ backgroundColor: theme.background }}
-                        >
-                          <Text style={{ color: theme.text }}>#{tag}</Text>
-                        </View>
-                      ))}
-                    </View>
+                    ))}
                   </View>
+                </View>
 
-                  {/* Disclaimer */}
-                  <View
-                    className="mt-6 p-4 rounded-xl"
-                    style={{ backgroundColor: theme.primary + "11" }}
+                {/* Disclaimer */}
+                <View
+                  className="mt-6 p-4 rounded-xl"
+                  style={{ backgroundColor: theme.primary + "11" }}
+                >
+                  <Text
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: theme.primary }}
                   >
-                    <Text
-                      className="text-xs font-semibold mb-2"
-                      style={{ color: theme.primary }}
-                    >
-                      ⚠️ Important Note
-                    </Text>
-                    <Text
-                      className="text-xs leading-5"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      This information is provided for educational purposes. For
-                      specific situations, please consult a qualified Islamic
-                      scholar or local imam.
-                    </Text>
-                  </View>
-                </ScrollView>
-              </>
-            )}
-          </View>
+                    ⚠️ Important Note
+                  </Text>
+                  <Text
+                    className="text-xs leading-5"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    This information is provided for educational purposes. For
+                    specific situations, please consult a qualified Islamic
+                    scholar or local imam.
+                  </Text>
+                </View>
+              </ScrollView>
+            </>
+          )}
         </View>
-      </Modal>
+      </CustomModal>
 
       {/* Filters Modal */}
-      <Modal
+      <CustomModal
         visible={showFilters}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowFilters(false)}
+        variant="bottom"
+        onClose={() => setShowFilters(false)}
+        heading="Filters"
       >
-        <View
-          className="flex-1 justify-end"
-          style={{ backgroundColor: "#00000088" }}
-        >
-          <View
-            className="rounded-t-3xl p-6"
-            style={{ backgroundColor: theme.card, maxHeight: "80%" }}
+        <View className="rounded-t-3xl flex-1">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              flex: 1,
+            }}
           >
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-bold" style={{ color: theme.text }}>
-                Filters
-              </Text>
-              <View className="flex-row gap-2">
-                {activeFiltersCount > 0 && (
-                  <Pressable
-                    onPress={clearFilters}
-                    className="px-4 py-2 rounded-xl"
-                    style={{ backgroundColor: theme.background }}
-                  >
-                    <Text
-                      className="text-sm font-semibold"
-                      style={{ color: theme.text }}
-                    >
-                      Clear All
-                    </Text>
-                  </Pressable>
-                )}
-                <Pressable onPress={() => setShowFilters(false)}>
-                  <Ionicons name="close" size={28} color={theme.text} />
-                </Pressable>
-              </View>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {/* Category Filter */}
-              <Text
-                className="text-sm font-semibold mb-3"
-                style={{ color: theme.textSecondary }}
-              >
-                Category
-              </Text>
-              <Pressable
-                onPress={() => setSelectedCategory("all")}
-                className="flex-row items-center p-3 rounded-xl mb-2 border"
-                style={{
-                  backgroundColor:
-                    selectedCategory === "all"
-                      ? theme.primary + "22"
-                      : theme.background,
-                  borderColor:
-                    selectedCategory === "all"
-                      ? theme.primary
-                      : (theme.accentLight ?? "#ffffff22"),
-                }}
-              >
-                <View
-                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                  style={{
-                    backgroundColor:
-                      selectedCategory === "all" ? theme.primary : theme.card,
-                  }}
-                >
-                  <Ionicons
-                    name="apps-outline"
-                    size={20}
-                    color={selectedCategory === "all" ? "#fff" : theme.text}
-                  />
-                </View>
-                <Text
-                  className="flex-1 font-semibold"
-                  style={{ color: theme.text }}
-                >
-                  All Categories
-                </Text>
-                {selectedCategory === "all" && (
-                  <Ionicons name="checkmark" size={24} color={theme.primary} />
-                )}
-              </Pressable>
-
-              {(Object.keys(CATEGORIES) as FiqhCategory[]).map((cat) => (
-                <Pressable
-                  key={cat}
-                  onPress={() => setSelectedCategory(cat)}
-                  className="flex-row items-center p-3 rounded-xl mb-2 border"
-                  style={{
-                    backgroundColor:
-                      selectedCategory === cat
-                        ? theme.primary + "22"
-                        : theme.background,
-                    borderColor:
-                      selectedCategory === cat
-                        ? theme.primary
-                        : (theme.accentLight ?? "#ffffff22"),
-                  }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                    style={{
-                      backgroundColor:
-                        selectedCategory === cat
-                          ? CATEGORIES[cat].color
-                          : theme.card,
-                    }}
-                  >
-                    <Ionicons
-                      name={CATEGORIES[cat].icon as any}
-                      size={20}
-                      color={selectedCategory === cat ? "#fff" : theme.text}
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <Text
-                      className="font-semibold"
-                      style={{ color: theme.text }}
-                    >
-                      {CATEGORIES[cat].label}
-                    </Text>
-                    <Text
-                      className="text-xs mt-1"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      {stats.byCategory[cat]} cards
-                    </Text>
-                  </View>
-                  {selectedCategory === cat && (
-                    <Ionicons
-                      name="checkmark"
-                      size={24}
-                      color={theme.primary}
-                    />
-                  )}
-                </Pressable>
-              ))}
-
-              {/* Ruling Filter */}
-              <Text
-                className="text-sm font-semibold mb-3 mt-6"
-                style={{ color: theme.textSecondary }}
-              >
-                Ruling Type
-              </Text>
-              <Pressable
-                onPress={() => setSelectedRuling("all")}
-                className="flex-row items-center p-3 rounded-xl mb-2 border"
-                style={{
-                  backgroundColor:
-                    selectedRuling === "all"
-                      ? theme.primary + "22"
-                      : theme.background,
-                  borderColor:
-                    selectedRuling === "all"
-                      ? theme.primary
-                      : (theme.accentLight ?? "#ffffff22"),
-                }}
-              >
-                <View
-                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                  style={{
-                    backgroundColor:
-                      selectedRuling === "all" ? theme.primary : theme.card,
-                  }}
-                >
-                  <Ionicons
-                    name="list-outline"
-                    size={20}
-                    color={selectedRuling === "all" ? "#fff" : theme.text}
-                  />
-                </View>
-                <Text
-                  className="flex-1 font-semibold"
-                  style={{ color: theme.text }}
-                >
-                  All Rulings
-                </Text>
-                {selectedRuling === "all" && (
-                  <Ionicons name="checkmark" size={24} color={theme.primary} />
-                )}
-              </Pressable>
-
-              {(Object.keys(RULINGS) as FiqhRuling[]).map((ruling) => (
-                <Pressable
-                  key={ruling}
-                  onPress={() => setSelectedRuling(ruling)}
-                  className="flex-row items-center p-3 rounded-xl mb-2 border"
-                  style={{
-                    backgroundColor:
-                      selectedRuling === ruling
-                        ? RULINGS[ruling].color + "22"
-                        : theme.background,
-                    borderColor:
-                      selectedRuling === ruling
-                        ? RULINGS[ruling].color
-                        : (theme.accentLight ?? "#ffffff22"),
-                  }}
-                >
-                  <View
-                    className="w-2 h-10 rounded-full mr-3"
-                    style={{ backgroundColor: RULINGS[ruling].color }}
-                  />
-                  <View className="flex-1">
-                    <Text
-                      className="font-semibold"
-                      style={{ color: theme.text }}
-                    >
-                      {RULINGS[ruling].label}
-                    </Text>
-                    <Text
-                      className="text-xs mt-1"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      {RULINGS[ruling].description}
-                    </Text>
-                  </View>
-                  {selectedRuling === ruling && (
-                    <Ionicons
-                      name="checkmark"
-                      size={24}
-                      color={RULINGS[ruling].color}
-                    />
-                  )}
-                </Pressable>
-              ))}
-            </ScrollView>
-
-            {/* Apply Button */}
-            <Pressable
-              onPress={() => setShowFilters(false)}
-              className="mt-4 py-4 rounded-xl items-center"
-              style={{ backgroundColor: theme.primary }}
+            {/* Category Filter */}
+            <Text
+              className="text-sm font-semibold mb-3"
+              style={{ color: theme.textSecondary }}
             >
-              <Text className="text-base font-bold text-white">
-                Apply Filters ({filteredCards.length} results)
+              Category
+            </Text>
+            <Pressable
+              onPress={() => setSelectedCategory("all")}
+              className="flex-row items-center p-3 rounded-xl mb-2 border"
+              style={{
+                backgroundColor:
+                  selectedCategory === "all"
+                    ? theme.primary + "22"
+                    : theme.background,
+                borderColor:
+                  selectedCategory === "all"
+                    ? theme.primary
+                    : (theme.accentLight ?? "#ffffff22"),
+              }}
+            >
+              <View
+                className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                style={{
+                  backgroundColor:
+                    selectedCategory === "all" ? theme.primary : theme.card,
+                }}
+              >
+                <Ionicons
+                  name="apps-outline"
+                  size={20}
+                  color={selectedCategory === "all" ? "#fff" : theme.text}
+                />
+              </View>
+              <Text
+                className="flex-1 font-semibold"
+                style={{ color: theme.text }}
+              >
+                All Categories
               </Text>
+              {selectedCategory === "all" && (
+                <Ionicons name="checkmark" size={24} color={theme.primary} />
+              )}
             </Pressable>
-          </View>
+
+            {(Object.keys(CATEGORIES) as FiqhCategory[]).map((cat) => (
+              <Pressable
+                key={cat}
+                onPress={() => setSelectedCategory(cat)}
+                className="flex-row items-center p-3 rounded-xl mb-2 border"
+                style={{
+                  backgroundColor:
+                    selectedCategory === cat
+                      ? theme.primary + "22"
+                      : theme.background,
+                  borderColor:
+                    selectedCategory === cat
+                      ? theme.primary
+                      : (theme.accentLight ?? "#ffffff22"),
+                }}
+              >
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{
+                    backgroundColor:
+                      selectedCategory === cat
+                        ? CATEGORIES[cat].color
+                        : theme.card,
+                  }}
+                >
+                  <Ionicons
+                    name={CATEGORIES[cat].icon as any}
+                    size={20}
+                    color={selectedCategory === cat ? "#fff" : theme.text}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-semibold" style={{ color: theme.text }}>
+                    {CATEGORIES[cat].label}
+                  </Text>
+                  <Text
+                    className="text-xs mt-1"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {stats.byCategory[cat]} cards
+                  </Text>
+                </View>
+                {selectedCategory === cat && (
+                  <Ionicons name="checkmark" size={24} color={theme.primary} />
+                )}
+              </Pressable>
+            ))}
+
+            {/* Ruling Filter */}
+            <Text
+              className="text-sm font-semibold mb-3 mt-6"
+              style={{ color: theme.textSecondary }}
+            >
+              Ruling Type
+            </Text>
+            <Pressable
+              onPress={() => setSelectedRuling("all")}
+              className="flex-row items-center p-3 rounded-xl mb-2 border"
+              style={{
+                backgroundColor:
+                  selectedRuling === "all"
+                    ? theme.primary + "22"
+                    : theme.background,
+                borderColor:
+                  selectedRuling === "all"
+                    ? theme.primary
+                    : (theme.accentLight ?? "#ffffff22"),
+              }}
+            >
+              <View
+                className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                style={{
+                  backgroundColor:
+                    selectedRuling === "all" ? theme.primary : theme.card,
+                }}
+              >
+                <Ionicons
+                  name="list-outline"
+                  size={20}
+                  color={selectedRuling === "all" ? "#fff" : theme.text}
+                />
+              </View>
+              <Text
+                className="flex-1 font-semibold"
+                style={{ color: theme.text }}
+              >
+                All Rulings
+              </Text>
+              {selectedRuling === "all" && (
+                <Ionicons name="checkmark" size={24} color={theme.primary} />
+              )}
+            </Pressable>
+
+            {(Object.keys(RULINGS) as FiqhRuling[]).map((ruling) => (
+              <Pressable
+                key={ruling}
+                onPress={() => setSelectedRuling(ruling)}
+                className="flex-row items-center p-3 rounded-xl mb-2 border"
+                style={{
+                  backgroundColor:
+                    selectedRuling === ruling
+                      ? RULINGS[ruling].color + "22"
+                      : theme.background,
+                  borderColor:
+                    selectedRuling === ruling
+                      ? RULINGS[ruling].color
+                      : (theme.accentLight ?? "#ffffff22"),
+                }}
+              >
+                <View
+                  className="w-2 h-10 rounded-full mr-3"
+                  style={{ backgroundColor: RULINGS[ruling].color }}
+                />
+                <View className="flex-1">
+                  <Text className="font-semibold" style={{ color: theme.text }}>
+                    {RULINGS[ruling].label}
+                  </Text>
+                  <Text
+                    className="text-xs mt-1"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {RULINGS[ruling].description}
+                  </Text>
+                </View>
+                {selectedRuling === ruling && (
+                  <Ionicons
+                    name="checkmark"
+                    size={24}
+                    color={RULINGS[ruling].color}
+                  />
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          {/* Apply Button */}
+          <Pressable
+            onPress={() => setShowFilters(false)}
+            className="mt-4 py-4 rounded-xl items-center"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Text className="text-base font-bold text-white">
+              Apply Filters ({filteredCards.length} results)
+            </Text>
+          </Pressable>
         </View>
-      </Modal>
+      </CustomModal>
     </SafeAreaView>
   );
 };

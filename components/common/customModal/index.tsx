@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -43,6 +44,7 @@ const CustomModal = ({
   onBack,
   containerStyle = "",
 }: Props) => {
+  const { theme } = useTheme();
   const isBottom = variant === "bottom";
 
   const [render, setRender] = useState(visible);
@@ -137,7 +139,7 @@ const CustomModal = ({
               position: "absolute",
               left: 16,
               right: 16,
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 24,
               padding: addPadding ? 20 : 0,
               maxHeight: "85%",
@@ -155,7 +157,7 @@ const CustomModal = ({
                   opacity: panelOpacity,
                 },
           ]}
-          className={`${containerStyle}`}
+          className={`${containerStyle} border`}
         >
           {/* Header */}
           {(heading || showClose || showBack) && (
@@ -167,7 +169,7 @@ const CustomModal = ({
               )}
 
               {heading && (
-                <View className="flex-1 px-2">
+                <View className="flex-1">
                   <Text className="text-lg font-semibold" numberOfLines={1}>
                     {heading}
                   </Text>
@@ -180,14 +182,18 @@ const CustomModal = ({
               )}
 
               {showClose && (
-                <TouchableOpacity onPress={onClose}>
+                <TouchableOpacity
+                  onPress={onClose}
+                  activeOpacity={0.7}
+                  className="ml-auto p-2"
+                >
                   <Ionicons name="close" size={22} color="black" />
                 </TouchableOpacity>
               )}
             </View>
           )}
 
-          <View className="flex-1">{children}</View>
+          <View className="flex-1 ">{children}</View>
         </Animated.View>
       </KeyboardAvoidingView>
     </Modal>

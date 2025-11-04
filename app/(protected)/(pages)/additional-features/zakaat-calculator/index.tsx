@@ -1,9 +1,9 @@
+import CustomModal from "@/components/common/customModal";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Animated,
-  Modal,
   Pressable,
   ScrollView,
   Switch,
@@ -514,392 +514,295 @@ const ZakaatCalculatorScreen: React.FC = () => {
       </ScrollView>
 
       {/* Add Asset Modal */}
-      <Modal
+      <CustomModal
         visible={showAddModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowAddModal(false)}
+        variant="bottom"
+        onClose={() => setShowAddModal(false)}
+        heading="Add Asset"
       >
-        <View
-          className="flex-1 justify-end"
-          style={{ backgroundColor: "#00000088" }}
-        >
-          <View
-            className="rounded-t-3xl p-6"
-            style={{ backgroundColor: theme.card, maxHeight: "85%" }}
+        {/* <View style={{ backgroundColor: theme.card, maxHeight: "85%" }}> */}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Category Selection */}
+          <Text
+            className="text-sm font-semibold mb-3"
+            style={{ color: theme.textSecondary }}
           >
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-bold" style={{ color: theme.text }}>
-                Add Asset
-              </Text>
-              <Pressable onPress={() => setShowAddModal(false)}>
-                <Ionicons name="close" size={28} color={theme.text} />
-              </Pressable>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {/* Category Selection */}
-              <Text
-                className="text-sm font-semibold mb-3"
-                style={{ color: theme.textSecondary }}
-              >
-                Select Category
-              </Text>
-              <View className="gap-2 mb-4">
-                {(
-                  Object.entries(CATEGORIES) as [AssetCategory, CategoryInfo][]
-                ).map(([key, info]) => (
-                  <Pressable
-                    key={key}
-                    onPress={() => setSelectedCategory(key)}
-                    className="flex-row items-center p-3 rounded-xl border"
-                    style={{
-                      backgroundColor:
-                        selectedCategory === key
-                          ? theme.primary + "22"
-                          : theme.background,
-                      borderColor:
-                        selectedCategory === key
-                          ? theme.primary
-                          : (theme.accentLight ?? "#ffffff22"),
-                    }}
-                  >
-                    <View
-                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                      style={{
-                        backgroundColor:
-                          selectedCategory === key ? theme.primary : theme.card,
-                      }}
-                    >
-                      <Ionicons
-                        name={info.icon as any}
-                        size={20}
-                        color={selectedCategory === key ? "#fff" : theme.text}
-                      />
-                    </View>
-                    <View className="flex-1">
-                      <Text
-                        className="font-semibold"
-                        style={{ color: theme.text }}
-                      >
-                        {info.label}
-                      </Text>
-                      <Text
-                        className="text-xs mt-1"
-                        style={{ color: theme.textSecondary }}
-                      >
-                        {info.description}
-                      </Text>
-                    </View>
-                    {selectedCategory === key && (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={24}
-                        color={theme.primary}
-                      />
-                    )}
-                  </Pressable>
-                ))}
-              </View>
-
-              {/* Asset Details */}
-              <Text
-                className="text-sm font-semibold mb-3"
-                style={{ color: theme.textSecondary }}
-              >
-                Asset Details
-              </Text>
-              <TextInput
-                value={assetName}
-                onChangeText={setAssetName}
-                placeholder="Asset name (e.g., Savings Account)"
-                placeholderTextColor={theme.textSecondary}
-                className="p-4 rounded-xl mb-3"
-                style={{
-                  backgroundColor: theme.background,
-                  color: theme.text,
-                  borderWidth: 1,
-                  borderColor: theme.accentLight ?? "#ffffff22",
-                }}
-              />
-              <TextInput
-                value={assetValue}
-                onChangeText={setAssetValue}
-                placeholder="Value (e.g., 5000)"
-                keyboardType="decimal-pad"
-                placeholderTextColor={theme.textSecondary}
-                className="p-4 rounded-xl mb-4"
-                style={{
-                  backgroundColor: theme.background,
-                  color: theme.text,
-                  borderWidth: 1,
-                  borderColor: theme.accentLight ?? "#ffffff22",
-                }}
-              />
-
+            Select Category
+          </Text>
+          <View className="gap-2 mb-4">
+            {(
+              Object.entries(CATEGORIES) as [AssetCategory, CategoryInfo][]
+            ).map(([key, info]) => (
               <Pressable
-                onPress={handleAddAsset}
-                className="py-4 rounded-xl items-center"
-                style={{ backgroundColor: theme.primary }}
+                key={key}
+                onPress={() => setSelectedCategory(key)}
+                className="flex-row items-center p-3 rounded-xl border"
+                style={{
+                  backgroundColor:
+                    selectedCategory === key
+                      ? theme.primary + "22"
+                      : theme.background,
+                  borderColor:
+                    selectedCategory === key
+                      ? theme.primary
+                      : (theme.accentLight ?? "#ffffff22"),
+                }}
               >
-                <Text
-                  className="font-semibold text-base"
-                  style={{ color: "#fff" }}
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{
+                    backgroundColor:
+                      selectedCategory === key ? theme.primary : theme.card,
+                  }}
                 >
-                  Add Asset
-                </Text>
+                  <Ionicons
+                    name={info.icon as any}
+                    size={20}
+                    color={selectedCategory === key ? "#fff" : theme.text}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-semibold" style={{ color: theme.text }}>
+                    {info.label}
+                  </Text>
+                  <Text
+                    className="text-xs mt-1"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {info.description}
+                  </Text>
+                </View>
+                {selectedCategory === key && (
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={24}
+                    color={theme.primary}
+                  />
+                )}
               </Pressable>
-            </ScrollView>
+            ))}
           </View>
-        </View>
-      </Modal>
+
+          {/* Asset Details */}
+          <Text
+            className="text-sm font-semibold mb-3"
+            style={{ color: theme.textSecondary }}
+          >
+            Asset Details
+          </Text>
+          <TextInput
+            value={assetName}
+            onChangeText={setAssetName}
+            placeholder="Asset name (e.g., Savings Account)"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-3"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
+          <TextInput
+            value={assetValue}
+            onChangeText={setAssetValue}
+            placeholder="Value (e.g., 5000)"
+            keyboardType="decimal-pad"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-4"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
+
+          <Pressable
+            onPress={handleAddAsset}
+            className="py-4 rounded-xl items-center"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Text className="font-semibold text-base" style={{ color: "#fff" }}>
+              Add Asset
+            </Text>
+          </Pressable>
+        </ScrollView>
+        {/* </View> */}
+      </CustomModal>
 
       {/* Nisab Calculator Modal */}
-      <Modal
+      <CustomModal
         visible={showNisabModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowNisabModal(false)}
+        variant="bottom"
+        onClose={() => setShowNisabModal(false)}
+        heading="Nisab Calculator"
+        description="Enter current prices to calculate nisab threshold. Nisab is the minimum amount of wealth required before zakaat is due."
       >
-        <View
-          className="flex-1 justify-end"
-          style={{ backgroundColor: "#00000088" }}
-        >
-          <View
-            className="rounded-t-3xl p-6"
-            style={{ backgroundColor: theme.card }}
+        <View className="">
+          <Text
+            className="text-xs font-semibold mb-2"
+            style={{ color: theme.textSecondary }}
           >
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-bold" style={{ color: theme.text }}>
-                Nisab Calculator
-              </Text>
-              <Pressable onPress={() => setShowNisabModal(false)}>
-                <Ionicons name="close" size={28} color={theme.text} />
-              </Pressable>
-            </View>
+            Silver Price (per gram)
+          </Text>
+          <TextInput
+            value={silverPrice}
+            onChangeText={setSilverPrice}
+            placeholder="e.g., 0.75"
+            keyboardType="decimal-pad"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-4"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
 
-            <Text
-              className="text-sm mb-4"
-              style={{ color: theme.textSecondary }}
+          <Text
+            className="text-xs font-semibold mb-2"
+            style={{ color: theme.textSecondary }}
+          >
+            Gold Price (per gram)
+          </Text>
+          <TextInput
+            value={goldPrice}
+            onChangeText={setGoldPrice}
+            placeholder="e.g., 65.00"
+            keyboardType="decimal-pad"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-4"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
+
+          {nisabThreshold > 0 && (
+            <View
+              className="p-4 rounded-xl"
+              style={{ backgroundColor: theme.primary + "22" }}
             >
-              Enter current prices to calculate nisab threshold. Nisab is the
-              minimum amount of wealth required before zakaat is due.
-            </Text>
-
-            <Text
-              className="text-xs font-semibold mb-2"
-              style={{ color: theme.textSecondary }}
-            >
-              Silver Price (per gram)
-            </Text>
-            <TextInput
-              value={silverPrice}
-              onChangeText={setSilverPrice}
-              placeholder="e.g., 0.75"
-              keyboardType="decimal-pad"
-              placeholderTextColor={theme.textSecondary}
-              className="p-4 rounded-xl mb-4"
-              style={{
-                backgroundColor: theme.background,
-                color: theme.text,
-                borderWidth: 1,
-                borderColor: theme.accentLight ?? "#ffffff22",
-              }}
-            />
-
-            <Text
-              className="text-xs font-semibold mb-2"
-              style={{ color: theme.textSecondary }}
-            >
-              Gold Price (per gram)
-            </Text>
-            <TextInput
-              value={goldPrice}
-              onChangeText={setGoldPrice}
-              placeholder="e.g., 65.00"
-              keyboardType="decimal-pad"
-              placeholderTextColor={theme.textSecondary}
-              className="p-4 rounded-xl mb-4"
-              style={{
-                backgroundColor: theme.background,
-                color: theme.text,
-                borderWidth: 1,
-                borderColor: theme.accentLight ?? "#ffffff22",
-              }}
-            />
-
-            {nisabThreshold > 0 && (
-              <View
-                className="p-4 rounded-xl"
-                style={{ backgroundColor: theme.primary + "22" }}
+              <Text
+                className="text-xs mb-1"
+                style={{ color: theme.textSecondary }}
               >
-                <Text
-                  className="text-xs mb-1"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Calculated Nisab Threshold
-                </Text>
-                <Text
-                  className="text-2xl font-bold"
-                  style={{ color: theme.primary }}
-                >
-                  {formatCurrency(nisabThreshold)}
-                </Text>
-                <Text
-                  className="text-xs mt-2"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Based on {NISAB_SILVER_GRAMS}g silver or {NISAB_GOLD_GRAMS}g
-                  gold (lower value used)
-                </Text>
-              </View>
-            )}
-
-            <Pressable
-              onPress={() => setShowNisabModal(false)}
-              className="py-4 rounded-xl items-center mt-4"
-              style={{ backgroundColor: theme.primary }}
-            >
-              <Text className="font-semibold" style={{ color: "#fff" }}>
-                Done
+                Calculated Nisab Threshold
               </Text>
-            </Pressable>
-          </View>
+              <Text
+                className="text-2xl font-bold"
+                style={{ color: theme.primary }}
+              >
+                {formatCurrency(nisabThreshold)}
+              </Text>
+              <Text
+                className="text-xs mt-2"
+                style={{ color: theme.textSecondary }}
+              >
+                Based on {NISAB_SILVER_GRAMS}g silver or {NISAB_GOLD_GRAMS}g
+                gold (lower value used)
+              </Text>
+            </View>
+          )}
+
+          <Pressable
+            onPress={() => setShowNisabModal(false)}
+            className="py-4 rounded-xl items-center mt-4"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Text className="font-semibold" style={{ color: "#fff" }}>
+              Done
+            </Text>
+          </Pressable>
         </View>
-      </Modal>
+      </CustomModal>
 
       {/* Info Modal */}
-      <Modal
+      <CustomModal
         visible={showInfoModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowInfoModal(false)}
+        variant="bottom"
+        onClose={() => setShowInfoModal(false)}
+        heading="About Zakaat"
       >
-        <View
-          className="flex-1 justify-end"
-          style={{ backgroundColor: "#00000088" }}
-        >
-          <View
-            className="rounded-t-3xl p-6"
-            style={{ backgroundColor: theme.card, maxHeight: "80%" }}
-          >
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-bold" style={{ color: theme.text }}>
-                About Zakaat
-              </Text>
-              <Pressable onPress={() => setShowInfoModal(false)}>
-                <Ionicons name="close" size={28} color={theme.text} />
-              </Pressable>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View className="mb-4">
-                <Text
-                  className="font-semibold mb-2"
-                  style={{ color: theme.text }}
-                >
-                  What is Zakaat?
-                </Text>
-                <Text
-                  className="leading-6"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Zakaat is one of the Five Pillars of Islam. It's an obligatory
-                  charity on wealth that has been in your possession for one
-                  lunar year (hawl).
-                </Text>
-              </View>
-
-              <View className="mb-4">
-                <Text
-                  className="font-semibold mb-2"
-                  style={{ color: theme.text }}
-                >
-                  Zakaat Rate
-                </Text>
-                <Text
-                  className="leading-6"
-                  style={{ color: theme.textSecondary }}
-                >
-                  The standard rate is 2.5% of your zakaatable wealth. Different
-                  rates may apply to agricultural produce and livestock.
-                </Text>
-              </View>
-
-              <View className="mb-4">
-                <Text
-                  className="font-semibold mb-2"
-                  style={{ color: theme.text }}
-                >
-                  Nisab Threshold
-                </Text>
-                <Text
-                  className="leading-6"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Nisab is the minimum amount of wealth before zakaat is due.
-                  It's equivalent to 85 grams of gold or 595 grams of silver.
-                  The lower value is typically used.
-                </Text>
-              </View>
-
-              <View className="mb-4">
-                <Text
-                  className="font-semibold mb-2"
-                  style={{ color: theme.text }}
-                >
-                  Zakaatable Assets
-                </Text>
-                <Text
-                  className="leading-6"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Cash, savings, gold, silver, investments, business inventory,
-                  rental income, livestock, and money owed to you.
-                </Text>
-              </View>
-
-              <View className="mb-4">
-                <Text
-                  className="font-semibold mb-2"
-                  style={{ color: theme.text }}
-                >
-                  Debts & Liabilities
-                </Text>
-                <Text
-                  className="leading-6"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Many scholars allow deducting immediate debts from your wealth
-                  before calculating zakaat. This calculator gives you the
-                  option to include or exclude debts.
-                </Text>
-              </View>
-
-              <View
-                className="p-4 rounded-xl"
-                style={{ backgroundColor: theme.primary + "11" }}
-              >
-                <Text
-                  className="text-xs font-semibold"
-                  style={{ color: theme.primary }}
-                >
-                  ⚠️ Important Note
-                </Text>
-                <Text
-                  className="text-xs mt-2 leading-5"
-                  style={{ color: theme.textSecondary }}
-                >
-                  This calculator provides estimates. For specific situations,
-                  please consult a qualified Islamic scholar. Zakaat
-                  calculations can vary based on madhab and individual
-                  circumstances.
-                </Text>
-              </View>
-            </ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="mb-4">
+            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+              What is Zakaat?
+            </Text>
+            <Text className="leading-6" style={{ color: theme.textSecondary }}>
+              Zakaat is one of the Five Pillars of Islam. It's an obligatory
+              charity on wealth that has been in your possession for one lunar
+              year (hawl).
+            </Text>
           </View>
-        </View>
-      </Modal>
+
+          <View className="mb-4">
+            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+              Zakaat Rate
+            </Text>
+            <Text className="leading-6" style={{ color: theme.textSecondary }}>
+              The standard rate is 2.5% of your zakaatable wealth. Different
+              rates may apply to agricultural produce and livestock.
+            </Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+              Nisab Threshold
+            </Text>
+            <Text className="leading-6" style={{ color: theme.textSecondary }}>
+              Nisab is the minimum amount of wealth before zakaat is due. It's
+              equivalent to 85 grams of gold or 595 grams of silver. The lower
+              value is typically used.
+            </Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+              Zakaatable Assets
+            </Text>
+            <Text className="leading-6" style={{ color: theme.textSecondary }}>
+              Cash, savings, gold, silver, investments, business inventory,
+              rental income, livestock, and money owed to you.
+            </Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+              Debts & Liabilities
+            </Text>
+            <Text className="leading-6" style={{ color: theme.textSecondary }}>
+              Many scholars allow deducting immediate debts from your wealth
+              before calculating zakaat. This calculator gives you the option to
+              include or exclude debts.
+            </Text>
+          </View>
+
+          <View
+            className="p-4 rounded-xl"
+            style={{ backgroundColor: theme.primary + "11" }}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: theme.primary }}
+            >
+              ⚠️ Important Note
+            </Text>
+            <Text
+              className="text-xs mt-2 leading-5"
+              style={{ color: theme.textSecondary }}
+            >
+              This calculator provides estimates. For specific situations,
+              please consult a qualified Islamic scholar. Zakaat calculations
+              can vary based on madhab and individual circumstances.
+            </Text>
+          </View>
+        </ScrollView>
+      </CustomModal>
     </SafeAreaView>
   );
 };
