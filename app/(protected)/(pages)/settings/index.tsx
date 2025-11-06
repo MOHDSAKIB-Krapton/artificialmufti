@@ -20,9 +20,6 @@ export default function Settings() {
   const [incognito, setIncognito] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
 
-  const [bottomVisible, setBottomVisible] = useState(false);
-  const [centerVisible, setCenterVisible] = useState(false);
-
   const themeOptions: Option[] = [
     {
       name: "System",
@@ -150,7 +147,7 @@ export default function Settings() {
 
   return (
     <ScrollView
-      className="flex-1 bg-[#0d0d0d] px-5 py-6"
+      className="flex-1 px-5 py-6"
       style={{ backgroundColor: theme.background }}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
@@ -249,57 +246,6 @@ export default function Settings() {
       <OptionList {...GeneralSection} />
       {/* <OptionList {...PrivacySection} /> */}
       <OptionList {...HelpSupportSection} />
-
-      {/* <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <Button
-          title="Open Bottom Modal"
-          onPress={() => setBottomVisible(true)}
-        />
-        <Button
-          title="Open Center Modal"
-          onPress={() => setCenterVisible(true)}
-        />
-        <Modal
-          visible={bottomVisible}
-          onClose={() => setBottomVisible(false)}
-          isBottom={true}
-        >
-          <View>
-            <Text style={{ marginBottom: 10 }}>
-              👉 Scrollable content goes here
-            </Text>
-            <Text>Item 1</Text>
-            <Text>Item 2</Text>
-            <Text>Item 3</Text>
-            <Text>Item 4</Text>
-            <Text>Item 5</Text>
-            <Text>Item 6</Text>
-            <Text>Item 7</Text>
-          </View>
-        </Modal>
-
-        <Modal
-          visible={centerVisible}
-          onClose={() => setCenterVisible(false)}
-          // mode="center"
-          // title="Center Modal"
-          // description="This modal fades in the middle with scale animation."
-        >
-          <View>
-            <Text style={{ marginBottom: 10 }}>
-              👋 Hello from the center modal
-            </Text>
-            <Button title="Close Me" onPress={() => setCenterVisible(false)} />
-          </View>
-        </Modal>
-      </View> */}
 
       {/* Danger Zone */}
       <OptionList {...DangerZone} />

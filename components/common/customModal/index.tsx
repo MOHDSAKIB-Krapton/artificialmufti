@@ -1,14 +1,16 @@
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  BackHandler,
+  Dimensions,
   KeyboardAvoidingView,
   Modal,
   Platform,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -26,10 +28,16 @@ type Props = {
   showBack?: boolean;
   onBack?: () => void;
   containerStyle?: string;
+  animationDuration?: number;
+  closeOnBackdrop?: boolean;
 };
 
-const FADE_DURATION = 200;
-const SLIDE_DURATION = 250;
+const ANIMATION_CONFIG = {
+  duration: 300,
+  useNativeDriver: true,
+};
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const CustomModal = ({
   visible,
@@ -43,161 +51,313 @@ const CustomModal = ({
   showBack = false,
   onBack,
   containerStyle = "",
+  animationDuration = 500,
+  closeOnBackdrop = true,
 }: Props) => {
   const { theme } = useTheme();
   const isBottom = variant === "bottom";
 
-  const [render, setRender] = useState(visible);
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const panelTranslate = useRef(new Animated.Value(isBottom ? 300 : 0)).current;
-  const panelOpacity = useRef(new Animated.Value(0)).current;
+  // 2. Internal state to control whether the Modal is mounted
+  const [isModalMounted, setIsModalMounted] = useState(visible);
 
-  // Animate in/out
+  // Use stable refs for animation values
+  const animationValues = useRef({
+    backdrop: new Animated.Value(0),
+    translate: new Animated.Value(isBottom ? SCREEN_HEIGHT : 0),
+    scale: new Animated.Value(isBottom ? 1 : 0.9),
+    opacity: new Animated.Value(isBottom ? 1 : 0),
+  }).current;
+
+  // Handle animations
+  const animateIn = useCallback(() => {
+    const animations = [
+      Animated.timing(animationValues.backdrop, {
+        toValue: 1,
+        ...ANIMATION_CONFIG,
+      }),
+    ];
+
+    if (isBottom) {
+      animations.push(
+        Animated.spring(animationValues.translate, {
+          toValue: 0,
+          damping: 200,
+          stiffness: 300,
+          mass: 0.8,
+          useNativeDriver: true,
+        })
+      );
+    } else {
+      animations.push(
+        Animated.parallel([
+          Animated.timing(animationValues.opacity, {
+            toValue: 1,
+            ...ANIMATION_CONFIG,
+          }),
+          Animated.spring(animationValues.scale, {
+            toValue: 1,
+            damping: 15,
+            stiffness: 200,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    }
+
+    Animated.parallel(animations).start();
+  }, [isBottom, animationDuration, animationValues]);
+
+  const animateOut = useCallback(
+    (callback?: () => void) => {
+      const animations = [
+        Animated.timing(animationValues.backdrop, {
+          toValue: 0,
+          ...ANIMATION_CONFIG,
+        }),
+      ];
+
+      if (isBottom) {
+        animations.push(
+          Animated.timing(animationValues.translate, {
+            toValue: SCREEN_HEIGHT,
+            ...ANIMATION_CONFIG,
+          })
+        );
+      } else {
+        animations.push(
+          Animated.parallel([
+            Animated.timing(animationValues.opacity, {
+              toValue: 0,
+              ...ANIMATION_CONFIG,
+            }),
+            Animated.timing(animationValues.scale, {
+              toValue: 0.9,
+              ...ANIMATION_CONFIG,
+            }),
+          ])
+        );
+      }
+
+      Animated.parallel(animations).start(() => {
+        setIsModalMounted(false); // ⬅️ KEEP THIS LINE
+        if (callback) {
+          callback();
+        }
+      });
+    },
+    [isBottom, animationDuration, animationValues]
+  );
+
+  const handleClose = useCallback(() => {
+    animateOut(() => {
+      onClose();
+    });
+  }, [animateOut, onClose]);
+
+  const handleBackdropPress = useCallback(() => {
+    if (closeOnBackdrop) {
+      handleClose();
+    }
+  }, [closeOnBackdrop, handleClose]);
+
+  // Handle hardware back button on Android
+  useEffect(() => {
+    if (visible && Platform.OS === "android") {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          handleClose();
+          return true;
+        }
+      );
+
+      return () => backHandler.remove();
+    }
+  }, [visible, handleClose]);
+
+  // Animate on visibility change
   useEffect(() => {
     if (visible) {
-      setRender(true);
-
-      // Backdrop fade-in
-      Animated.timing(backdropOpacity, {
-        toValue: 1,
-        duration: FADE_DURATION,
-        useNativeDriver: true,
-      }).start();
-
-      // Panel animation
-      if (isBottom) {
-        Animated.timing(panelTranslate, {
-          toValue: 0,
-          duration: SLIDE_DURATION,
-          useNativeDriver: true,
-        }).start();
-      } else {
-        Animated.timing(panelOpacity, {
-          toValue: 1,
-          duration: FADE_DURATION,
-          useNativeDriver: true,
-        }).start();
+      if (!isModalMounted) {
+        setIsModalMounted(true);
       }
+      animateIn();
     } else {
-      // Animate out
-      Animated.timing(backdropOpacity, {
-        toValue: 0,
-        duration: FADE_DURATION,
-        useNativeDriver: true,
-      }).start();
-
-      if (isBottom) {
-        Animated.timing(panelTranslate, {
-          toValue: 300,
-          duration: SLIDE_DURATION,
-          useNativeDriver: true,
-        }).start();
-      } else {
-        Animated.timing(panelOpacity, {
-          toValue: 0,
-          duration: FADE_DURATION,
-          useNativeDriver: true,
-        }).start();
-      }
-
-      // Delay unmount until animation ends
-      setTimeout(() => setRender(false), SLIDE_DURATION);
+      // 5. When external 'visible' prop changes to false, start the fade out animation
+      animateOut();
     }
-  }, [visible]);
+  }, [visible, animateIn, animateOut, isModalMounted]);
 
-  if (!render) return null;
+  if (!isModalMounted) return null;
 
   return (
     <Modal
-      visible
+      visible={isModalMounted}
       transparent
       statusBarTranslucent
-      animationType="none" // we handle animation manually
-      onRequestClose={onClose}
+      animationType="none"
+      onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
-      >
+      <View style={StyleSheet.absoluteFillObject}>
         {/* Backdrop */}
-        <TouchableWithoutFeedback onPress={onClose}>
-          <Animated.View
-            style={{
-              flex: 1,
-              backgroundColor: "#00000088",
-              opacity: backdropOpacity,
-              justifyContent: isBottom ? "flex-end" : "center",
-              alignItems: "center",
-            }}
-          />
-        </TouchableWithoutFeedback>
-
-        {/* Panel */}
-        <Animated.View
-          style={[
-            {
-              position: "absolute",
-              left: 16,
-              right: 16,
-              backgroundColor: theme.card,
-              borderRadius: 24,
-              padding: addPadding ? 20 : 0,
-              maxHeight: "85%",
-              borderWidth: 1,
-              borderColor: "#e5e7eb",
-              shadowColor: "#000",
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-            },
-            isBottom
-              ? { bottom: 16, transform: [{ translateY: panelTranslate }] }
-              : {
-                  top: "50%",
-                  transform: [{ translateY: -200 }],
-                  opacity: panelOpacity,
-                },
-          ]}
-          className={`${containerStyle} border`}
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={handleBackdropPress}
+          style={StyleSheet.absoluteFillObject}
         >
-          {/* Header */}
-          {(heading || showClose || showBack) && (
-            <View className="w-full flex-row justify-between items-center mb-3">
-              {showBack && (
-                <TouchableOpacity onPress={onBack}>
-                  <Ionicons name="arrow-back" size={22} color="black" />
-                </TouchableOpacity>
-              )}
+          <Animated.View
+            style={[
+              styles.backdrop,
+              {
+                opacity: animationValues.backdrop,
+              },
+            ]}
+          />
+        </TouchableOpacity>
 
-              {heading && (
-                <View className="flex-1">
-                  <Text className="text-lg font-semibold" numberOfLines={1}>
-                    {heading}
-                  </Text>
-                  {description && (
-                    <Text className="text-xs text-gray-500 mt-0.5">
-                      {description}
+        {/* Content Container */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={[
+            { flex: 1 },
+            isBottom ? styles.bottomContainer : styles.centerContainer,
+          ]}
+          pointerEvents="box-none"
+        >
+          {/* Panel */}
+          <Animated.View
+            style={[
+              styles.panel,
+              {
+                margin: isBottom ? 16 : 0,
+                backgroundColor: theme.card,
+                padding: addPadding ? 20 : 0,
+                ...(isBottom && {
+                  paddingBottom: Platform.OS === "ios" ? 34 : 20, // Safe area
+                }),
+              },
+              isBottom
+                ? {
+                    bottom: 0,
+                    transform: [{ translateY: animationValues.translate }],
+                  }
+                : {
+                    top: "50%",
+                    alignSelf: "center" as const,
+                    width: "90%",
+                    transform: [
+                      { translateY: -SCREEN_HEIGHT * 0.3 },
+                      { scale: animationValues.scale },
+                    ],
+                    opacity: animationValues.opacity,
+                  },
+            ]}
+            className={containerStyle}
+          >
+            {/* Header */}
+            {(heading || showClose || showBack) && (
+              <View style={styles.header}>
+                {showBack && (
+                  <TouchableOpacity
+                    onPress={onBack}
+                    style={styles.headerButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="arrow-back" size={24} color={theme.text} />
+                  </TouchableOpacity>
+                )}
+
+                {heading && (
+                  <View style={styles.headerText}>
+                    <Text
+                      style={[styles.heading, { color: theme.text }]}
+                      numberOfLines={1}
+                    >
+                      {heading}
                     </Text>
-                  )}
-                </View>
-              )}
+                    {description && (
+                      <Text
+                        style={[
+                          styles.description,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        {description}
+                      </Text>
+                    )}
+                  </View>
+                )}
 
-              {showClose && (
-                <TouchableOpacity
-                  onPress={onClose}
-                  activeOpacity={0.7}
-                  className="ml-auto p-2"
-                >
-                  <Ionicons name="close" size={22} color="black" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+                {showClose && (
+                  <TouchableOpacity
+                    onPress={handleClose}
+                    style={styles.headerButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="close" size={24} color={theme.text} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
 
-          <View className="flex-1 ">{children}</View>
-        </Animated.View>
-      </KeyboardAvoidingView>
+            {/* Content */}
+            <View>{children}</View>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  centerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  bottomContainer: {
+    justifyContent: "flex-end",
+  },
+  panel: {
+    borderRadius: 24,
+    maxHeight: "85%",
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    minHeight: 32,
+  },
+  headerButton: {
+    padding: 4,
+  },
+  headerText: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  description: {
+    fontSize: 13,
+    marginTop: 2,
+  },
+});
 
 export default CustomModal;
