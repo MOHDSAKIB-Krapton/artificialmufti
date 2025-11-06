@@ -227,8 +227,22 @@ const CustomModal = ({
           {/* Panel */}
           <Animated.View
             style={[
-              styles.panel,
               {
+                borderRadius: 24,
+                maxHeight: "85%",
+                // flex: 1,
+                overflow: "hidden",
+                ...Platform.select({
+                  ios: {
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 10,
+                  },
+                  android: {
+                    elevation: 5,
+                  },
+                }),
                 margin: isBottom ? 16 : 0,
                 backgroundColor: theme.card,
                 padding: addPadding ? 20 : 0,
@@ -238,7 +252,7 @@ const CustomModal = ({
               },
               isBottom
                 ? {
-                    bottom: 0,
+                    bottom: 10,
                     transform: [{ translateY: animationValues.translate }],
                   }
                 : {
@@ -320,22 +334,6 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     justifyContent: "flex-end",
-  },
-  panel: {
-    borderRadius: 24,
-    maxHeight: "85%",
-    overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
   },
   header: {
     flexDirection: "row",

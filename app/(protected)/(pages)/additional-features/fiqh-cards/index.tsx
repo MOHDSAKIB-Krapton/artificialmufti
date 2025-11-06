@@ -831,13 +831,8 @@ const FiqhLookupScreen: React.FC = () => {
         onClose={() => setShowFilters(false)}
         heading="Filters"
       >
-        <View className="rounded-t-3xl flex-1">
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              flex: 1,
-            }}
-          >
+        <View className="rounded-t-3xl">
+          <ScrollView showsVerticalScrollIndicator={false} className="mb-32">
             {/* Category Filter */}
             <Text
               className="text-sm font-semibold mb-3"

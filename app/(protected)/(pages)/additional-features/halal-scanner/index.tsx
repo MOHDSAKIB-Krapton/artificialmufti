@@ -1,11 +1,11 @@
-// HalalFoodScanner.tsx
+import Container from "@/components/common/container";
+import CustomModal from "@/components/common/customModal";
 import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Modal,
   Pressable,
   ScrollView,
   Text,
@@ -317,7 +317,7 @@ const HalalFoodScanner = () => {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <Container>
       {/* Header */}
       <View
         className="rounded-2xl border p-4 mb-4"
@@ -656,40 +656,25 @@ const HalalFoodScanner = () => {
       )}
 
       {/* Details Modal */}
-      <Modal
+      <CustomModal
         visible={showDetails}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowDetails(false)}
+        variant="bottom"
+        onClose={() => setShowDetails(false)}
+        heading="Scan Result"
       >
-        <View className="flex-1 justify-end">
-          <Pressable
-            className="flex-1"
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            onPress={() => setShowDetails(false)}
+        {scanResult && (
+          <ScanResultDetails
+            result={scanResult}
+            theme={theme}
+            onClose={() => setShowDetails(false)}
+            isFavorite={favorites.includes(scanResult.product.id)}
+            onToggleFavorite={() => toggleFavorite(scanResult.product.id)}
+            getStatusColor={getStatusColor}
+            getStatusIcon={getStatusIcon}
           />
-          <View
-            className="rounded-t-3xl p-6"
-            style={{
-              backgroundColor: theme.background,
-              maxHeight: "90%",
-            }}
-          >
-            {scanResult && (
-              <ScanResultDetails
-                result={scanResult}
-                theme={theme}
-                onClose={() => setShowDetails(false)}
-                isFavorite={favorites.includes(scanResult.product.id)}
-                onToggleFavorite={() => toggleFavorite(scanResult.product.id)}
-                getStatusColor={getStatusColor}
-                getStatusIcon={getStatusIcon}
-              />
-            )}
-          </View>
-        </View>
-      </Modal>
-    </View>
+        )}
+      </CustomModal>
+    </Container>
   );
 };
 
@@ -732,46 +717,28 @@ const ScanResultDetails = ({
   ).length;
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between mb-4">
-        <Text
-          className="text-2xl font-bold flex-1"
-          style={{ color: theme.text }}
-        >
-          Scan Result
-        </Text>
-        <View className="flex-row items-center">
-          <TouchableOpacity
-            onPress={onToggleFavorite}
-            className="w-10 h-10 rounded-full items-center justify-center mr-2"
-            style={{ backgroundColor: theme.card }}
-          >
-            <Ionicons
-              name={isFavorite ? "heart" : "heart-outline"}
-              size={20}
-              color={isFavorite ? "#ef4444" : theme.textSecondary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onClose}
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: theme.card }}
-          >
-            <Ionicons name="close" size={24} color={theme.textSecondary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
+    <ScrollView showsVerticalScrollIndicator={false} className="mb-12">
       {/* Overall Status Card */}
       <View
-        className="rounded-2xl p-6 mb-4"
+        className="rounded-2xl mb-4 p-6 relative"
         style={{
           backgroundColor: statusColor + "15",
           borderWidth: 2,
           borderColor: statusColor,
         }}
       >
+        <TouchableOpacity
+          onPress={onToggleFavorite}
+          className="w-10 h-10 rounded-full items-center justify-center mr-2 absolute right-2 top-3"
+          style={{ backgroundColor: theme.card }}
+        >
+          <Ionicons
+            name={isFavorite ? "heart" : "heart-outline"}
+            size={20}
+            color={isFavorite ? "#ef4444" : theme.textSecondary}
+          />
+        </TouchableOpacity>
+
         <View className="items-center">
           <View
             className="w-20 h-20 rounded-full items-center justify-center mb-3"

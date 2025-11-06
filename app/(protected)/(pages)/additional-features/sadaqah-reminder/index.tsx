@@ -1,4 +1,5 @@
 import Container from "@/components/common/container";
+import CustomModal from "@/components/common/customModal";
 import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -13,7 +14,6 @@ import {
   Alert,
   Animated,
   Dimensions,
-  Modal,
   Pressable,
   ScrollView,
   Switch,
@@ -609,11 +609,11 @@ const SadaqahReminder = () => {
         </ScrollView>
 
         {/* Add Entry Modal */}
-        <Modal
+        <CustomModal
           visible={showAddModal}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setShowAddModal(false)}
+          onClose={() => setShowAddModal(false)}
+          variant="bottom"
+          heading="Record Sadaqah"
         >
           <AddEntryModal
             theme={theme}
@@ -621,14 +621,14 @@ const SadaqahReminder = () => {
             onAdd={addEntry}
             sadaqahTypes={SADAQAH_TYPES}
           />
-        </Modal>
+        </CustomModal>
 
         {/* Add Goal Modal */}
-        <Modal
+        <CustomModal
           visible={showGoalModal}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setShowGoalModal(false)}
+          onClose={() => setShowGoalModal(false)}
+          heading="Set New Goal"
+          variant="bottom"
         >
           <AddGoalModal
             theme={theme}
@@ -646,14 +646,14 @@ const SadaqahReminder = () => {
               );
             }}
           />
-        </Modal>
+        </CustomModal>
 
         {/* Reminders Modal */}
-        <Modal
+        <CustomModal
           visible={showReminderModal}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setShowReminderModal(false)}
+          onClose={() => setShowReminderModal(false)}
+          variant="bottom"
+          heading="Sadaqah Reminders"
         >
           <RemindersModal
             theme={theme}
@@ -664,7 +664,7 @@ const SadaqahReminder = () => {
               AsyncStorage.setItem("sadaqahReminders", JSON.stringify(updated));
             }}
           />
-        </Modal>
+        </CustomModal>
       </Animated.View>
     </Container>
   );
@@ -1564,258 +1564,227 @@ const AddEntryModal = ({
   };
 
   return (
-    <View className="flex-1 justify-end">
-      <Pressable
-        className="flex-1"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-      />
-      <View
-        className="rounded-t-3xl p-6"
-        style={{
-          backgroundColor: theme.background,
-          maxHeight: "80%",
-        }}
-      >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-xl font-bold" style={{ color: theme.text }}>
-              Record Sadaqah
-            </Text>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons
-                name="close-circle"
-                size={28}
-                color={theme.textSecondary}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* Type Selection */}
-          <Text className="font-semibold mb-3" style={{ color: theme.text }}>
-            Select Type
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-4"
-          >
-            {sadaqahTypes.map((type) => (
-              <TouchableOpacity
-                key={type.id}
-                onPress={() => setSelectedType(type)}
-                className="mr-3"
+    <View className="rounded-t-3xl">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Type Selection */}
+        <Text className="font-semibold mb-3" style={{ color: theme.text }}>
+          Select Type
+        </Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mb-4"
+        >
+          {sadaqahTypes.map((type) => (
+            <TouchableOpacity
+              key={type.id}
+              onPress={() => setSelectedType(type)}
+              className="mr-3"
+            >
+              <View
+                className="rounded-xl p-3 items-center"
+                style={{
+                  backgroundColor:
+                    selectedType.id === type.id
+                      ? type.color + "20"
+                      : theme.background,
+                  borderWidth: 2,
+                  borderColor:
+                    selectedType.id === type.id ? type.color : "transparent",
+                  minWidth: 80,
+                }}
               >
                 <View
-                  className="rounded-xl p-3 items-center"
-                  style={{
-                    backgroundColor:
-                      selectedType.id === type.id
-                        ? type.color + "20"
-                        : theme.card,
-                    borderWidth: 2,
-                    borderColor:
-                      selectedType.id === type.id ? type.color : "transparent",
-                    minWidth: 80,
-                  }}
+                  className="w-10 h-10 rounded-full items-center justify-center mb-2"
+                  style={{ backgroundColor: type.color + "30" }}
                 >
-                  <View
-                    className="w-10 h-10 rounded-full items-center justify-center mb-2"
-                    style={{ backgroundColor: type.color + "30" }}
-                  >
-                    {type.iconType === "material" ? (
-                      <MaterialCommunityIcons
-                        name={type.icon as any}
-                        size={20}
-                        color={type.color}
-                      />
-                    ) : type.iconType === "font5" ? (
-                      <FontAwesome5
-                        name={type.icon as any}
-                        size={16}
-                        color={type.color}
-                      />
-                    ) : (
-                      <Ionicons
-                        name={type.icon as any}
-                        size={20}
-                        color={type.color}
-                      />
-                    )}
-                  </View>
-                  <Text
-                    className="text-xs font-semibold text-center"
-                    style={{ color: theme.text }}
-                  >
-                    {type.name}
-                  </Text>
+                  {type.iconType === "material" ? (
+                    <MaterialCommunityIcons
+                      name={type.icon as any}
+                      size={20}
+                      color={type.color}
+                    />
+                  ) : type.iconType === "font5" ? (
+                    <FontAwesome5
+                      name={type.icon as any}
+                      size={16}
+                      color={type.color}
+                    />
+                  ) : (
+                    <Ionicons
+                      name={type.icon as any}
+                      size={20}
+                      color={type.color}
+                    />
+                  )}
                 </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                <Text
+                  className="text-xs font-semibold text-center"
+                  style={{ color: theme.text }}
+                >
+                  {type.name}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-          {/* Amount Input (for monetary) */}
-          {selectedType.isMonetary && (
-            <View className="mb-4">
-              <Text
-                className="font-semibold mb-2"
-                style={{ color: theme.text }}
-              >
-                Amount ($)
-              </Text>
-              <TextInput
-                className="rounded-lg p-3"
-                style={{
-                  backgroundColor: theme.card,
-                  color: theme.text,
-                  borderWidth: 1,
-                  borderColor: theme.accentLight,
-                }}
-                placeholder="Enter amount..."
-                placeholderTextColor={theme.textSecondary}
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="numeric"
-              />
-            </View>
-          )}
-
-          {/* Description */}
+        {/* Amount Input (for monetary) */}
+        {selectedType.isMonetary && (
           <View className="mb-4">
             <Text className="font-semibold mb-2" style={{ color: theme.text }}>
-              Description
+              Amount ($)
             </Text>
             <TextInput
               className="rounded-lg p-3"
               style={{
-                backgroundColor: theme.card,
+                backgroundColor: theme.background,
                 color: theme.text,
                 borderWidth: 1,
                 borderColor: theme.accentLight,
               }}
-              placeholder={`e.g., ${selectedType.examples[0]}`}
+              placeholder="Enter amount..."
               placeholderTextColor={theme.textSecondary}
-              value={description}
-              onChangeText={setDescription}
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="numeric"
             />
           </View>
+        )}
 
-          {/* Mood Selection */}
+        {/* Description */}
+        <View className="mb-4">
           <Text className="font-semibold mb-2" style={{ color: theme.text }}>
-            How do you feel?
+            Description
           </Text>
-          <View className="flex-row mb-4">
-            {[
-              { value: "happy" as const, emoji: "😊", label: "Happy" },
-              { value: "grateful" as const, emoji: "🙏", label: "Grateful" },
-              { value: "blessed" as const, emoji: "✨", label: "Blessed" },
-            ].map((m) => (
-              <TouchableOpacity
-                key={m.value}
-                onPress={() => setMood(m.value)}
-                className="flex-1 mr-2"
-              >
-                <View
-                  className="rounded-lg p-3 items-center"
-                  style={{
-                    backgroundColor:
-                      mood === m.value ? theme.primary + "20" : theme.card,
-                    borderWidth: 1,
-                    borderColor:
-                      mood === m.value ? theme.primary : theme.accentLight,
-                  }}
-                >
-                  <Text className="text-2xl mb-1">{m.emoji}</Text>
-                  <Text className="text-xs" style={{ color: theme.text }}>
-                    {m.label}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Recurring Option */}
-          <View
-            className="rounded-lg p-3 mb-4"
+          <TextInput
+            className="rounded-lg p-3"
             style={{
-              backgroundColor: theme.card,
+              backgroundColor: theme.background,
+              color: theme.text,
               borderWidth: 1,
               borderColor: theme.accentLight,
             }}
-          >
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="font-semibold" style={{ color: theme.text }}>
-                Make it recurring
-              </Text>
-              <Switch
-                value={isRecurring}
-                onValueChange={setIsRecurring}
-                trackColor={{ false: theme.accentLight, true: theme.primary }}
-                thumbColor="#fff"
-              />
-            </View>
-            {isRecurring && (
-              <View className="flex-row">
-                {(["daily", "weekly", "monthly"] as const).map((f) => (
-                  <TouchableOpacity
-                    key={f}
-                    onPress={() => setFrequency(f)}
-                    className="flex-1 mr-2"
-                  >
-                    <View
-                      className="py-2 rounded items-center"
-                      style={{
-                        backgroundColor:
-                          frequency === f ? theme.primary : theme.background,
-                      }}
-                    >
-                      <Text
-                        className="text-xs capitalize"
-                        style={{ color: frequency === f ? "#fff" : theme.text }}
-                      >
-                        {f}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
+            placeholder={`e.g., ${selectedType.examples[0]}`}
+            placeholderTextColor={theme.textSecondary}
+            value={description}
+            onChangeText={setDescription}
+          />
+        </View>
 
-          {/* Notes */}
-          <View className="mb-6">
-            <Text className="font-semibold mb-2" style={{ color: theme.text }}>
-              Notes (optional)
+        {/* Mood Selection */}
+        <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+          How do you feel?
+        </Text>
+        <View className="flex-row mb-4">
+          {[
+            { value: "happy" as const, emoji: "😊", label: "Happy" },
+            { value: "grateful" as const, emoji: "🙏", label: "Grateful" },
+            { value: "blessed" as const, emoji: "✨", label: "Blessed" },
+          ].map((m) => (
+            <TouchableOpacity
+              key={m.value}
+              onPress={() => setMood(m.value)}
+              className="flex-1 mr-2"
+            >
+              <View
+                className="rounded-lg p-3 items-center"
+                style={{
+                  backgroundColor:
+                    mood === m.value ? theme.primary + "20" : theme.background,
+                  borderWidth: 1,
+                  borderColor:
+                    mood === m.value ? theme.primary : theme.accentLight,
+                }}
+              >
+                <Text className="text-2xl mb-1">{m.emoji}</Text>
+                <Text className="text-xs" style={{ color: theme.text }}>
+                  {m.label}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Recurring Option */}
+        <View
+          className="rounded-lg p-3 mb-4"
+          style={{
+            backgroundColor: theme.background,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="font-semibold" style={{ color: theme.text }}>
+              Make it recurring
             </Text>
-            <TextInput
-              className="rounded-lg p-3"
-              style={{
-                backgroundColor: theme.card,
-                color: theme.text,
-                borderWidth: 1,
-                borderColor: theme.accentLight,
-                minHeight: 60,
-              }}
-              placeholder="Add any notes..."
-              placeholderTextColor={theme.textSecondary}
-              value={notes}
-              onChangeText={setNotes}
-              multiline
+            <Switch
+              value={isRecurring}
+              onValueChange={setIsRecurring}
+              trackColor={{ false: theme.accentLight, true: theme.primary }}
+              thumbColor="#fff"
             />
           </View>
+          {isRecurring && (
+            <View className="flex-row">
+              {(["daily", "weekly", "monthly"] as const).map((f) => (
+                <TouchableOpacity
+                  key={f}
+                  onPress={() => setFrequency(f)}
+                  className="flex-1 mr-2"
+                >
+                  <View
+                    className="py-2 rounded items-center"
+                    style={{
+                      backgroundColor:
+                        frequency === f ? theme.primary : theme.background,
+                    }}
+                  >
+                    <Text
+                      className="text-xs capitalize"
+                      style={{ color: frequency === f ? "#fff" : theme.text }}
+                    >
+                      {f}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
-          {/* Submit Button */}
-          <TouchableOpacity
-            onPress={handleSubmit}
-            className="py-4 rounded-xl items-center"
-            style={{ backgroundColor: theme.primary }}
-          >
-            <Text className="text-white font-bold text-base">
-              Record Sadaqah
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+        {/* Notes */}
+        <View className="mb-6">
+          <Text className="font-semibold mb-2" style={{ color: theme.text }}>
+            Notes (optional)
+          </Text>
+          <TextInput
+            className="rounded-lg p-3"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight,
+              minHeight: 60,
+            }}
+            placeholder="Add any notes..."
+            placeholderTextColor={theme.textSecondary}
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+          />
+        </View>
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="py-4 rounded-xl items-center"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Text className="text-white font-bold text-base">Record Sadaqah</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -1853,109 +1822,88 @@ const AddGoalModal = ({
   };
 
   return (
-    <View className="flex-1 justify-end">
-      <Pressable
-        className="flex-1"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
+    <View>
+      {/* Goal form fields */}
+      <TextInput
+        className="rounded-lg p-3 mb-4"
+        style={{
+          backgroundColor: theme.background,
+          color: theme.text,
+          borderWidth: 1,
+          borderColor: theme.accentLight,
+        }}
+        placeholder="Goal title..."
+        placeholderTextColor={theme.textSecondary}
+        value={title}
+        onChangeText={setTitle}
       />
-      <View
-        className="rounded-t-3xl p-6"
-        style={{ backgroundColor: theme.background }}
-      >
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-xl font-bold" style={{ color: theme.text }}>
-            Set New Goal
-          </Text>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons
-              name="close-circle"
-              size={28}
-              color={theme.textSecondary}
-            />
-          </TouchableOpacity>
-        </View>
 
-        {/* Goal form fields */}
+      <View className="flex-row mb-4">
+        <TouchableOpacity
+          onPress={() => setType("monetary")}
+          className="flex-1 mr-2 py-3 rounded-lg items-center"
+          style={{
+            backgroundColor:
+              type === "monetary" ? theme.primary : theme.background,
+          }}
+        >
+          <Text style={{ color: type === "monetary" ? "#fff" : theme.text }}>
+            Monetary Goal
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setType("actions")}
+          className="flex-1 ml-2 py-3 rounded-lg items-center"
+          style={{
+            backgroundColor:
+              type === "actions" ? theme.primary : theme.background,
+          }}
+        >
+          <Text style={{ color: type === "actions" ? "#fff" : theme.text }}>
+            Actions Goal
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {type === "monetary" ? (
         <TextInput
           className="rounded-lg p-3 mb-4"
           style={{
-            backgroundColor: theme.card,
+            backgroundColor: theme.background,
             color: theme.text,
             borderWidth: 1,
             borderColor: theme.accentLight,
           }}
-          placeholder="Goal title..."
+          placeholder="Target amount ($)..."
           placeholderTextColor={theme.textSecondary}
-          value={title}
-          onChangeText={setTitle}
+          value={targetAmount}
+          onChangeText={setTargetAmount}
+          keyboardType="numeric"
         />
+      ) : (
+        <TextInput
+          className="rounded-lg p-3 mb-4"
+          style={{
+            backgroundColor: theme.background,
+            color: theme.text,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+          placeholder="Number of good deeds..."
+          placeholderTextColor={theme.textSecondary}
+          value={targetActions}
+          onChangeText={setTargetActions}
+          keyboardType="numeric"
+        />
+      )}
 
-        <View className="flex-row mb-4">
-          <TouchableOpacity
-            onPress={() => setType("monetary")}
-            className="flex-1 mr-2 py-3 rounded-lg items-center"
-            style={{
-              backgroundColor: type === "monetary" ? theme.primary : theme.card,
-            }}
-          >
-            <Text style={{ color: type === "monetary" ? "#fff" : theme.text }}>
-              Monetary Goal
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setType("actions")}
-            className="flex-1 ml-2 py-3 rounded-lg items-center"
-            style={{
-              backgroundColor: type === "actions" ? theme.primary : theme.card,
-            }}
-          >
-            <Text style={{ color: type === "actions" ? "#fff" : theme.text }}>
-              Actions Goal
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {type === "monetary" ? (
-          <TextInput
-            className="rounded-lg p-3 mb-4"
-            style={{
-              backgroundColor: theme.card,
-              color: theme.text,
-              borderWidth: 1,
-              borderColor: theme.accentLight,
-            }}
-            placeholder="Target amount ($)..."
-            placeholderTextColor={theme.textSecondary}
-            value={targetAmount}
-            onChangeText={setTargetAmount}
-            keyboardType="numeric"
-          />
-        ) : (
-          <TextInput
-            className="rounded-lg p-3 mb-4"
-            style={{
-              backgroundColor: theme.card,
-              color: theme.text,
-              borderWidth: 1,
-              borderColor: theme.accentLight,
-            }}
-            placeholder="Number of good deeds..."
-            placeholderTextColor={theme.textSecondary}
-            value={targetActions}
-            onChangeText={setTargetActions}
-            keyboardType="numeric"
-          />
-        )}
-
-        <TouchableOpacity
-          onPress={handleSubmit}
-          className="py-4 rounded-xl items-center"
-          style={{ backgroundColor: theme.primary }}
-        >
-          <Text className="text-white font-bold text-base">Create Goal</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        onPress={handleSubmit}
+        className="py-4 rounded-xl items-center"
+        style={{ backgroundColor: theme.primary }}
+      >
+        <Text className="text-white font-bold text-base">Create Goal</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -2016,103 +1964,77 @@ const RemindersModal = ({
   };
 
   return (
-    <View className="flex-1 justify-end">
-      <Pressable
-        className="flex-1"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-      />
-      <View
-        className="rounded-t-3xl p-6"
-        style={{
-          backgroundColor: theme.background,
-          maxHeight: "70%",
-        }}
-      >
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-xl font-bold" style={{ color: theme.text }}>
-            Sadaqah Reminders
-          </Text>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons
-              name="close-circle"
-              size={28}
-              color={theme.textSecondary}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {localReminders.map((reminder) => (
-            <View
-              key={reminder.id}
-              className="rounded-xl p-4 mb-3"
-              style={{
-                backgroundColor: theme.card,
-                borderWidth: 1,
-                borderColor: reminder.isActive
-                  ? theme.primary
-                  : theme.accentLight,
-              }}
-            >
-              <View className="flex-row items-center justify-between mb-2">
-                <View className="flex-1">
-                  <Text
-                    className="font-semibold text-base"
-                    style={{ color: theme.text }}
-                  >
-                    {reminder.title}
-                  </Text>
-                  <Text
-                    className="text-sm mt-1"
-                    style={{ color: theme.textSecondary }}
-                  >
-                    {reminder.time} • {reminder.type}
-                  </Text>
-                </View>
-                <Switch
-                  value={reminder.isActive}
-                  onValueChange={() => toggleReminder(reminder.id)}
-                  trackColor={{ false: theme.accentLight, true: theme.primary }}
-                  thumbColor="#fff"
-                />
+    <View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {localReminders.map((reminder) => (
+          <View
+            key={reminder.id}
+            className="rounded-xl p-4 mb-3"
+            style={{
+              backgroundColor: theme.background,
+              borderWidth: 1,
+              borderColor: reminder.isActive
+                ? theme.primary
+                : theme.accentLight,
+            }}
+          >
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-1">
+                <Text
+                  className="font-semibold text-base"
+                  style={{ color: theme.text }}
+                >
+                  {reminder.title}
+                </Text>
+                <Text
+                  className="text-sm mt-1"
+                  style={{ color: theme.textSecondary }}
+                >
+                  {reminder.time} • {reminder.type}
+                </Text>
               </View>
-              <View className="flex-row flex-wrap">
-                {reminder.days.map((day, idx) => (
-                  <View
-                    key={idx}
-                    className="mr-2 mb-2 px-2 py-1 rounded"
+              <Switch
+                value={reminder.isActive}
+                onValueChange={() => toggleReminder(reminder.id)}
+                trackColor={{ false: theme.accentLight, true: theme.primary }}
+                thumbColor="#fff"
+              />
+            </View>
+            <View className="flex-row flex-wrap">
+              {reminder.days.map((day, idx) => (
+                <View
+                  key={idx}
+                  className="mr-2 mb-2 px-2 py-1 rounded"
+                  style={{
+                    backgroundColor: reminder.isActive
+                      ? theme.primary + "20"
+                      : theme.background,
+                  }}
+                >
+                  <Text
+                    className="text-xs"
                     style={{
-                      backgroundColor: reminder.isActive
-                        ? theme.primary + "20"
-                        : theme.background,
+                      color: reminder.isActive
+                        ? theme.primary
+                        : theme.textSecondary,
                     }}
                   >
-                    <Text
-                      className="text-xs"
-                      style={{
-                        color: reminder.isActive
-                          ? theme.primary
-                          : theme.textSecondary,
-                      }}
-                    >
-                      {day}
-                    </Text>
-                  </View>
-                ))}
-              </View>
+                    {day}
+                  </Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </ScrollView>
+          </View>
+        ))}
+      </ScrollView>
 
-        <TouchableOpacity
-          onPress={saveReminders}
-          className="mt-4 py-4 rounded-xl items-center"
-          style={{ backgroundColor: theme.primary }}
-        >
-          <Text className="text-white font-bold text-base">Save Reminders</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        onPress={saveReminders}
+        className="mt-4 py-4 rounded-xl items-center"
+        style={{ backgroundColor: theme.primary }}
+      >
+        <Text className="text-white font-bold text-base">Save Reminders</Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -1,3 +1,4 @@
+import Container from "@/components/common/container";
 import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
@@ -450,7 +451,7 @@ const WuduGuide = () => {
   const isAllCompleted = completedSteps.length === WUDU_STEPS.length;
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <Container>
       {/* Header */}
       <View
         className="rounded-2xl border p-4 mb-4"
@@ -620,7 +621,7 @@ const WuduGuide = () => {
           </View>
         )}
       </ScrollView>
-    </View>
+    </Container>
   );
 };
 

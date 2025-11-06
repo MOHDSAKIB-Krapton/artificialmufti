@@ -520,8 +520,7 @@ const ZakaatCalculatorScreen: React.FC = () => {
         onClose={() => setShowAddModal(false)}
         heading="Add Asset"
       >
-        {/* <View style={{ backgroundColor: theme.card, maxHeight: "85%" }}> */}
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} className="mb-12">
           {/* Category Selection */}
           <Text
             className="text-sm font-semibold mb-3"
@@ -628,7 +627,6 @@ const ZakaatCalculatorScreen: React.FC = () => {
             </Text>
           </Pressable>
         </ScrollView>
-        {/* </View> */}
       </CustomModal>
 
       {/* Nisab Calculator Modal */}

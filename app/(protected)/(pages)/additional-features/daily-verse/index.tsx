@@ -1,3 +1,5 @@
+import Container from "@/components/common/container";
+import CustomModal from "@/components/common/customModal";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,9 +9,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Modal,
   PanResponder,
-  Pressable,
   ScrollView,
   Share,
   Text,
@@ -512,7 +512,7 @@ const VerseOfTheDay = () => {
   });
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <Container>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Premium Header */}
         <Animated.View
@@ -521,176 +521,168 @@ const VerseOfTheDay = () => {
             transform: [{ translateY: slideAnim }],
           }}
         >
-          <LinearGradient
-            colors={[theme.primary + "20", "transparent"]}
-            className="px-4 pt-12 pb-6"
+          <View className="flex-row items-center justify-between mb-4">
+            <View>
+              <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </Text>
+              <Text
+                className="text-3xl font-bold mt-1"
+                style={{ color: theme.text }}
+              >
+                Daily Verse
+              </Text>
+            </View>
+
+            <View className="flex-row items-center">
+              <TouchableOpacity
+                onPress={() => setReadingMode(!readingMode)}
+                className="w-10 h-10 rounded-full items-center justify-center mr-2"
+                style={{ backgroundColor: theme.card }}
+              >
+                <Ionicons
+                  name={readingMode ? "book" : "book-outline"}
+                  size={20}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="w-10 h-10 rounded-full items-center justify-center"
+                style={{ backgroundColor: theme.card }}
+              >
+                <Ionicons
+                  name="settings-outline"
+                  size={20}
+                  color={theme.text}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Streak & Progress Card */}
+          <View
+            className="rounded-2xl p-4 mb-4"
+            style={{
+              backgroundColor: theme.card,
+              borderWidth: 1,
+              borderColor: theme.accentLight,
+            }}
           >
-            <View className="flex-row items-center justify-between mb-4">
-              <View>
-                <Text
-                  className="text-xs"
-                  style={{ color: theme.textSecondary }}
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center">
+                <View
+                  className="w-12 h-12 rounded-xl items-center justify-center mr-3"
+                  style={{ backgroundColor: "#f59e0b" + "20" }}
                 >
-                  {new Date().toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
-                <Text
-                  className="text-3xl font-bold mt-1"
-                  style={{ color: theme.text }}
-                >
-                  Daily Verse
-                </Text>
+                  <Text className="text-2xl">🔥</Text>
+                </View>
+                <View>
+                  <Text
+                    className="text-2xl font-bold"
+                    style={{ color: theme.text }}
+                  >
+                    {readingStreak.currentStreak}
+                  </Text>
+                  <Text
+                    className="text-xs"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Day Streak
+                  </Text>
+                </View>
               </View>
 
               <View className="flex-row items-center">
-                <TouchableOpacity
-                  onPress={() => setReadingMode(!readingMode)}
-                  className="w-10 h-10 rounded-full items-center justify-center mr-2"
-                  style={{ backgroundColor: theme.card }}
-                >
-                  <Ionicons
-                    name={readingMode ? "book" : "book-outline"}
-                    size={20}
-                    color={theme.primary}
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="w-10 h-10 rounded-full items-center justify-center"
-                  style={{ backgroundColor: theme.card }}
-                >
-                  <Ionicons
-                    name="settings-outline"
-                    size={20}
-                    color={theme.text}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Streak & Progress Card */}
-            <View
-              className="rounded-2xl p-4 mb-4"
-              style={{
-                backgroundColor: theme.card,
-                borderWidth: 1,
-                borderColor: theme.accentLight,
-              }}
-            >
-              <View className="flex-row items-center justify-between mb-3">
-                <View className="flex-row items-center">
-                  <View
-                    className="w-12 h-12 rounded-xl items-center justify-center mr-3"
-                    style={{ backgroundColor: "#f59e0b" + "20" }}
+                <View className="mr-4">
+                  <Text
+                    className="text-lg font-bold text-right"
+                    style={{ color: theme.primary }}
                   >
-                    <Text className="text-2xl">🔥</Text>
-                  </View>
-                  <View>
-                    <Text
-                      className="text-2xl font-bold"
-                      style={{ color: theme.text }}
-                    >
-                      {readingStreak.currentStreak}
-                    </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      Day Streak
-                    </Text>
-                  </View>
+                    {readingStreak.dailyProgress}/{readingStreak.readingGoal}
+                  </Text>
+                  <Text
+                    className="text-xs"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Daily Goal
+                  </Text>
                 </View>
 
-                <View className="flex-row items-center">
-                  <View className="mr-4">
-                    <Text
-                      className="text-lg font-bold text-right"
-                      style={{ color: theme.primary }}
-                    >
-                      {readingStreak.dailyProgress}/{readingStreak.readingGoal}
-                    </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      Daily Goal
-                    </Text>
-                  </View>
-
-                  <View>
-                    <Text
-                      className="text-lg font-bold text-right"
-                      style={{ color: theme.text }}
-                    >
-                      {readingStreak.totalVersesRead}
-                    </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.textSecondary }}
-                    >
-                      Total Read
-                    </Text>
-                  </View>
+                <View>
+                  <Text
+                    className="text-lg font-bold text-right"
+                    style={{ color: theme.text }}
+                  >
+                    {readingStreak.totalVersesRead}
+                  </Text>
+                  <Text
+                    className="text-xs"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Total Read
+                  </Text>
                 </View>
-              </View>
-
-              {/* Week Progress */}
-              <View className="flex-row justify-between mt-2">
-                {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => {
-                  const progress = weekProgress[index];
-                  const isToday = index === new Date().getDay() - 1;
-                  const isCompleted = progress?.completed;
-
-                  return (
-                    <View key={index} className="items-center">
-                      <View
-                        className="w-8 h-8 rounded-full items-center justify-center mb-1"
-                        style={{
-                          backgroundColor: isCompleted
-                            ? theme.primary
-                            : isToday
-                              ? theme.primary + "40"
-                              : theme.background,
-                          borderWidth: isToday ? 2 : 0,
-                          borderColor: theme.primary,
-                        }}
-                      >
-                        {isCompleted ? (
-                          <Ionicons name="checkmark" size={16} color="#fff" />
-                        ) : (
-                          <Text
-                            className="text-xs font-semibold"
-                            style={{
-                              color: isToday
-                                ? theme.primary
-                                : theme.textSecondary,
-                            }}
-                          >
-                            {progress?.versesRead || 0}
-                          </Text>
-                        )}
-                      </View>
-                      <Text
-                        className="text-[10px]"
-                        style={{
-                          color: isToday ? theme.primary : theme.textSecondary,
-                        }}
-                      >
-                        {day}
-                      </Text>
-                    </View>
-                  );
-                })}
               </View>
             </View>
-          </LinearGradient>
+
+            {/* Week Progress */}
+            <View className="flex-row justify-between mt-2">
+              {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => {
+                const progress = weekProgress[index];
+                const isToday = index === new Date().getDay() - 1;
+                const isCompleted = progress?.completed;
+
+                return (
+                  <View key={index} className="items-center">
+                    <View
+                      className="w-8 h-8 rounded-full items-center justify-center mb-1"
+                      style={{
+                        backgroundColor: isCompleted
+                          ? theme.primary
+                          : isToday
+                            ? theme.primary + "40"
+                            : theme.background,
+                        borderWidth: isToday ? 2 : 0,
+                        borderColor: theme.primary,
+                      }}
+                    >
+                      {isCompleted ? (
+                        <Ionicons name="checkmark" size={16} color="#fff" />
+                      ) : (
+                        <Text
+                          className="text-xs font-semibold"
+                          style={{
+                            color: isToday
+                              ? theme.primary
+                              : theme.textSecondary,
+                          }}
+                        >
+                          {progress?.versesRead || 0}
+                        </Text>
+                      )}
+                    </View>
+                    <Text
+                      className="text-[10px]"
+                      style={{
+                        color: isToday ? theme.primary : theme.textSecondary,
+                      }}
+                    >
+                      {day}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
         </Animated.View>
 
         {/* Navigation Tabs */}
-        <View className="flex-row px-4 mb-4">
+        <View className="flex-row mb-4">
           {(["verse", "saved", "insights"] as const).map((tab) => (
             <TouchableOpacity
               key={tab}
@@ -766,11 +758,12 @@ const VerseOfTheDay = () => {
       </ScrollView>
 
       {/* Note Modal */}
-      <Modal
+      <CustomModal
         visible={showNoteModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowNoteModal(false)}
+        variant="bottom"
+        onClose={() => setShowNoteModal(false)}
+        heading="Add Note"
+        description={`${currentVerse.surah} ${currentVerse.verseNumber}`}
       >
         <NoteModal
           theme={theme}
@@ -786,8 +779,8 @@ const VerseOfTheDay = () => {
             setSelectedTags([]);
           }}
         />
-      </Modal>
-    </View>
+      </CustomModal>
+    </Container>
   );
 };
 
@@ -815,14 +808,8 @@ const VerseTab = ({
   readingMode,
   panResponder,
 }: any) => {
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.15, 0.3],
-  });
-
   return (
     <Animated.View
-      className="px-4"
       style={{
         opacity: fadeAnim,
         transform: [{ translateX: slideAnim }],
@@ -836,7 +823,6 @@ const VerseTab = ({
           backgroundColor: theme.card,
           borderWidth: 1,
           borderColor: theme.accentLight,
-          elevation: 8,
         }}
       >
         {/* Glow Effect */}
@@ -847,7 +833,7 @@ const VerseTab = ({
             height: 200,
             borderRadius: 100,
             backgroundColor: theme.primary,
-            opacity: glowOpacity,
+            opacity: 0.1,
             transform: [{ scale: 1.5 }],
           }}
         />
@@ -1277,7 +1263,7 @@ const SavedTab = ({ savedVerses, collections, theme, onRemove }: any) => {
   }, [savedVerses, filterCategory]);
 
   return (
-    <View className="px-4">
+    <View>
       {savedVerses.length === 0 ? (
         <View className="items-center py-16">
           <View
@@ -1510,7 +1496,7 @@ const InsightsTab = ({
   const avgPerDay = totalReadTime / Math.max(1, readingStreak.currentStreak);
 
   return (
-    <View className="px-4">
+    <View>
       {/* Achievement Cards */}
       <View className="flex-row mb-4">
         <View
@@ -1731,126 +1717,79 @@ const NoteModal = ({
   ];
 
   return (
-    <View className="flex-1 justify-end">
-      <Pressable
-        className="flex-1"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-      />
-      <View
-        className="rounded-t-3xl p-6"
+    <View
+      className="rounded-3xl p-6"
+      style={{
+        backgroundColor: theme.background,
+      }}
+    >
+      {/* Note Input */}
+      <TextInput
+        value={noteText}
+        onChangeText={setNoteText}
+        placeholder="Write your thoughts, reflections, or insights..."
+        placeholderTextColor={theme.textSecondary}
+        multiline
+        className="rounded-xl p-4 mb-4"
         style={{
-          backgroundColor: theme.background,
-          maxHeight: "80%",
+          backgroundColor: theme.card,
+          color: theme.text,
+          minHeight: 120,
+          textAlignVertical: "top",
+          borderWidth: 1,
+          borderColor: theme.accentLight,
         }}
+      />
+
+      {/* Tags */}
+      <Text
+        className="text-sm font-semibold mb-3"
+        style={{ color: theme.text }}
       >
-        <View className="flex-row items-center justify-between mb-4">
-          <View>
-            <Text className="text-xl font-bold" style={{ color: theme.text }}>
-              Add Note
-            </Text>
-            <Text
-              className="text-sm mt-1"
-              style={{ color: theme.textSecondary }}
-            >
-              {verse.surah} {verse.verseNumber}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons
-              name="close-circle"
-              size={28}
-              color={theme.textSecondary}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Note Input */}
-        <TextInput
-          value={noteText}
-          onChangeText={setNoteText}
-          placeholder="Write your thoughts, reflections, or insights..."
-          placeholderTextColor={theme.textSecondary}
-          multiline
-          className="rounded-xl p-4 mb-4"
-          style={{
-            backgroundColor: theme.card,
-            color: theme.text,
-            minHeight: 120,
-            textAlignVertical: "top",
-            borderWidth: 1,
-            borderColor: theme.accentLight,
-          }}
-        />
-
-        {/* Tags */}
-        <Text
-          className="text-sm font-semibold mb-3"
-          style={{ color: theme.text }}
-        >
-          Add Tags
-        </Text>
-        <View className="flex-row flex-wrap mb-6">
-          {suggestedTags.map((tag) => (
-            <TouchableOpacity
-              key={tag}
-              onPress={() => {
-                if (selectedTags.includes(tag)) {
-                  setSelectedTags(
-                    selectedTags.filter((t: string) => t !== tag)
-                  );
-                } else {
-                  setSelectedTags([...selectedTags, tag]);
-                }
-              }}
-              className="mr-2 mb-2 px-3 py-2 rounded-full"
-              style={{
-                backgroundColor: selectedTags.includes(tag)
-                  ? theme.primary
-                  : theme.card,
-                borderWidth: 1,
-                borderColor: selectedTags.includes(tag)
-                  ? theme.primary
-                  : theme.accentLight,
-              }}
-            >
-              <Text
-                className="text-sm"
-                style={{
-                  color: selectedTags.includes(tag) ? "#fff" : theme.text,
-                }}
-              >
-                {tag}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Actions */}
-        <View className="flex-row">
+        Add Tags
+      </Text>
+      <View className="flex-row flex-wrap mb-6">
+        {suggestedTags.map((tag) => (
           <TouchableOpacity
-            onPress={onClose}
-            className="flex-1 mr-2 py-4 rounded-xl items-center"
+            key={tag}
+            onPress={() => {
+              if (selectedTags.includes(tag)) {
+                setSelectedTags(selectedTags.filter((t: string) => t !== tag));
+              } else {
+                setSelectedTags([...selectedTags, tag]);
+              }
+            }}
+            className="mr-2 mb-2 px-3 py-2 rounded-full"
             style={{
-              backgroundColor: theme.card,
+              backgroundColor: selectedTags.includes(tag)
+                ? theme.primary
+                : theme.card,
               borderWidth: 1,
-              borderColor: theme.accentLight,
+              borderColor: selectedTags.includes(tag)
+                ? theme.primary
+                : theme.accentLight,
             }}
           >
-            <Text className="font-semibold" style={{ color: theme.text }}>
-              Cancel
+            <Text
+              className="text-sm"
+              style={{
+                color: selectedTags.includes(tag) ? "#fff" : theme.text,
+              }}
+            >
+              {tag}
             </Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={onSave}
-            className="flex-1 ml-2 py-4 rounded-xl items-center"
-            style={{ backgroundColor: theme.primary }}
-          >
-            <Text className="font-semibold text-white">Save Note</Text>
-          </TouchableOpacity>
-        </View>
+        ))}
       </View>
+
+      {/* Actions */}
+      <TouchableOpacity
+        onPress={onSave}
+        className="ml-2 py-4 rounded-xl items-center"
+        style={{ backgroundColor: theme.primary }}
+      >
+        <Text className="font-semibold text-white">Save Note</Text>
+      </TouchableOpacity>
     </View>
   );
 };
