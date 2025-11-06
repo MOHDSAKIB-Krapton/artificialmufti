@@ -52,6 +52,7 @@ export const useUserLocation = () => {
 
     const init = async () => {
       try {
+        setPermission("loading");
         const cached = await AsyncStorage.getItem(CACHE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
@@ -60,6 +61,8 @@ export const useUserLocation = () => {
           const timeDiff = Date.now() - parsed.timestamp;
           if (timeDiff > REFRESH_INTERVAL) {
             await fetchLocation(true); // refresh if older than 2 hours
+          } else {
+            setPermission("granted");
           }
         } else {
           await fetchLocation(true); // first time fetch
@@ -69,6 +72,7 @@ export const useUserLocation = () => {
         refreshTimer = setInterval(fetchLocation, REFRESH_INTERVAL);
       } catch (err) {
         console.error("Location init error:", err);
+        setPermission("denied");
       }
     };
 

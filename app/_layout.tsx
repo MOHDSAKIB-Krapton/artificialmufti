@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/context/theme";
 import AuthBootstrap from "@/providers/AuthBootstrap";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -22,6 +23,17 @@ export default function RootLayout() {
     // Async font loading only occurs in development.
     return null;
   }
+
+  // 👇 Add this line once in your app root (outside of component render)
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true, // show notification even in foreground
+      shouldPlaySound: true, // play sound
+      shouldSetBadge: true, // don’t update app icon badge
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

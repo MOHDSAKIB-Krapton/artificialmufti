@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import ProgressBar from "./progressBar";
 
-const ACTIVE_WINDOW_MS = 1 * 60 * 1000; // 10 minutes
+const ACTIVE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 
 const HeroCard = ({
   today,
@@ -38,11 +38,13 @@ const HeroCard = ({
   // ------------------------
   // Time Calculations
   // ------------------------
-  const nextAt = nextTime?.getTime() ?? 0;
+  let nextAt = nextTime?.getTime() ?? 0;
   const prevAt = prevTime?.getTime() ?? 0;
+  if (nextAt <= prevAt) {
+    nextAt += 24 * 60 * 60 * 1000; // add one day
+  }
 
   const countdownMs = nextAt - now; // time until next prayer
-
   const isActivePrayer = countdownMs <= 0 && countdownMs > -ACTIVE_WINDOW_MS;
   const isUpcoming = countdownMs > 0;
 
@@ -51,6 +53,7 @@ const HeroCard = ({
     if (!prevTime || !nextTime) return 0;
     const total = nextAt - prevAt;
     const elapsed = now - prevAt;
+    if (total <= 0) return 0;
     return Math.max(0, Math.min(100, (elapsed / total) * 100));
   }, [prevTime, nextTime, now]);
 

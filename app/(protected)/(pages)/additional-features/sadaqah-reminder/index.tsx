@@ -1,3 +1,4 @@
+import Container from "@/components/common/container";
 import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -212,7 +213,10 @@ const SadaqahReminder = () => {
 
   useEffect(() => {
     // Load data
-    loadData();
+    (async () => {
+      console.log("load data called => ");
+      await loadData();
+    })();
 
     // Set daily quote
     const today = new Date().getDay();
@@ -265,6 +269,7 @@ const SadaqahReminder = () => {
       if (goalsData) setGoals(JSON.parse(goalsData));
       if (remindersData) setReminders(JSON.parse(remindersData));
 
+      console.log("All data loaded", reminders);
       calculateStats(entriesData ? JSON.parse(entriesData) : []);
     } catch (error) {
       console.error("Error loading data:", error);
@@ -314,6 +319,7 @@ const SadaqahReminder = () => {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status === "granted") {
       // Schedule reminders
+      console.log(reminders);
       reminders.forEach((reminder) => {
         if (reminder.isActive) {
           scheduleReminder(reminder);
@@ -324,19 +330,55 @@ const SadaqahReminder = () => {
 
   const scheduleReminder = async (reminder: Reminder) => {
     const [hours, minutes] = reminder.time.split(":").map(Number);
+    console.log("inside ScheduleReminder => ", reminder);
+
+    // await Notifications.scheduleNotificationAsync({
+    //   content: {
+    //     title: "Sadaqah Reminder 🌙",
+    //     body: reminder.title,
+    //     sound: true,
+
+    //   },
+    //   // trigger: {
+    //   //   type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+    //   //   hour: hours,
+    //   //   minute: minutes,
+    //   //   repeats: true,
+    //   // },
+    //   trigger: null,
+    // });
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Sadaqah Reminder 🌙",
-        body: reminder.title,
-        sound: true,
+        title: "🌙 Sadaqah Reminder — Time for Charity!",
+        body: `${reminder.title}\nTap to view your progress.`,
+        subtitle: "Give with intention",
+        sound: "default",
+        badge: 1,
+        color: "#4ADE80",
+        data: {
+          type: "reminder",
+          reminderId: reminder.id,
+          deepLink: "/(protected)/(pages)/sadaqah-tracker",
+          extra: { time: reminder.time, days: reminder.days },
+        },
+        priority: Notifications.AndroidNotificationPriority.HIGH,
+        vibrate: [0, 250, 250, 250],
+        sticky: false,
+        autoDismiss: true,
+        categoryIdentifier: "sadaqah-actions",
+
+        // ✅ Android-only image support
+        ...({
+          android: {
+            channelId: "sadaqah-reminders",
+            smallIcon: "ic_notification",
+            pressAction: { id: "default", launchActivity: "default" },
+            imageUrl:
+              "https://cdn.pixabay.com/photo/2023/05/04/15/22/multi-verse-7970350_1280.jpg",
+          },
+        } as any),
       },
-      // trigger: {
-      //   type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-      //   hour: hours,
-      //   minute: minutes,
-      //   repeats: true,
-      // },
       trigger: null,
     });
   };
@@ -364,259 +406,267 @@ const SadaqahReminder = () => {
   };
 
   return (
-    <Animated.View
-      className="flex-1"
-      style={{
-        backgroundColor: theme.background,
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }}
-    >
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header Card */}
-        <View
-          className="rounded-2xl border p-5 mb-4"
-          style={{
-            borderColor: theme.accentLight ?? "#ffffff22",
-            backgroundColor: theme.card,
-          }}
-        >
-          <View className="flex-row items-center justify-between mb-4">
-            <View>
-              <Text
-                className="text-2xl font-bold"
-                style={{ color: theme.text }}
-              >
-                Sadaqah Tracker
-              </Text>
-              <Text
-                className="text-sm mt-1"
-                style={{ color: theme.textSecondary }}
-              >
-                Every good deed counts
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => setShowReminderModal(true)}
-              className="w-10 h-10 rounded-full items-center justify-center"
-              style={{
-                backgroundColor: theme.primaryLight ?? theme.primary + "20",
-              }}
-            >
-              <Ionicons name="notifications" size={20} color={theme.primary} />
-              {reminders.some((r) => r.isActive) && (
-                <View
-                  className="absolute top-0 right-0 w-2 h-2 rounded-full"
-                  style={{ backgroundColor: theme.primary }}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {/* Today's Motivation */}
+    <Container>
+      <Animated.View
+        className="flex-1"
+        style={{
+          backgroundColor: theme.background,
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Header Card */}
           <View
-            className="rounded-xl p-4 mb-4"
+            className="rounded-2xl border p-5 mb-4"
             style={{
-              backgroundColor: theme.primary + "10",
-              borderWidth: 1,
-              borderColor: theme.primary + "30",
+              borderColor: theme.accentLight ?? "#ffffff22",
+              backgroundColor: theme.card,
             }}
           >
-            <View className="flex-row items-start mb-2">
-              <Ionicons
-                name="sunny"
-                size={20}
-                color={theme.primary}
-                style={{ marginRight: 8 }}
-              />
-              <View className="flex-1">
+            <View className="flex-row items-center justify-between mb-4">
+              <View>
                 <Text
-                  className="text-sm font-semibold mb-2"
-                  style={{ color: theme.primary }}
-                >
-                  Today's Inspiration
-                </Text>
-                <Text
-                  className="text-sm italic mb-2"
+                  className="text-2xl font-bold"
                   style={{ color: theme.text }}
                 >
-                  "{todayQuote.text}"
+                  Sadaqah Tracker
                 </Text>
                 <Text
-                  className="text-xs mb-1"
+                  className="text-sm mt-1"
                   style={{ color: theme.textSecondary }}
                 >
-                  {todayQuote.arabic}
-                </Text>
-                <Text className="text-xs" style={{ color: theme.primary }}>
-                  — {todayQuote.source}
+                  Every good deed counts
                 </Text>
               </View>
-            </View>
-          </View>
-
-          {/* Stats Overview */}
-          <View className="flex-row justify-between mb-4">
-            <StatCard
-              icon="flame"
-              iconType="ionicon"
-              value={streak.toString()}
-              label="Day Streak"
-              color="#f59e0b"
-              theme={theme}
-            />
-            <StatCard
-              icon="cash-multiple"
-              iconType="material"
-              value={`$${totalDonations}`}
-              label="Total Given"
-              color="#10b981"
-              theme={theme}
-            />
-            <StatCard
-              icon="hand-heart"
-              iconType="material"
-              value={totalActions.toString()}
-              label="Good Deeds"
-              color="#3b82f6"
-              theme={theme}
-            />
-          </View>
-
-          {/* Quick Add CTA */}
-          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <TouchableOpacity
-              onPress={() => setShowAddModal(true)}
-              className="py-3 rounded-xl flex-row items-center justify-center"
-              style={{ backgroundColor: theme.primary }}
-            >
-              <Ionicons
-                name="add-circle"
-                size={24}
-                color="#fff"
-                style={{ marginRight: 8 }}
-              />
-              <Text className="text-white font-bold text-base">
-                Record Sadaqah
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-
-        {/* Navigation Tabs */}
-        <View className="flex-row mb-4">
-          {(["tracker", "goals", "insights"] as const).map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              onPress={() => setActiveTab(tab)}
-              className="flex-1 py-3 items-center"
-              style={{
-                borderBottomWidth: 2,
-                borderBottomColor:
-                  activeTab === tab ? theme.primary : "transparent",
-              }}
-            >
-              <Text
-                className="font-semibold capitalize"
+              <TouchableOpacity
+                onPress={() => setShowReminderModal(true)}
+                className="w-10 h-10 rounded-full items-center justify-center"
                 style={{
-                  color:
-                    activeTab === tab ? theme.primary : theme.textSecondary,
+                  backgroundColor: theme.primaryLight ?? theme.primary + "20",
                 }}
               >
-                {tab}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+                <Ionicons
+                  name="notifications"
+                  size={20}
+                  color={theme.primary}
+                />
+                {reminders.some((r) => r.isActive) && (
+                  <View
+                    className="absolute top-0 right-0 w-2 h-2 rounded-full"
+                    style={{ backgroundColor: theme.primary }}
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
 
-        {/* Tab Content */}
-        {activeTab === "tracker" && (
-          <TrackerTab
-            entries={entries}
+            {/* Today's Motivation */}
+            <View
+              className="rounded-xl p-4 mb-4"
+              style={{
+                backgroundColor: theme.primary + "10",
+                borderWidth: 1,
+                borderColor: theme.primary + "30",
+              }}
+            >
+              <View className="flex-row items-start mb-2">
+                <Ionicons
+                  name="sunny"
+                  size={20}
+                  color={theme.primary}
+                  style={{ marginRight: 8 }}
+                />
+                <View className="flex-1">
+                  <Text
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: theme.primary }}
+                  >
+                    Today's Inspiration
+                  </Text>
+                  <Text
+                    className="text-sm italic mb-2"
+                    style={{ color: theme.text }}
+                  >
+                    "{todayQuote.text}"
+                  </Text>
+                  <Text
+                    className="text-xs mb-1"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {todayQuote.arabic}
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.primary }}>
+                    — {todayQuote.source}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Stats Overview */}
+            <View className="flex-row justify-between mb-4">
+              <StatCard
+                icon="flame"
+                iconType="ionicon"
+                value={streak.toString()}
+                label="Day Streak"
+                color="#f59e0b"
+                theme={theme}
+              />
+              <StatCard
+                icon="cash-multiple"
+                iconType="material"
+                value={`$${totalDonations}`}
+                label="Total Given"
+                color="#10b981"
+                theme={theme}
+              />
+              <StatCard
+                icon="hand-heart"
+                iconType="material"
+                value={totalActions.toString()}
+                label="Good Deeds"
+                color="#3b82f6"
+                theme={theme}
+              />
+            </View>
+
+            {/* Quick Add CTA */}
+            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+              <TouchableOpacity
+                onPress={() => setShowAddModal(true)}
+                className="py-3 rounded-xl flex-row items-center justify-center"
+                style={{ backgroundColor: theme.primary }}
+              >
+                <Ionicons
+                  name="add-circle"
+                  size={24}
+                  color="#fff"
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="text-white font-bold text-base">
+                  Record Sadaqah
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+
+          {/* Navigation Tabs */}
+          <View className="flex-row mb-4">
+            {(["tracker", "goals", "insights"] as const).map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => setActiveTab(tab)}
+                className="flex-1 py-3 items-center"
+                style={{
+                  borderBottomWidth: 2,
+                  borderBottomColor:
+                    activeTab === tab ? theme.primary : "transparent",
+                }}
+              >
+                <Text
+                  className="font-semibold capitalize"
+                  style={{
+                    color:
+                      activeTab === tab ? theme.primary : theme.textSecondary,
+                  }}
+                >
+                  {tab}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Tab Content */}
+          {activeTab === "tracker" && (
+            <TrackerTab
+              entries={entries}
+              theme={theme}
+              onAddEntry={() => setShowAddModal(true)}
+            />
+          )}
+
+          {activeTab === "goals" && (
+            <GoalsTab
+              goals={goals}
+              theme={theme}
+              onAddGoal={() => setShowGoalModal(true)}
+              totalDonations={totalDonations}
+              totalActions={totalActions}
+            />
+          )}
+
+          {activeTab === "insights" && (
+            <InsightsTab
+              entries={entries}
+              theme={theme}
+              streak={streak}
+              totalDonations={totalDonations}
+              totalActions={totalActions}
+            />
+          )}
+
+          <View className="h-14" />
+        </ScrollView>
+
+        {/* Add Entry Modal */}
+        <Modal
+          visible={showAddModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowAddModal(false)}
+        >
+          <AddEntryModal
             theme={theme}
-            onAddEntry={() => setShowAddModal(true)}
+            onClose={() => setShowAddModal(false)}
+            onAdd={addEntry}
+            sadaqahTypes={SADAQAH_TYPES}
           />
-        )}
+        </Modal>
 
-        {activeTab === "goals" && (
-          <GoalsTab
-            goals={goals}
+        {/* Add Goal Modal */}
+        <Modal
+          visible={showGoalModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowGoalModal(false)}
+        >
+          <AddGoalModal
             theme={theme}
-            onAddGoal={() => setShowGoalModal(true)}
-            totalDonations={totalDonations}
-            totalActions={totalActions}
+            onClose={() => setShowGoalModal(false)}
+            onAdd={(goal) => {
+              const newGoal = {
+                ...goal,
+                id: Date.now().toString(),
+                createdAt: new Date(),
+              };
+              setGoals([...goals, newGoal]);
+              AsyncStorage.setItem(
+                "sadaqahGoals",
+                JSON.stringify([...goals, newGoal])
+              );
+            }}
           />
-        )}
+        </Modal>
 
-        {activeTab === "insights" && (
-          <InsightsTab
-            entries={entries}
+        {/* Reminders Modal */}
+        <Modal
+          visible={showReminderModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowReminderModal(false)}
+        >
+          <RemindersModal
             theme={theme}
-            streak={streak}
-            totalDonations={totalDonations}
-            totalActions={totalActions}
+            onClose={() => setShowReminderModal(false)}
+            reminders={reminders}
+            onUpdateReminders={(updated) => {
+              setReminders(updated);
+              AsyncStorage.setItem("sadaqahReminders", JSON.stringify(updated));
+            }}
           />
-        )}
-      </ScrollView>
-
-      {/* Add Entry Modal */}
-      <Modal
-        visible={showAddModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowAddModal(false)}
-      >
-        <AddEntryModal
-          theme={theme}
-          onClose={() => setShowAddModal(false)}
-          onAdd={addEntry}
-          sadaqahTypes={SADAQAH_TYPES}
-        />
-      </Modal>
-
-      {/* Add Goal Modal */}
-      <Modal
-        visible={showGoalModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowGoalModal(false)}
-      >
-        <AddGoalModal
-          theme={theme}
-          onClose={() => setShowGoalModal(false)}
-          onAdd={(goal) => {
-            const newGoal = {
-              ...goal,
-              id: Date.now().toString(),
-              createdAt: new Date(),
-            };
-            setGoals([...goals, newGoal]);
-            AsyncStorage.setItem(
-              "sadaqahGoals",
-              JSON.stringify([...goals, newGoal])
-            );
-          }}
-        />
-      </Modal>
-
-      {/* Reminders Modal */}
-      <Modal
-        visible={showReminderModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowReminderModal(false)}
-      >
-        <RemindersModal
-          theme={theme}
-          onClose={() => setShowReminderModal(false)}
-          reminders={reminders}
-          onUpdateReminders={(updated) => {
-            setReminders(updated);
-            AsyncStorage.setItem("sadaqahReminders", JSON.stringify(updated));
-          }}
-        />
-      </Modal>
-    </Animated.View>
+        </Modal>
+      </Animated.View>
+    </Container>
   );
 };
 

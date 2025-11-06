@@ -1,377 +1,63 @@
-// import CustomModal from "@/components/common/customModal";
-// import { useTheme } from "@/hooks/useTheme";
-// import { Ionicons } from "@expo/vector-icons";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import React, { useCallback, useEffect, useState } from "react";
-// import {
-//   ActivityIndicator,
-//   Animated,
-//   Pressable,
-//   ScrollView,
-//   Share,
-//   Text,
-//   TextInput,
-//   Vibration,
-//   View,
-// } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-
-// // ---- Types ---- //
-// interface DailyVerse {
-//   id: string; // YYYY-MM-DD
-//   arabic: string;
-//   translation: string;
-//   surah: string;
-//   ayahNumber: number;
-//   reflection?: string;
-//   isFavorite: boolean;
-// }
-
-// interface VerseState {
-//   verses: DailyVerse[];
-//   updatedAt: number;
-// }
-
-// const STORAGE_KEY = "VERSE_OF_THE_DAY_V1";
-
-// // ---- Static Verses (you can later fetch dynamically or expand) ---- //
-// const VERSES: Omit<DailyVerse, "id" | "isFavorite" | "reflection">[] = [
-//   {
-//     arabic: "قُلْ لَن يُصِيبَنَا إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا ۚ",
-//     translation:
-//       "Say: Never will anything happen to us except what Allah has decreed for us.",
-//     surah: "At-Tawbah",
-//     ayahNumber: 51,
-//   },
-//   {
-//     arabic: "وَإِن تَعُدُّوا نِعْمَتَ ٱللَّهِ لَا تُحْصُوهَا",
-//     translation:
-//       "And if you should count the favors of Allah, you could not enumerate them.",
-//     surah: "Ibrahim",
-//     ayahNumber: 34,
-//   },
-//   {
-//     arabic: "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ",
-//     translation: "Allah is the Light of the heavens and the earth.",
-//     surah: "An-Nur",
-//     ayahNumber: 35,
-//   },
-//   // Add more verses here...
-// ];
-
-// // ---- Helpers ---- //
-// const formatYMD = (d: Date) =>
-//   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-//     d.getDate()
-//   ).padStart(2, "0")}`;
-
-// const VerseOfTheDayScreen: React.FC = () => {
-//   const { theme } = useTheme();
-
-//   const [state, setState] = useState<VerseState | null>(null);
-//   const [loading, setLoading] = useState(true);
-//   const [activeVerse, setActiveVerse] = useState<DailyVerse | null>(null);
-//   const [showReflectionModal, setShowReflectionModal] = useState(false);
-//   const [reflectionDraft, setReflectionDraft] = useState("");
-
-//   // Animation for verse entry
-//   const [fadeAnim] = useState(new Animated.Value(0));
-
-//   const todayId = formatYMD(new Date());
-
-//   const persist = useCallback(async (next: VerseState) => {
-//     setState(next);
-//     try {
-//       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-//     } catch {}
-//   }, []);
-
-//   // Load initial or generate new
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         const raw = await AsyncStorage.getItem(STORAGE_KEY);
-//         if (raw) {
-//           const parsed: VerseState = JSON.parse(raw);
-//           setState(parsed);
-
-//           const verse = parsed.verses.find((v) => v.id === todayId);
-//           if (verse) setActiveVerse(verse);
-//           else {
-//             const rand = VERSES[Math.floor(Math.random() * VERSES.length)];
-//             const fresh: DailyVerse = {
-//               id: todayId,
-//               ...rand,
-//               isFavorite: false,
-//             };
-//             const updated = { ...parsed, verses: [...parsed.verses, fresh] };
-//             await persist(updated);
-//             setActiveVerse(fresh);
-//           }
-//           setLoading(false);
-//           return;
-//         }
-//       } catch {}
-
-//       // Initialize fresh
-//       const rand = VERSES[Math.floor(Math.random() * VERSES.length)];
-//       const fresh: DailyVerse = {
-//         id: todayId,
-//         ...rand,
-//         isFavorite: false,
-//       };
-//       const init: VerseState = { verses: [fresh], updatedAt: Date.now() };
-//       await persist(init);
-//       setActiveVerse(fresh);
-//       setLoading(false);
-//     })();
-//   }, [persist, todayId]);
-
-//   const favoriteToggle = useCallback(async () => {
-//     if (!state || !activeVerse) return;
-//     const updatedVerses = state.verses.map((v) =>
-//       v.id === activeVerse.id ? { ...v, isFavorite: !v.isFavorite } : v
-//     );
-//     Vibration.vibrate(20);
-//     await persist({ ...state, verses: updatedVerses });
-//     setActiveVerse(updatedVerses.find((v) => v.id === activeVerse.id)!);
-//   }, [state, activeVerse, persist]);
-
-//   const handleShare = useCallback(() => {
-//     if (!activeVerse) return;
-//     const text = `📖 ${activeVerse.surah} ${activeVerse.ayahNumber}\n\n${activeVerse.arabic}\n\n"${activeVerse.translation}"`;
-//     Share.share({ message: text });
-//   }, [activeVerse]);
-
-//   const openReflectionModal = useCallback(() => {
-//     if (!activeVerse) return;
-//     setReflectionDraft(activeVerse.reflection ?? "");
-//     setShowReflectionModal(true);
-//   }, [activeVerse]);
-
-//   const saveReflection = useCallback(async () => {
-//     if (!state || !activeVerse) return;
-//     const updatedVerses = state.verses.map((v) =>
-//       v.id === activeVerse.id ? { ...v, reflection: reflectionDraft } : v
-//     );
-//     await persist({ ...state, verses: updatedVerses });
-//     setActiveVerse(updatedVerses.find((v) => v.id === activeVerse.id)!);
-//     setShowReflectionModal(false);
-//   }, [state, activeVerse, reflectionDraft, persist]);
-
-//   // Animate entry on verse change
-//   useEffect(() => {
-//     if (activeVerse) {
-//       fadeAnim.setValue(0);
-//       Animated.timing(fadeAnim, {
-//         toValue: 1,
-//         duration: 500,
-//         useNativeDriver: true,
-//       }).start();
-//     }
-//   }, [activeVerse, fadeAnim]);
-
-//   if (loading || !activeVerse) {
-//     return (
-//       <SafeAreaView
-//         className="flex-1 items-center justify-center"
-//         style={{ backgroundColor: theme.background }}
-//       >
-//         <ActivityIndicator size="large" color={theme.primary} />
-//       </SafeAreaView>
-//     );
-//   }
-
-//   return (
-//     <SafeAreaView
-//       className="flex-1"
-//       style={{ backgroundColor: theme.background }}
-//     >
-//       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-//         {/* Header */}
-//         <View className="flex-row items-center justify-between mb-4">
-//           <View>
-//             <Text className="text-xs" style={{ color: theme.textSecondary }}>
-//               Verse of the Day
-//             </Text>
-//             <Text
-//               className="text-2xl font-bold mt-1"
-//               style={{ color: theme.text }}
-//             >
-//               {activeVerse.surah} – {activeVerse.ayahNumber}
-//             </Text>
-//           </View>
-//           <Pressable
-//             onPress={favoriteToggle}
-//             className="w-10 h-10 rounded-full items-center justify-center"
-//             style={{ backgroundColor: theme.card }}
-//           >
-//             <Ionicons
-//               name={activeVerse.isFavorite ? "heart" : "heart-outline"}
-//               size={22}
-//               color={activeVerse.isFavorite ? "#ef4444" : theme.text}
-//             />
-//           </Pressable>
-//         </View>
-
-//         {/* Verse Content */}
-//         <Animated.View style={{ opacity: fadeAnim }}>
-//           <View
-//             className="rounded-2xl p-6 mb-6 border"
-//             style={{
-//               borderColor: theme.accentLight ?? "#ffffff22",
-//               backgroundColor: theme.card,
-//             }}
-//           >
-//             <Text
-//               className="text-2xl font-semibold"
-//               style={{ color: theme.text, lineHeight: 36 }}
-//             >
-//               {activeVerse.arabic}
-//             </Text>
-//             <Text
-//               className="mt-4 text-base"
-//               style={{ color: theme.textSecondary }}
-//             >
-//               {activeVerse.translation}
-//             </Text>
-//             <Text
-//               className="mt-4 text-xs"
-//               style={{ color: theme.textSecondary }}
-//             >
-//               – {activeVerse.surah} {activeVerse.ayahNumber}
-//             </Text>
-//           </View>
-//         </Animated.View>
-
-//         {/* Actions */}
-//         <View className="flex-row gap-3">
-//           <Pressable
-//             onPress={handleShare}
-//             className="flex-1 py-4 rounded-2xl items-center border"
-//             style={{
-//               borderColor: theme.accentLight ?? "#ffffff22",
-//               backgroundColor: theme.card,
-//             }}
-//           >
-//             <Ionicons name="share-outline" size={18} color={theme.text} />
-//             <Text
-//               className="mt-1 text-xs font-semibold"
-//               style={{ color: theme.text }}
-//             >
-//               Share
-//             </Text>
-//           </Pressable>
-
-//           <Pressable
-//             onPress={openReflectionModal}
-//             className="flex-1 py-4 rounded-2xl items-center border"
-//             style={{
-//               borderColor: theme.accentLight ?? "#ffffff22",
-//               backgroundColor: theme.card,
-//             }}
-//           >
-//             <Ionicons name="create-outline" size={18} color={theme.text} />
-//             <Text
-//               className="mt-1 text-xs font-semibold"
-//               style={{ color: theme.text }}
-//             >
-//               {activeVerse.reflection ? "Edit Reflection" : "Add Reflection"}
-//             </Text>
-//           </Pressable>
-//         </View>
-//       </ScrollView>
-
-//       {/* Reflection Modal */}
-//       <CustomModal
-//         visible={showReflectionModal}
-//         onClose={() => setShowReflectionModal(false)}
-//         heading="Reflection"
-//         description={`${activeVerse.surah} ${activeVerse.ayahNumber}`}
-//         variant="bottom"
-//       >
-//         <View>
-//           <Text className="text-xs mb-2" style={{ color: theme.textSecondary }}>
-//             What does this verse mean to you today?
-//           </Text>
-//           <TextInput
-//             value={reflectionDraft}
-//             onChangeText={setReflectionDraft}
-//             placeholder="Type your reflection..."
-//             placeholderTextColor={theme.textSecondary}
-//             multiline
-//             className="p-4 rounded-xl mb-3"
-//             style={{
-//               minHeight: 120,
-//               backgroundColor: theme.background,
-//               color: theme.text,
-//               borderWidth: 1,
-//               borderColor: theme.accentLight ?? "#ffffff22",
-//               textAlignVertical: "top",
-//             }}
-//           />
-//           <Pressable
-//             onPress={saveReflection}
-//             className="py-4 rounded-xl items-center"
-//             style={{ backgroundColor: theme.primary }}
-//           >
-//             <Text className="font-semibold" style={{ color: "#fff" }}>
-//               Save Reflection
-//             </Text>
-//           </Pressable>
-//         </View>
-//       </CustomModal>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default VerseOfTheDayScreen;
-
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
+  Modal,
+  PanResponder,
   Pressable,
   ScrollView,
   Share,
   Text,
   TextInput,
-  Vibration,
+  TouchableOpacity,
   View,
 } from "react-native";
 
-// Mock theme hook
-const useTheme = () => ({
-  theme: {
-    background: "#0a0a0a",
-    card: "#1a1a1a",
-    text: "#ffffff",
-    textSecondary: "#a0a0a0",
-    primary: "#10b981",
-    accent: "#8b5cf6",
-    accentLight: "#ffffff22",
-    error: "#ef4444",
-  },
-});
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // Types
 interface Verse {
   id: string;
   surah: string;
   surahNumber: number;
+  surahNameArabic: string;
   verseNumber: number;
   arabic: string;
   translation: string;
   transliteration: string;
   category: string;
   revelation: "Meccan" | "Medinan";
-  theme: string[];
+  themes: string[];
+  juz: number;
+  ruku: number;
+  sajdah: boolean;
+  wordByWord?: WordByWord[];
+  tafsir?: string;
+  audioUrl?: string;
+  context?: string;
+  relatedVerses?: string[];
+}
+
+interface WordByWord {
+  arabic: string;
+  transliteration: string;
+  translation: string;
+  grammaticalRole?: string;
 }
 
 interface SavedVerse extends Verse {
   savedAt: number;
   notes: string;
   isFavorite: boolean;
+  tags: string[];
+  lastReadAt?: number;
+  readCount: number;
+  highlightedWords?: number[];
 }
 
 interface ReadingStreak {
@@ -379,896 +65,1794 @@ interface ReadingStreak {
   longestStreak: number;
   lastReadDate: string;
   totalVersesRead: number;
+  totalMinutesRead: number;
+  favoriteCategory: string;
+  readingGoal: number;
+  dailyProgress: number;
 }
 
-// Mock verse data
-const VERSES: Verse[] = [
+interface Collection {
+  id: string;
+  name: string;
+  description: string;
+  verses: string[];
+  icon: string;
+  color: string;
+  createdAt: number;
+  isDefault?: boolean;
+}
+
+interface DailyProgress {
+  date: string;
+  versesRead: number;
+  minutesRead: number;
+  completed: boolean;
+}
+
+// Enhanced Verses Database
+const VERSES_DATABASE: Verse[] = [
   {
-    id: "1",
+    id: "2:186",
     surah: "Al-Baqarah",
     surahNumber: 2,
+    surahNameArabic: "البقرة",
     verseNumber: 186,
-    arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ",
+    arabic:
+      "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
     translation:
-      "And when My servants ask you concerning Me, indeed I am near.",
-    transliteration: "Wa itha sa-alaka 'ibadi 'anni fa-inni qarib",
+      "And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me.",
+    transliteration:
+      "Wa itha sa-alaka 'ibadi 'anni fa-inni qarib. Ujibu da'watad-da'i itha da'an",
     category: "Dua & Prayer",
     revelation: "Medinan",
-    theme: ["Prayer", "Closeness to Allah", "Hope"],
+    themes: ["Prayer", "Closeness to Allah", "Hope", "Response"],
+    juz: 2,
+    ruku: 23,
+    sajdah: false,
+    context:
+      "This verse was revealed when companions asked about Allah's presence during prayer.",
+    tafsir:
+      "Ibn Kathir mentions that this verse emphasizes Allah's immediate presence and response to sincere supplication...",
+    wordByWord: [
+      {
+        arabic: "وَإِذَا",
+        transliteration: "wa-itha",
+        translation: "And when",
+      },
+      {
+        arabic: "سَأَلَكَ",
+        transliteration: "sa-alaka",
+        translation: "they ask you",
+      },
+      {
+        arabic: "عِبَادِي",
+        transliteration: "'ibadi",
+        translation: "My servants",
+      },
+      { arabic: "عَنِّي", transliteration: "'anni", translation: "about Me" },
+      {
+        arabic: "فَإِنِّي",
+        transliteration: "fa-inni",
+        translation: "then indeed I",
+      },
+      { arabic: "قَرِيبٌ", transliteration: "qarib", translation: "am near" },
+    ],
+    relatedVerses: ["40:60", "2:152", "50:16"],
   },
   {
-    id: "2",
+    id: "94:5-6",
+    surah: "Al-Inshirah",
+    surahNumber: 94,
+    surahNameArabic: "الشرح",
+    verseNumber: 5,
+    arabic: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    translation:
+      "For indeed, with hardship comes ease. Indeed, with hardship comes ease.",
+    transliteration: "Fa inna ma'al 'usri yusra. Inna ma'al 'usri yusra",
+    category: "Hope & Patience",
+    revelation: "Meccan",
+    themes: ["Hope", "Patience", "Trials", "Relief"],
+    juz: 30,
+    ruku: 1,
+    sajdah: false,
+    context:
+      "Revealed during a difficult period in Makkah to console the Prophet ﷺ",
+    relatedVerses: ["2:214", "65:7", "94:1-8"],
+  },
+  {
+    id: "55:13",
     surah: "Ar-Rahman",
     surahNumber: 55,
+    surahNameArabic: "الرحمن",
     verseNumber: 13,
     arabic: "فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ",
     translation: "So which of the favors of your Lord would you deny?",
-    transliteration: "Fabi-ayyi ala-i rabbikuma tukaththiban",
+    transliteration: "Fabi-ayyi ala-i rabbikuma tukadhdhiban",
     category: "Gratitude",
     revelation: "Medinan",
-    theme: ["Gratitude", "Blessings", "Reflection"],
-  },
-  {
-    id: "3",
-    surah: "Al-Inshirah",
-    surahNumber: 94,
-    verseNumber: 6,
-    arabic: "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-    translation: "Indeed, with hardship comes ease.",
-    transliteration: "Inna ma'al 'usri yusra",
-    category: "Hope & Patience",
-    revelation: "Meccan",
-    theme: ["Hope", "Patience", "Trials"],
+    themes: ["Gratitude", "Blessings", "Reflection", "Recognition"],
+    juz: 27,
+    ruku: 1,
+    sajdah: false,
+    context:
+      "This verse is repeated 31 times in Surah Ar-Rahman, emphasizing gratitude",
+    relatedVerses: ["16:18", "14:34", "93:11"],
   },
 ];
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-const VerseOfDayScreen: React.FC = () => {
+const VerseOfTheDay = () => {
   const { theme } = useTheme();
 
-  // State
-  const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  // Core State
+  const [currentVerse, setCurrentVerse] = useState<Verse>(VERSES_DATABASE[0]);
   const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [readingStreak, setReadingStreak] = useState<ReadingStreak>({
     currentStreak: 0,
     longestStreak: 0,
     lastReadDate: "",
     totalVersesRead: 0,
+    totalMinutesRead: 0,
+    favoriteCategory: "Hope & Patience",
+    readingGoal: 3,
+    dailyProgress: 0,
   });
-  const [showNotes, setShowNotes] = useState(false);
+  const [weekProgress, setWeekProgress] = useState<DailyProgress[]>([]);
+
+  // UI State
+  const [activeTab, setActiveTab] = useState<"verse" | "saved" | "insights">(
+    "verse"
+  );
+  const [showWordByWord, setShowWordByWord] = useState(false);
+  const [showTafsir, setShowTafsir] = useState(false);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [noteText, setNoteText] = useState("");
-  const [showSaved, setShowSaved] = useState(false);
-  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [readingMode, setReadingMode] = useState(false);
+  const [fontSize, setFontSize] = useState(28);
+  const [selectedWord, setSelectedWord] = useState<number | null>(null);
 
   // Animations
-  const [fadeAnim] = useState(new Animated.Value(1));
-  const [slideAnim] = useState(new Animated.Value(0));
-  const [heartAnim] = useState(new Animated.Value(1));
-  const [glowAnim] = useState(new Animated.Value(0));
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const heartAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
+  const cardFlipAnim = useRef(new Animated.Value(0)).current;
 
-  // Current verse
-  const currentVerse = useMemo(
-    () => VERSES[currentVerseIndex],
-    [currentVerseIndex]
-  );
+  // Swipe Gesture
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > 20;
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 50) {
+          navigateVerse("previous");
+        } else if (gestureState.dx < -50) {
+          navigateVerse("next");
+        }
+      },
+    })
+  ).current;
 
-  // Check if current verse is saved
-  const isSaved = useMemo(
-    () => savedVerses.some((v) => v.id === currentVerse.id),
-    [savedVerses, currentVerse.id]
-  );
-
-  // Initialize reading streak
+  // Load initial data
   useEffect(() => {
-    const today = new Date().toDateString();
-    const lastRead = readingStreak.lastReadDate;
+    loadData();
+    initializeDaily();
+    startAnimations();
+  }, []);
 
-    if (lastRead !== today) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const isConsecutive = lastRead === yesterday.toDateString();
+  // Start entrance animations
+  const startAnimations = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      }),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 0,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+    ]).start();
+  };
 
-      setReadingStreak((prev) => ({
-        currentStreak: isConsecutive ? prev.currentStreak + 1 : 1,
-        longestStreak: Math.max(
-          prev.longestStreak,
-          isConsecutive ? prev.currentStreak + 1 : 1
-        ),
-        lastReadDate: today,
-        totalVersesRead: prev.totalVersesRead + 1,
-      }));
+  const loadData = async () => {
+    try {
+      const [verses, cols, streak, progress] = await Promise.all([
+        AsyncStorage.getItem("savedVerses"),
+        AsyncStorage.getItem("collections"),
+        AsyncStorage.getItem("readingStreak"),
+        AsyncStorage.getItem("weekProgress"),
+      ]);
+
+      if (verses) setSavedVerses(JSON.parse(verses));
+      if (cols) setCollections(JSON.parse(cols));
+      if (streak) setReadingStreak(JSON.parse(streak));
+      if (progress) setWeekProgress(JSON.parse(progress));
+    } catch (error) {
+      console.error("Error loading data:", error);
     }
-  }, []);
+  };
 
-  // Glow animation loop
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
+  const initializeDaily = () => {
+    const today = new Date().toDateString();
+    const todayIndex = new Date().getDate() % VERSES_DATABASE.length;
+    setCurrentVerse(VERSES_DATABASE[todayIndex]);
 
-  // Slide animation for verse change
-  const animateVerseChange = useCallback(
-    (direction: "left" | "right") => {
+    // Update streak
+    if (readingStreak.lastReadDate !== today) {
+      updateStreak();
+    }
+
+    // Update daily progress
+    updateDailyProgress();
+  };
+
+  const updateStreak = () => {
+    const today = new Date().toDateString();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const isConsecutive =
+      readingStreak.lastReadDate === yesterday.toDateString();
+
+    const newStreak: ReadingStreak = {
+      ...readingStreak,
+      currentStreak: isConsecutive ? readingStreak.currentStreak + 1 : 1,
+      longestStreak: Math.max(
+        readingStreak.longestStreak,
+        isConsecutive ? readingStreak.currentStreak + 1 : 1
+      ),
+      lastReadDate: today,
+      totalVersesRead: readingStreak.totalVersesRead + 1,
+      dailyProgress: 1,
+    };
+
+    setReadingStreak(newStreak);
+    AsyncStorage.setItem("readingStreak", JSON.stringify(newStreak));
+
+    // Animate progress
+    Animated.timing(progressAnim, {
+      toValue: newStreak.dailyProgress / newStreak.readingGoal,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const updateDailyProgress = () => {
+    const today = new Date().toDateString();
+    const todayProgress = weekProgress.find((p) => p.date === today);
+
+    if (!todayProgress) {
+      const newProgress = [
+        ...weekProgress.slice(-6),
+        {
+          date: today,
+          versesRead: 1,
+          minutesRead: 0,
+          completed: false,
+        },
+      ];
+      setWeekProgress(newProgress);
+      AsyncStorage.setItem("weekProgress", JSON.stringify(newProgress));
+    }
+  };
+
+  const navigateVerse = (direction: "next" | "previous") => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    const currentIndex = VERSES_DATABASE.findIndex(
+      (v) => v.id === currentVerse.id
+    );
+    const newIndex =
+      direction === "next"
+        ? (currentIndex + 1) % VERSES_DATABASE.length
+        : (currentIndex - 1 + VERSES_DATABASE.length) % VERSES_DATABASE.length;
+
+    // Animate transition
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: direction === "next" ? -50 : 50,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentVerse(VERSES_DATABASE[newIndex]);
+      slideAnim.setValue(direction === "next" ? 50 : -50);
+
       Animated.parallel([
         Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
           toValue: 0,
-          duration: 200,
+          tension: 50,
+          friction: 8,
           useNativeDriver: true,
         }),
-        Animated.timing(slideAnim, {
-          toValue: direction === "left" ? -50 : 50,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setCurrentVerseIndex((prev) =>
-          direction === "left"
-            ? (prev + 1) % VERSES.length
-            : (prev - 1 + VERSES.length) % VERSES.length
-        );
+      ]).start();
+    });
+  };
 
-        slideAnim.setValue(direction === "left" ? 50 : -50);
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(slideAnim, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      });
-    },
-    [fadeAnim, slideAnim]
-  );
+  const toggleSaveVerse = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-  // Heart animation
-  const animateHeart = useCallback(() => {
+    // Animate heart
     Animated.sequence([
       Animated.timing(heartAnim, {
-        toValue: 1.3,
+        toValue: 1.4,
         duration: 150,
         useNativeDriver: true,
       }),
-      Animated.timing(heartAnim, {
+      Animated.spring(heartAnim, {
         toValue: 1,
-        duration: 150,
+        tension: 50,
+        friction: 5,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [heartAnim]);
 
-  // Save/Unsave verse
-  const handleSaveVerse = useCallback(() => {
-    Vibration.vibrate(10);
-    animateHeart();
+    const existingIndex = savedVerses.findIndex(
+      (v) => v.id === currentVerse.id
+    );
 
-    if (isSaved) {
-      setSavedVerses((prev) => prev.filter((v) => v.id !== currentVerse.id));
+    if (existingIndex >= 0) {
+      // Remove from saved
+      const updated = savedVerses.filter((v) => v.id !== currentVerse.id);
+      setSavedVerses(updated);
+      AsyncStorage.setItem("savedVerses", JSON.stringify(updated));
     } else {
-      const savedVerse: SavedVerse = {
+      // Add to saved
+      const newSaved: SavedVerse = {
         ...currentVerse,
         savedAt: Date.now(),
         notes: "",
         isFavorite: true,
+        tags: [],
+        readCount: 1,
+        lastReadAt: Date.now(),
       };
-      setSavedVerses((prev) => [savedVerse, ...prev]);
+      const updated = [newSaved, ...savedVerses];
+      setSavedVerses(updated);
+      AsyncStorage.setItem("savedVerses", JSON.stringify(updated));
     }
-  }, [isSaved, currentVerse, animateHeart]);
+  };
 
-  // Share verse
-  const handleShare = useCallback(async () => {
+  const shareVerse = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     try {
       await Share.share({
-        message: `${currentVerse.arabic}\n\n"${currentVerse.translation}"\n\n- Quran ${currentVerse.surahNumber}:${currentVerse.verseNumber} (${currentVerse.surah})`,
+        title: `${currentVerse.surah} - Verse ${currentVerse.verseNumber}`,
+        message: `${currentVerse.arabic}\n\n"${currentVerse.translation}"\n\n— Quran ${currentVerse.surahNumber}:${currentVerse.verseNumber} (${currentVerse.surah})\n\nShared via Quran App`,
       });
     } catch (error) {
-      console.error(error);
+      console.error("Error sharing:", error);
     }
-  }, [currentVerse]);
+  };
 
-  // Play audio (mock)
-  const handlePlayAudio = useCallback(() => {
-    setAudioPlaying((prev) => !prev);
-    Vibration.vibrate(10);
-  }, []);
+  const playAudio = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setIsPlaying(!isPlaying);
+    // Implement actual audio playback
+  };
 
-  // Save note
-  const handleSaveNote = useCallback(() => {
-    setSavedVerses((prev) =>
-      prev.map((v) =>
-        v.id === currentVerse.id ? { ...v, notes: noteText } : v
-      )
+  const saveNote = () => {
+    if (!noteText.trim()) return;
+
+    const existingIndex = savedVerses.findIndex(
+      (v) => v.id === currentVerse.id
     );
-    setShowNotes(false);
+
+    if (existingIndex >= 0) {
+      const updated = [...savedVerses];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        notes: noteText,
+        tags: selectedTags,
+      };
+      setSavedVerses(updated);
+      AsyncStorage.setItem("savedVerses", JSON.stringify(updated));
+    } else {
+      const newSaved: SavedVerse = {
+        ...currentVerse,
+        savedAt: Date.now(),
+        notes: noteText,
+        isFavorite: true,
+        tags: selectedTags,
+        readCount: 1,
+        lastReadAt: Date.now(),
+      };
+      const updated = [newSaved, ...savedVerses];
+      setSavedVerses(updated);
+      AsyncStorage.setItem("savedVerses", JSON.stringify(updated));
+    }
+
+    setShowNoteModal(false);
     setNoteText("");
-    Vibration.vibrate(10);
-  }, [currentVerse.id, noteText]);
+    setSelectedTags([]);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const isSaved = useMemo(
+    () => savedVerses.some((v) => v.id === currentVerse.id),
+    [savedVerses, currentVerse]
+  );
 
   const glowOpacity = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.3, 0.6],
+    outputRange: [0.2, 0.4],
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingBottom: 40,
-          paddingTop: 60,
-        }}
-      >
-        {/* Header with Streak */}
-        <View style={{ marginBottom: 24 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 16,
-            }}
+    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Premium Header */}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
+        >
+          <LinearGradient
+            colors={[theme.primary + "20", "transparent"]}
+            className="px-4 pt-12 pb-6"
           >
-            <View>
-              <Text style={{ fontSize: 12, color: theme.textSecondary }}>
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 28,
-                  fontWeight: "bold",
-                  color: theme.text,
-                  marginTop: 4,
-                }}
-              >
-                Verse of the Day
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={() => setShowSaved(!showSaved)}
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: theme.card,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ fontSize: 24 }}>📖</Text>
-              {savedVerses.length > 0 && (
-                <View
-                  style={{
-                    position: "absolute",
-                    top: -4,
-                    right: -4,
-                    width: 20,
-                    height: 20,
-                    borderRadius: 10,
-                    backgroundColor: theme.primary,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 10, fontWeight: "bold", color: "#fff" }}
-                  >
-                    {savedVerses.length}
-                  </Text>
-                </View>
-              )}
-            </Pressable>
-          </View>
-
-          {/* Streak Card */}
-          <View
-            style={{
-              backgroundColor: theme.card,
-              borderRadius: 16,
-              padding: 16,
-              borderWidth: 1,
-              borderColor: theme.accentLight,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ fontSize: 32, marginRight: 8 }}>🔥</Text>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontWeight: "bold",
-                      color: theme.primary,
-                    }}
-                  >
-                    {readingStreak.currentStreak}
-                  </Text>
-                  <Text style={{ fontSize: 12, color: theme.textSecondary }}>
-                    Day Streak
-                  </Text>
-                </View>
-              </View>
-
-              <View style={{ alignItems: "flex-end" }}>
+            <View className="flex-row items-center justify-between mb-4">
+              <View>
                 <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "600",
-                    color: theme.text,
-                  }}
+                  className="text-xs"
+                  style={{ color: theme.textSecondary }}
                 >
-                  {readingStreak.totalVersesRead}
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </Text>
-                <Text style={{ fontSize: 12, color: theme.textSecondary }}>
-                  Verses Read
+                <Text
+                  className="text-3xl font-bold mt-1"
+                  style={{ color: theme.text }}
+                >
+                  Daily Verse
                 </Text>
               </View>
-            </View>
-          </View>
-        </View>
 
-        {/* Main Verse Card */}
-        {!showSaved ? (
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateX: slideAnim }],
-            }}
-          >
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={() => setReadingMode(!readingMode)}
+                  className="w-10 h-10 rounded-full items-center justify-center mr-2"
+                  style={{ backgroundColor: theme.card }}
+                >
+                  <Ionicons
+                    name={readingMode ? "book" : "book-outline"}
+                    size={20}
+                    color={theme.primary}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.card }}
+                >
+                  <Ionicons
+                    name="settings-outline"
+                    size={20}
+                    color={theme.text}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Streak & Progress Card */}
             <View
+              className="rounded-2xl p-4 mb-4"
               style={{
                 backgroundColor: theme.card,
-                borderRadius: 24,
-                padding: 24,
-                marginBottom: 24,
                 borderWidth: 1,
                 borderColor: theme.accentLight,
-                position: "relative",
-                overflow: "hidden",
               }}
             >
-              {/* Glow Effect */}
-              <Animated.View
-                style={{
-                  position: "absolute",
-                  top: -100,
-                  right: -100,
-                  width: 200,
-                  height: 200,
-                  borderRadius: 100,
-                  backgroundColor: theme.primary,
-                  opacity: glowOpacity,
-                }}
-              />
-
-              {/* Surah Info */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 20,
-                }}
-              >
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "600",
-                      color: theme.text,
-                    }}
-                  >
-                    {currentVerse.surah}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: theme.textSecondary,
-                      marginTop: 2,
-                    }}
-                  >
-                    Verse {currentVerse.verseNumber} • {currentVerse.revelation}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: theme.primary + "22",
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 12,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: theme.primary,
-                    }}
-                  >
-                    {currentVerse.category}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Arabic Text */}
-              <Text
-                style={{
-                  fontSize: 32,
-                  fontWeight: "700",
-                  color: theme.text,
-                  textAlign: "right",
-                  lineHeight: 56,
-                  marginBottom: 24,
-                }}
-              >
-                {currentVerse.arabic}
-              </Text>
-
-              {/* Transliteration */}
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontStyle: "italic",
-                  color: theme.textSecondary,
-                  marginBottom: 16,
-                  lineHeight: 22,
-                }}
-              >
-                {currentVerse.transliteration}
-              </Text>
-
-              {/* Translation */}
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: theme.text,
-                  lineHeight: 28,
-                  fontWeight: "500",
-                }}
-              >
-                "{currentVerse.translation}"
-              </Text>
-
-              {/* Themes */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  marginTop: 20,
-                  gap: 8,
-                }}
-              >
-                {currentVerse.theme.map((t) => (
+              <View className="flex-row items-center justify-between mb-3">
+                <View className="flex-row items-center">
                   <View
-                    key={t}
-                    style={{
-                      backgroundColor: theme.background,
-                      paddingHorizontal: 12,
-                      paddingVertical: 6,
-                      borderRadius: 8,
-                    }}
+                    className="w-12 h-12 rounded-xl items-center justify-center mr-3"
+                    style={{ backgroundColor: "#f59e0b" + "20" }}
                   >
-                    <Text style={{ fontSize: 11, color: theme.textSecondary }}>
-                      {t}
-                    </Text>
+                    <Text className="text-2xl">🔥</Text>
                   </View>
-                ))}
-              </View>
-            </View>
-
-            {/* Action Buttons */}
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 12,
-                marginBottom: 24,
-              }}
-            >
-              <Animated.View style={{ transform: [{ scale: heartAnim }] }}>
-                <Pressable
-                  onPress={handleSaveVerse}
-                  style={{
-                    flex: 1,
-                    backgroundColor: isSaved ? theme.primary : theme.card,
-                    paddingVertical: 16,
-                    borderRadius: 16,
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: theme.accentLight,
-                  }}
-                >
-                  <Text style={{ fontSize: 24, marginBottom: 4 }}>
-                    {isSaved ? "❤️" : "🤍"}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: isSaved ? "#fff" : theme.text,
-                    }}
-                  >
-                    {isSaved ? "Saved" : "Save"}
-                  </Text>
-                </Pressable>
-              </Animated.View>
-
-              <Pressable
-                onPress={handlePlayAudio}
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.card,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: theme.accentLight,
-                }}
-              >
-                <Text style={{ fontSize: 24, marginBottom: 4 }}>
-                  {audioPlaying ? "⏸️" : "▶️"}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: theme.text,
-                  }}
-                >
-                  Listen
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={handleShare}
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.card,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: theme.accentLight,
-                }}
-              >
-                <Text style={{ fontSize: 24, marginBottom: 4 }}>📤</Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: theme.text,
-                  }}
-                >
-                  Share
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => setShowNotes(true)}
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.card,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: theme.accentLight,
-                }}
-              >
-                <Text style={{ fontSize: 24, marginBottom: 4 }}>📝</Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: theme.text,
-                  }}
-                >
-                  Notes
-                </Text>
-              </Pressable>
-            </View>
-
-            {/* Navigation */}
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <Pressable
-                onPress={() => animateVerseChange("right")}
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.card,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  gap: 8,
-                  borderWidth: 1,
-                  borderColor: theme.accentLight,
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>←</Text>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    color: theme.text,
-                  }}
-                >
-                  Previous
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => animateVerseChange("left")}
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.primary,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    color: "#fff",
-                  }}
-                >
-                  Next
-                </Text>
-                <Text style={{ fontSize: 20 }}>→</Text>
-              </Pressable>
-            </View>
-          </Animated.View>
-        ) : (
-          /* Saved Verses List */
-          <View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  color: theme.text,
-                }}
-              >
-                Saved Verses ({savedVerses.length})
-              </Text>
-              <Pressable
-                onPress={() => setShowSaved(false)}
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  backgroundColor: theme.card,
-                  borderRadius: 12,
-                }}
-              >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>
-                  Back
-                </Text>
-              </Pressable>
-            </View>
-
-            {savedVerses.length === 0 ? (
-              <View
-                style={{
-                  backgroundColor: theme.card,
-                  borderRadius: 16,
-                  padding: 40,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 48, marginBottom: 16 }}>📚</Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: theme.textSecondary,
-                    textAlign: "center",
-                  }}
-                >
-                  No saved verses yet{"\n"}Start saving your favorites!
-                </Text>
-              </View>
-            ) : (
-              savedVerses.map((verse) => (
-                <Pressable
-                  key={verse.id}
-                  style={{
-                    backgroundColor: theme.card,
-                    borderRadius: 16,
-                    padding: 16,
-                    marginBottom: 12,
-                    borderWidth: 1,
-                    borderColor: theme.accentLight,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      marginBottom: 12,
-                    }}
-                  >
+                  <View>
                     <Text
-                      style={{
-                        fontSize: 14,
-                        fontWeight: "600",
-                        color: theme.text,
-                      }}
+                      className="text-2xl font-bold"
+                      style={{ color: theme.text }}
                     >
-                      {verse.surah} {verse.verseNumber}
+                      {readingStreak.currentStreak}
                     </Text>
-                    <Text style={{ fontSize: 16 }}>❤️</Text>
-                  </View>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      color: theme.text,
-                      textAlign: "right",
-                      marginBottom: 8,
-                    }}
-                  >
-                    {verse.arabic}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: theme.textSecondary,
-                      lineHeight: 20,
-                    }}
-                  >
-                    "{verse.translation}"
-                  </Text>
-                  {verse.notes && (
-                    <View
-                      style={{
-                        marginTop: 12,
-                        backgroundColor: theme.background,
-                        padding: 12,
-                        borderRadius: 8,
-                      }}
+                    <Text
+                      className="text-xs"
+                      style={{ color: theme.textSecondary }}
                     >
-                      <Text
+                      Day Streak
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center">
+                  <View className="mr-4">
+                    <Text
+                      className="text-lg font-bold text-right"
+                      style={{ color: theme.primary }}
+                    >
+                      {readingStreak.dailyProgress}/{readingStreak.readingGoal}
+                    </Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: theme.textSecondary }}
+                    >
+                      Daily Goal
+                    </Text>
+                  </View>
+
+                  <View>
+                    <Text
+                      className="text-lg font-bold text-right"
+                      style={{ color: theme.text }}
+                    >
+                      {readingStreak.totalVersesRead}
+                    </Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: theme.textSecondary }}
+                    >
+                      Total Read
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Week Progress */}
+              <View className="flex-row justify-between mt-2">
+                {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => {
+                  const progress = weekProgress[index];
+                  const isToday = index === new Date().getDay() - 1;
+                  const isCompleted = progress?.completed;
+
+                  return (
+                    <View key={index} className="items-center">
+                      <View
+                        className="w-8 h-8 rounded-full items-center justify-center mb-1"
                         style={{
-                          fontSize: 12,
-                          color: theme.textSecondary,
-                          fontStyle: "italic",
+                          backgroundColor: isCompleted
+                            ? theme.primary
+                            : isToday
+                              ? theme.primary + "40"
+                              : theme.background,
+                          borderWidth: isToday ? 2 : 0,
+                          borderColor: theme.primary,
                         }}
                       >
-                        📝 {verse.notes}
+                        {isCompleted ? (
+                          <Ionicons name="checkmark" size={16} color="#fff" />
+                        ) : (
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{
+                              color: isToday
+                                ? theme.primary
+                                : theme.textSecondary,
+                            }}
+                          >
+                            {progress?.versesRead || 0}
+                          </Text>
+                        )}
+                      </View>
+                      <Text
+                        className="text-[10px]"
+                        style={{
+                          color: isToday ? theme.primary : theme.textSecondary,
+                        }}
+                      >
+                        {day}
                       </Text>
                     </View>
-                  )}
-                </Pressable>
-              ))
-            )}
-          </View>
+                  );
+                })}
+              </View>
+            </View>
+          </LinearGradient>
+        </Animated.View>
+
+        {/* Navigation Tabs */}
+        <View className="flex-row px-4 mb-4">
+          {(["verse", "saved", "insights"] as const).map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              onPress={() => setActiveTab(tab)}
+              className="flex-1 py-3 items-center"
+              style={{
+                borderBottomWidth: 2,
+                borderBottomColor:
+                  activeTab === tab ? theme.primary : "transparent",
+              }}
+            >
+              <Text
+                className="font-semibold capitalize"
+                style={{
+                  color:
+                    activeTab === tab ? theme.primary : theme.textSecondary,
+                }}
+              >
+                {tab === "verse" ? "Today's Verse" : tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Content based on active tab */}
+        {activeTab === "verse" && (
+          <VerseTab
+            verse={currentVerse}
+            theme={theme}
+            isSaved={isSaved}
+            onSave={toggleSaveVerse}
+            onShare={shareVerse}
+            onPlayAudio={playAudio}
+            onShowNotes={() => setShowNoteModal(true)}
+            onNavigate={navigateVerse}
+            fadeAnim={fadeAnim}
+            slideAnim={slideAnim}
+            heartAnim={heartAnim}
+            glowAnim={glowAnim}
+            isPlaying={isPlaying}
+            showWordByWord={showWordByWord}
+            setShowWordByWord={setShowWordByWord}
+            showTafsir={showTafsir}
+            setShowTafsir={setShowTafsir}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+            readingMode={readingMode}
+            panResponder={panResponder}
+          />
+        )}
+
+        {activeTab === "saved" && (
+          <SavedTab
+            savedVerses={savedVerses}
+            collections={collections}
+            theme={theme}
+            onRemove={(id: any) => {
+              const updated = savedVerses.filter((v) => v.id !== id);
+              setSavedVerses(updated);
+              AsyncStorage.setItem("savedVerses", JSON.stringify(updated));
+            }}
+          />
+        )}
+
+        {activeTab === "insights" && (
+          <InsightsTab
+            readingStreak={readingStreak}
+            savedVerses={savedVerses}
+            weekProgress={weekProgress}
+            theme={theme}
+          />
         )}
       </ScrollView>
 
-      {/* Notes Modal */}
-      {showNotes && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.9)",
-            justifyContent: "center",
-            padding: 20,
+      {/* Note Modal */}
+      <Modal
+        visible={showNoteModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowNoteModal(false)}
+      >
+        <NoteModal
+          theme={theme}
+          verse={currentVerse}
+          noteText={noteText}
+          setNoteText={setNoteText}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+          onSave={saveNote}
+          onClose={() => {
+            setShowNoteModal(false);
+            setNoteText("");
+            setSelectedTags([]);
           }}
+        />
+      </Modal>
+    </View>
+  );
+};
+
+// Verse Tab Component
+const VerseTab = ({
+  verse,
+  theme,
+  isSaved,
+  onSave,
+  onShare,
+  onPlayAudio,
+  onShowNotes,
+  onNavigate,
+  fadeAnim,
+  slideAnim,
+  heartAnim,
+  glowAnim,
+  isPlaying,
+  showWordByWord,
+  setShowWordByWord,
+  showTafsir,
+  setShowTafsir,
+  fontSize,
+  setFontSize,
+  readingMode,
+  panResponder,
+}: any) => {
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.15, 0.3],
+  });
+
+  return (
+    <Animated.View
+      className="px-4"
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateX: slideAnim }],
+      }}
+      {...panResponder.panHandlers}
+    >
+      {/* Main Verse Card */}
+      <View
+        className="rounded-3xl overflow-hidden mb-6"
+        style={{
+          backgroundColor: theme.card,
+          borderWidth: 1,
+          borderColor: theme.accentLight,
+          elevation: 8,
+        }}
+      >
+        {/* Glow Effect */}
+        <Animated.View
+          className="absolute top-0 right-0"
+          style={{
+            width: 200,
+            height: 200,
+            borderRadius: 100,
+            backgroundColor: theme.primary,
+            opacity: glowOpacity,
+            transform: [{ scale: 1.5 }],
+          }}
+        />
+
+        {/* Surah Header */}
+        <LinearGradient
+          colors={[theme.primary + "20", "transparent"]}
+          className="px-6 pt-6 pb-4"
         >
-          <View
-            style={{
-              backgroundColor: theme.card,
-              borderRadius: 24,
-              padding: 24,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                color: theme.text,
-                marginBottom: 16,
-              }}
+          <View className="flex-row items-center justify-between">
+            <View>
+              <View className="flex-row items-center">
+                <Text
+                  className="text-xl font-bold"
+                  style={{ color: theme.text }}
+                >
+                  {verse.surah}
+                </Text>
+                <Text
+                  className="text-lg ml-2"
+                  style={{ color: theme.textSecondary }}
+                >
+                  {verse.surahNameArabic}
+                </Text>
+              </View>
+              <Text
+                className="text-sm mt-1"
+                style={{ color: theme.textSecondary }}
+              >
+                Verse {verse.verseNumber} • {verse.revelation} • Juz {verse.juz}
+              </Text>
+            </View>
+
+            <View
+              className="px-3 py-2 rounded-xl"
+              style={{ backgroundColor: theme.primary + "20" }}
             >
-              Add Note
-            </Text>
-            <TextInput
-              value={noteText}
-              onChangeText={setNoteText}
-              placeholder="Write your thoughts..."
-              placeholderTextColor={theme.textSecondary}
-              multiline
-              numberOfLines={6}
-              style={{
-                backgroundColor: theme.background,
-                color: theme.text,
-                padding: 16,
-                borderRadius: 12,
-                fontSize: 14,
-                minHeight: 120,
-                textAlignVertical: "top",
-                marginBottom: 16,
-              }}
-            />
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <Pressable
-                onPress={() => {
-                  setShowNotes(false);
-                  setNoteText("");
-                }}
-                style={{
-                  flex: 1,
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  alignItems: "center",
-                  backgroundColor: theme.background,
-                }}
+              <Text
+                className="text-xs font-bold"
+                style={{ color: theme.primary }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>
-                  Cancel
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveNote}
-                style={{
-                  flex: 1,
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  alignItems: "center",
-                  backgroundColor: theme.primary,
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
-                  Save Note
-                </Text>
-              </Pressable>
+                {verse.category}
+              </Text>
             </View>
           </View>
+        </LinearGradient>
+
+        {/* Reading Controls */}
+        {readingMode && (
+          <View
+            className="mx-6 p-3 rounded-xl flex-row items-center justify-between"
+            style={{ backgroundColor: theme.background }}
+          >
+            <Text className="text-xs" style={{ color: theme.textSecondary }}>
+              Font Size
+            </Text>
+            <View className="flex-row items-center">
+              <TouchableOpacity
+                onPress={() => setFontSize(Math.max(20, fontSize - 2))}
+                className="w-8 h-8 rounded items-center justify-center"
+                style={{ backgroundColor: theme.card }}
+              >
+                <Text style={{ color: theme.text }}>A-</Text>
+              </TouchableOpacity>
+              <Text className="mx-3" style={{ color: theme.text }}>
+                {fontSize}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setFontSize(Math.min(40, fontSize + 2))}
+                className="w-8 h-8 rounded items-center justify-center"
+                style={{ backgroundColor: theme.card }}
+              >
+                <Text style={{ color: theme.text }}>A+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* Arabic Text */}
+        <View className="px-6 py-6">
+          {verse.sajdah && (
+            <View
+              className="self-end mb-4 px-3 py-1 rounded-full flex-row items-center"
+              style={{ backgroundColor: "#fbbf24" + "20" }}
+            >
+              <Ionicons name="alert-circle" size={14} color="#fbbf24" />
+              <Text className="text-xs ml-1" style={{ color: "#fbbf24" }}>
+                Sajdah Verse
+              </Text>
+            </View>
+          )}
+
+          <Text
+            className="font-arabic text-right leading-loose"
+            style={{
+              fontSize: fontSize,
+              color: theme.text,
+              lineHeight: fontSize * 1.8,
+            }}
+          >
+            {verse.arabic}
+          </Text>
+
+          {/* Word by Word */}
+          {showWordByWord && verse.wordByWord && (
+            <View className="mt-6">
+              <Text
+                className="text-sm font-bold mb-3"
+                style={{ color: theme.text }}
+              >
+                Word by Word
+              </Text>
+              <View className="flex-row flex-wrap">
+                {verse.wordByWord.map((word: any, index: number) => (
+                  <TouchableOpacity
+                    key={index}
+                    className="p-3 m-1 rounded-lg"
+                    style={{ backgroundColor: theme.background }}
+                  >
+                    <Text
+                      className="text-lg text-center mb-1"
+                      style={{ color: theme.text }}
+                    >
+                      {word.arabic}
+                    </Text>
+                    <Text
+                      className="text-xs text-center"
+                      style={{ color: theme.primary }}
+                    >
+                      {word.transliteration}
+                    </Text>
+                    <Text
+                      className="text-xs text-center"
+                      style={{ color: theme.textSecondary }}
+                    >
+                      {word.translation}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Transliteration */}
+          <Text
+            className="text-base italic mt-4"
+            style={{ color: theme.textSecondary, lineHeight: 24 }}
+          >
+            {verse.transliteration}
+          </Text>
+
+          {/* Translation */}
+          <Text
+            className="text-lg font-medium mt-4"
+            style={{ color: theme.text, lineHeight: 28 }}
+          >
+            "{verse.translation}"
+          </Text>
+
+          {/* Themes */}
+          <View className="flex-row flex-wrap mt-4">
+            {verse.themes.map((theme: string, index: number) => (
+              <View
+                key={index}
+                className="px-3 py-1 rounded-full mr-2 mb-2"
+                // style={{ backgroundColor: theme. }}
+              >
+                <Text className="text-xs">#{theme}</Text>
+              </View>
+            ))}
+          </View>
         </View>
+
+        {/* Context & Tafsir Toggle */}
+        <View className="px-6 pb-4">
+          <View className="flex-row">
+            <TouchableOpacity
+              onPress={() => setShowWordByWord(!showWordByWord)}
+              className="flex-1 mr-2 py-2 rounded-lg items-center"
+              style={{
+                backgroundColor: showWordByWord
+                  ? theme.primary
+                  : theme.background,
+              }}
+            >
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: showWordByWord ? "#fff" : theme.text }}
+              >
+                Word by Word
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setShowTafsir(!showTafsir)}
+              className="flex-1 ml-2 py-2 rounded-lg items-center"
+              style={{
+                backgroundColor: showTafsir ? theme.primary : theme.background,
+              }}
+            >
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: showTafsir ? "#fff" : theme.text }}
+              >
+                Tafsir
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* Tafsir Section */}
+      {showTafsir && (
+        <View
+          className="rounded-2xl p-5 mb-6"
+          style={{
+            backgroundColor: theme.card,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <View className="flex-row items-center mb-3">
+            <Ionicons name="book" size={20} color={theme.primary} />
+            <Text className="ml-2 font-bold" style={{ color: theme.text }}>
+              Tafsir & Context
+            </Text>
+          </View>
+
+          {verse.context && (
+            <View className="mb-4">
+              <Text
+                className="text-xs font-semibold mb-2"
+                style={{ color: theme.textSecondary }}
+              >
+                HISTORICAL CONTEXT
+              </Text>
+              <Text
+                className="text-sm"
+                style={{ color: theme.text, lineHeight: 20 }}
+              >
+                {verse.context}
+              </Text>
+            </View>
+          )}
+
+          {verse.tafsir && (
+            <View>
+              <Text
+                className="text-xs font-semibold mb-2"
+                style={{ color: theme.textSecondary }}
+              >
+                TAFSIR
+              </Text>
+              <Text
+                className="text-sm"
+                style={{ color: theme.text, lineHeight: 20 }}
+              >
+                {verse.tafsir}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Related Verses */}
+      {verse.relatedVerses && verse.relatedVerses.length > 0 && (
+        <View
+          className="rounded-2xl p-5 mb-6"
+          style={{
+            backgroundColor: theme.card,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <Text className="font-bold mb-3" style={{ color: theme.text }}>
+            Related Verses
+          </Text>
+          {verse.relatedVerses.map((ref: string, index: number) => (
+            <TouchableOpacity
+              key={index}
+              className="py-2 px-3 rounded-lg mb-2 flex-row items-center justify-between"
+              style={{ backgroundColor: theme.background }}
+            >
+              <Text className="text-sm" style={{ color: theme.text }}>
+                Quran {ref}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={theme.textSecondary}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      {/* Action Buttons */}
+      <View className="flex-row mb-4">
+        <Animated.View
+          className="flex-1 mr-2"
+          style={{ transform: [{ scale: heartAnim }] }}
+        >
+          <TouchableOpacity
+            onPress={onSave}
+            className="py-4 rounded-xl items-center"
+            style={{
+              backgroundColor: isSaved ? theme.primary : theme.card,
+              borderWidth: 1,
+              borderColor: isSaved ? theme.primary : theme.accentLight,
+            }}
+          >
+            <Ionicons
+              name={isSaved ? "heart" : "heart-outline"}
+              size={24}
+              color={isSaved ? "#fff" : theme.primary}
+            />
+            <Text
+              className="text-xs font-semibold mt-1"
+              style={{ color: isSaved ? "#fff" : theme.text }}
+            >
+              {isSaved ? "Saved" : "Save"}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <TouchableOpacity
+          onPress={onPlayAudio}
+          className="flex-1 mx-2 py-4 rounded-xl items-center"
+          style={{
+            backgroundColor: isPlaying ? theme.primary : theme.card,
+            borderWidth: 1,
+            borderColor: isPlaying ? theme.primary : theme.accentLight,
+          }}
+        >
+          <Ionicons
+            name={isPlaying ? "pause" : "play"}
+            size={24}
+            color={isPlaying ? "#fff" : theme.primary}
+          />
+          <Text
+            className="text-xs font-semibold mt-1"
+            style={{ color: isPlaying ? "#fff" : theme.text }}
+          >
+            {isPlaying ? "Pause" : "Listen"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={onShare}
+          className="flex-1 mx-2 py-4 rounded-xl items-center"
+          style={{
+            backgroundColor: theme.card,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <Ionicons name="share-social" size={24} color={theme.primary} />
+          <Text
+            className="text-xs font-semibold mt-1"
+            style={{ color: theme.text }}
+          >
+            Share
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={onShowNotes}
+          className="flex-1 ml-2 py-4 rounded-xl items-center"
+          style={{
+            backgroundColor: theme.card,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <Ionicons name="create" size={24} color={theme.primary} />
+          <Text
+            className="text-xs font-semibold mt-1"
+            style={{ color: theme.text }}
+          >
+            Note
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Navigation */}
+      <View className="flex-row mb-6">
+        <TouchableOpacity
+          onPress={() => onNavigate("previous")}
+          className="flex-1 mr-2 py-4 rounded-xl flex-row items-center justify-center"
+          style={{
+            backgroundColor: theme.card,
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        >
+          <Ionicons name="chevron-back" size={20} color={theme.text} />
+          <Text className="ml-2 font-semibold" style={{ color: theme.text }}>
+            Previous
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => onNavigate("next")}
+          className="flex-1 ml-2 py-4 rounded-xl flex-row items-center justify-center"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Text className="mr-2 font-semibold text-white">Next</Text>
+          <Ionicons name="chevron-forward" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  );
+};
+
+// Saved Tab Component
+const SavedTab = ({ savedVerses, collections, theme, onRemove }: any) => {
+  const [filterCategory, setFilterCategory] = useState("All");
+
+  const categories = useMemo(() => {
+    const cats = new Set(savedVerses.map((v: SavedVerse) => v.category));
+    return ["All", ...Array.from(cats)];
+  }, [savedVerses]);
+
+  const filteredVerses = useMemo(() => {
+    if (filterCategory === "All") return savedVerses;
+    return savedVerses.filter((v: SavedVerse) => v.category === filterCategory);
+  }, [savedVerses, filterCategory]);
+
+  return (
+    <View className="px-4">
+      {savedVerses.length === 0 ? (
+        <View className="items-center py-16">
+          <View
+            className="w-24 h-24 rounded-full items-center justify-center mb-4"
+            style={{ backgroundColor: theme.card }}
+          >
+            <Ionicons
+              name="bookmark-outline"
+              size={48}
+              color={theme.textSecondary}
+            />
+          </View>
+          <Text
+            className="text-lg font-bold mb-2"
+            style={{ color: theme.text }}
+          >
+            No Saved Verses
+          </Text>
+          <Text
+            className="text-sm text-center"
+            style={{ color: theme.textSecondary }}
+          >
+            Start saving verses to build{"\n"}your personal collection
+          </Text>
+        </View>
+      ) : (
+        <>
+          {/* Filter Categories */}
+          {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+            {categories.map((cat, idx) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => setFilterCategory(cat)}
+                className="mr-3 px-4 py-2 rounded-full"
+                style={{
+                  backgroundColor: filterCategory === cat ? theme.primary : theme.card,
+                }}
+              >
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: filterCategory === cat ? "#fff" : theme.text }}
+                >
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView> */}
+
+          {/* Collections */}
+          <View
+            className="rounded-2xl p-4 mb-4"
+            style={{
+              backgroundColor: theme.primary + "10",
+              borderWidth: 1,
+              borderColor: theme.primary + "30",
+            }}
+          >
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="font-bold" style={{ color: theme.text }}>
+                Collections
+              </Text>
+              <TouchableOpacity
+                className="px-3 py-1 rounded-full"
+                style={{ backgroundColor: theme.primary }}
+              >
+                <Text className="text-xs font-semibold text-white">
+                  Create New
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {collections.length === 0 ? (
+                <View
+                  className="w-32 h-24 rounded-xl items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: theme.card,
+                    borderWidth: 1,
+                    borderStyle: "dashed",
+                    borderColor: theme.accentLight,
+                  }}
+                >
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={24}
+                    color={theme.textSecondary}
+                  />
+                  <Text
+                    className="text-xs mt-2"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    Add Collection
+                  </Text>
+                </View>
+              ) : (
+                collections.map((col: Collection) => (
+                  <TouchableOpacity
+                    key={col.id}
+                    className="w-32 rounded-xl p-3 mr-3"
+                    style={{ backgroundColor: theme.card }}
+                  >
+                    <Text className="text-2xl mb-1">{col.icon}</Text>
+                    <Text
+                      className="text-xs font-semibold"
+                      style={{ color: theme.text }}
+                    >
+                      {col.name}
+                    </Text>
+                    <Text
+                      className="text-[10px]"
+                      style={{ color: theme.textSecondary }}
+                    >
+                      {col.verses.length} verses
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </View>
+
+          {/* Saved Verses List */}
+          {filteredVerses.map((verse: SavedVerse, index: number) => (
+            <TouchableOpacity
+              key={verse.id}
+              className="rounded-2xl p-4 mb-3"
+              style={{
+                backgroundColor: theme.card,
+                borderWidth: 1,
+                borderColor: theme.accentLight,
+              }}
+            >
+              <View className="flex-row items-start justify-between mb-3">
+                <View className="flex-1">
+                  <Text
+                    className="font-bold text-base"
+                    style={{ color: theme.text }}
+                  >
+                    {verse.surah} {verse.verseNumber}
+                  </Text>
+                  <Text
+                    className="text-xs mt-1"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {verse.category} • Read {verse.readCount} times
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => onRemove(verse.id)}
+                  className="w-8 h-8 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.background }}
+                >
+                  <Ionicons
+                    name="close"
+                    size={16}
+                    color={theme.textSecondary}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <Text
+                className="text-lg text-right mb-3"
+                style={{ color: theme.text, lineHeight: 32 }}
+              >
+                {verse.arabic}
+              </Text>
+
+              <Text
+                className="text-sm mb-3"
+                style={{ color: theme.textSecondary }}
+              >
+                "{verse.translation}"
+              </Text>
+
+              {verse.notes && (
+                <View
+                  className="p-3 rounded-lg"
+                  style={{ backgroundColor: theme.background }}
+                >
+                  <Text
+                    className="text-xs italic"
+                    style={{ color: theme.text }}
+                  >
+                    📝 {verse.notes}
+                  </Text>
+                </View>
+              )}
+
+              {verse.tags && verse.tags.length > 0 && (
+                <View className="flex-row flex-wrap mt-3">
+                  {verse.tags.map((tag, idx) => (
+                    <View
+                      key={idx}
+                      className="px-2 py-1 rounded mr-2 mb-2"
+                      style={{ backgroundColor: theme.primary + "20" }}
+                    >
+                      <Text
+                        className="text-[10px]"
+                        style={{ color: theme.primary }}
+                      >
+                        #{tag}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </>
       )}
     </View>
   );
 };
 
-export default VerseOfDayScreen;
+// Insights Tab Component
+const InsightsTab = ({
+  readingStreak,
+  savedVerses,
+  weekProgress,
+  theme,
+}: any) => {
+  const categoryStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    savedVerses.forEach((v: SavedVerse) => {
+      stats[v.category] = (stats[v.category] || 0) + 1;
+    });
+    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
+  }, [savedVerses]);
+
+  const totalReadTime = readingStreak.totalMinutesRead;
+  const avgPerDay = totalReadTime / Math.max(1, readingStreak.currentStreak);
+
+  return (
+    <View className="px-4">
+      {/* Achievement Cards */}
+      <View className="flex-row mb-4">
+        <View
+          className="flex-1 mr-2 rounded-2xl p-4"
+          style={{
+            backgroundColor: theme.primary,
+          }}
+        >
+          <Text className="text-3xl mb-2">🏆</Text>
+          <Text className="text-2xl font-bold text-white mb-1">
+            {readingStreak.longestStreak}
+          </Text>
+          <Text className="text-xs text-white/80">Longest Streak</Text>
+        </View>
+
+        <View
+          className="flex-1 ml-2 rounded-2xl p-4"
+          style={{
+            backgroundColor: theme.accent,
+          }}
+        >
+          <Text className="text-3xl mb-2">📖</Text>
+          <Text className="text-2xl font-bold text-white mb-1">
+            {readingStreak.totalVersesRead}
+          </Text>
+          <Text className="text-xs text-white/80">Verses Read</Text>
+        </View>
+      </View>
+
+      {/* Reading Stats */}
+      <View
+        className="rounded-2xl p-4 mb-4"
+        style={{
+          backgroundColor: theme.card,
+          borderWidth: 1,
+          borderColor: theme.accentLight,
+        }}
+      >
+        <Text
+          className="font-bold text-base mb-4"
+          style={{ color: theme.text }}
+        >
+          Reading Statistics
+        </Text>
+
+        <View className="flex-row justify-between mb-3">
+          <View>
+            <Text
+              className="text-xs mb-1"
+              style={{ color: theme.textSecondary }}
+            >
+              Total Time
+            </Text>
+            <Text className="text-lg font-bold" style={{ color: theme.text }}>
+              {Math.floor(totalReadTime / 60)}h {totalReadTime % 60}m
+            </Text>
+          </View>
+
+          <View>
+            <Text
+              className="text-xs mb-1"
+              style={{ color: theme.textSecondary }}
+            >
+              Avg per Day
+            </Text>
+            <Text className="text-lg font-bold" style={{ color: theme.text }}>
+              {avgPerDay.toFixed(0)} min
+            </Text>
+          </View>
+
+          <View>
+            <Text
+              className="text-xs mb-1"
+              style={{ color: theme.textSecondary }}
+            >
+              Saved Verses
+            </Text>
+            <Text className="text-lg font-bold" style={{ color: theme.text }}>
+              {savedVerses.length}
+            </Text>
+          </View>
+        </View>
+
+        {/* Category Distribution */}
+        {categoryStats.length > 0 && (
+          <View className="mt-4">
+            <Text
+              className="text-xs font-semibold mb-3"
+              style={{ color: theme.textSecondary }}
+            >
+              FAVORITE CATEGORIES
+            </Text>
+            {categoryStats.slice(0, 3).map(([category, count]) => (
+              <View key={category} className="mb-3">
+                <View className="flex-row justify-between mb-1">
+                  <Text className="text-sm" style={{ color: theme.text }}>
+                    {category}
+                  </Text>
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: theme.primary }}
+                  >
+                    {count} verses
+                  </Text>
+                </View>
+                <View
+                  className="h-2 rounded-full overflow-hidden"
+                  style={{ backgroundColor: theme.background }}
+                >
+                  <View
+                    className="h-full rounded-full"
+                    style={{
+                      backgroundColor: theme.primary,
+                      width: `${(count / savedVerses.length) * 100}%`,
+                    }}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Milestones */}
+      <View
+        className="rounded-2xl p-4"
+        style={{
+          backgroundColor: theme.card,
+          borderWidth: 1,
+          borderColor: theme.accentLight,
+        }}
+      >
+        <Text
+          className="font-bold text-base mb-4"
+          style={{ color: theme.text }}
+        >
+          Milestones
+        </Text>
+
+        <View className="flex-row flex-wrap">
+          {[
+            {
+              icon: "🔥",
+              title: "7 Day Streak",
+              achieved: readingStreak.currentStreak >= 7,
+            },
+            {
+              icon: "📚",
+              title: "50 Verses",
+              achieved: readingStreak.totalVersesRead >= 50,
+            },
+            {
+              icon: "⭐",
+              title: "30 Day Streak",
+              achieved: readingStreak.currentStreak >= 30,
+            },
+            {
+              icon: "💎",
+              title: "100 Verses",
+              achieved: readingStreak.totalVersesRead >= 100,
+            },
+          ].map((milestone, index) => (
+            <View key={index} className="w-1/2 p-2">
+              <View
+                className="rounded-xl p-3 items-center"
+                style={{
+                  backgroundColor: milestone.achieved
+                    ? theme.primary + "20"
+                    : theme.background,
+                  opacity: milestone.achieved ? 1 : 0.5,
+                }}
+              >
+                <Text className="text-2xl mb-1">{milestone.icon}</Text>
+                <Text
+                  className="text-xs text-center"
+                  style={{
+                    color: milestone.achieved
+                      ? theme.primary
+                      : theme.textSecondary,
+                  }}
+                >
+                  {milestone.title}
+                </Text>
+                {milestone.achieved && (
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={16}
+                    color={theme.primary}
+                  />
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+// Note Modal Component
+const NoteModal = ({
+  theme,
+  verse,
+  noteText,
+  setNoteText,
+  selectedTags,
+  setSelectedTags,
+  onSave,
+  onClose,
+}: any) => {
+  const suggestedTags = [
+    "Reflection",
+    "Gratitude",
+    "Guidance",
+    "Prayer",
+    "Wisdom",
+    "Hope",
+  ];
+
+  return (
+    <View className="flex-1 justify-end">
+      <Pressable
+        className="flex-1"
+        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        onPress={onClose}
+      />
+      <View
+        className="rounded-t-3xl p-6"
+        style={{
+          backgroundColor: theme.background,
+          maxHeight: "80%",
+        }}
+      >
+        <View className="flex-row items-center justify-between mb-4">
+          <View>
+            <Text className="text-xl font-bold" style={{ color: theme.text }}>
+              Add Note
+            </Text>
+            <Text
+              className="text-sm mt-1"
+              style={{ color: theme.textSecondary }}
+            >
+              {verse.surah} {verse.verseNumber}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={onClose}>
+            <Ionicons
+              name="close-circle"
+              size={28}
+              color={theme.textSecondary}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Note Input */}
+        <TextInput
+          value={noteText}
+          onChangeText={setNoteText}
+          placeholder="Write your thoughts, reflections, or insights..."
+          placeholderTextColor={theme.textSecondary}
+          multiline
+          className="rounded-xl p-4 mb-4"
+          style={{
+            backgroundColor: theme.card,
+            color: theme.text,
+            minHeight: 120,
+            textAlignVertical: "top",
+            borderWidth: 1,
+            borderColor: theme.accentLight,
+          }}
+        />
+
+        {/* Tags */}
+        <Text
+          className="text-sm font-semibold mb-3"
+          style={{ color: theme.text }}
+        >
+          Add Tags
+        </Text>
+        <View className="flex-row flex-wrap mb-6">
+          {suggestedTags.map((tag) => (
+            <TouchableOpacity
+              key={tag}
+              onPress={() => {
+                if (selectedTags.includes(tag)) {
+                  setSelectedTags(
+                    selectedTags.filter((t: string) => t !== tag)
+                  );
+                } else {
+                  setSelectedTags([...selectedTags, tag]);
+                }
+              }}
+              className="mr-2 mb-2 px-3 py-2 rounded-full"
+              style={{
+                backgroundColor: selectedTags.includes(tag)
+                  ? theme.primary
+                  : theme.card,
+                borderWidth: 1,
+                borderColor: selectedTags.includes(tag)
+                  ? theme.primary
+                  : theme.accentLight,
+              }}
+            >
+              <Text
+                className="text-sm"
+                style={{
+                  color: selectedTags.includes(tag) ? "#fff" : theme.text,
+                }}
+              >
+                {tag}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Actions */}
+        <View className="flex-row">
+          <TouchableOpacity
+            onPress={onClose}
+            className="flex-1 mr-2 py-4 rounded-xl items-center"
+            style={{
+              backgroundColor: theme.card,
+              borderWidth: 1,
+              borderColor: theme.accentLight,
+            }}
+          >
+            <Text className="font-semibold" style={{ color: theme.text }}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onSave}
+            className="flex-1 ml-2 py-4 rounded-xl items-center"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Text className="font-semibold text-white">Save Note</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default VerseOfTheDay;

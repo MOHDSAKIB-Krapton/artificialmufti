@@ -222,7 +222,7 @@ export default function BasicCompass() {
 
   return (
     <Container>
-      <View className="flex-1 items-center justify-center bg-[#0F1116]">
+      <View className="flex-1 items-center justify-center">
         {/* Dial with animated rotation */}
         <Animated.View style={[dialStyle]}>
           <CompassDial />
@@ -258,6 +258,8 @@ const majorTickInterval = 30;
 const minorTickInterval = 2;
 
 function CompassDial() {
+  const { theme } = useTheme();
+
   const ticks = Array.from({ length: 360 / minorTickInterval }, (_, i) => ({
     deg: i * minorTickInterval,
   }));
@@ -270,7 +272,7 @@ function CompassDial() {
           cx={center}
           cy={center}
           r={radius}
-          stroke="#5F6677"
+          stroke={theme.textSecondary}
           strokeWidth={2}
           fill="none"
         />
@@ -279,7 +281,7 @@ function CompassDial() {
         {ticks.map(({ deg }, idx) => {
           const isMajor = deg % majorTickInterval === 0;
           const length = isMajor ? 14 : 6;
-          const stroke = isMajor ? "#fff" : "#888";
+          const stroke = isMajor ? theme.accent : theme.textSecondary;
           const angleRad = (deg * Math.PI) / 180;
           const x1 = center + Math.sin(angleRad) * (radius - length);
           const y1 = center - Math.cos(angleRad) * (radius - length);
@@ -312,7 +314,7 @@ function CompassDial() {
               y={y + 6}
               fontSize={22}
               fontWeight="bold"
-              fill={txt === "N" ? "#D33C3C" : "#A9B4C9"}
+              fill={txt === "N" ? "#D33C3C" : theme.text}
               textAnchor="middle"
             >
               {txt}

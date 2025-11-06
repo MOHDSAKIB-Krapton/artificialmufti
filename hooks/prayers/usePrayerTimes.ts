@@ -27,6 +27,11 @@ export const usePrayerTimes = (
   };
 
   useEffect(() => {
+    const id = setInterval(() => setToday(new Date()), 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
     refreshPrayerTimes();
   }, [location, params]);
 
