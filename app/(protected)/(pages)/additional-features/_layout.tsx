@@ -55,8 +55,16 @@ const FeaturesLayout = () => {
       title: "Islamic Encyclopedia",
     },
     {
+      name: "islamic-names/index",
+      title: "Islamic Names",
+    },
+    {
       name: "sadaqah-reminder/index",
       title: "Sadaqah Reminder",
+    },
+    {
+      name: "shahada/index",
+      title: "Shahada Screen",
     },
   ];
   return (

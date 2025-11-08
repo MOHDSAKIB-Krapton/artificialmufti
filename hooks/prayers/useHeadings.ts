@@ -102,10 +102,7 @@ export function useHeading(options?: { hz?: number; deadbandDeg?: number }) {
     subscribe: (cb: (deg: number) => void) => {
       subscribers.current.add(cb);
 
-      // Immediately send initial heading
       cb(headingRef.current);
-
-      // ✅ Correct cleanup function — returns void, not boolean
       return () => {
         subscribers.current.delete(cb);
       };

@@ -1441,6 +1441,7 @@
 // export default IslamicEncyclopedia;
 
 // IslamicEncyclopedia.tsx
+import Container from "@/components/common/container";
 import ProgressBar from "@/components/pagePartials/prayerTimes/progressBar";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -1500,6 +1501,8 @@ interface Category {
   subcategories?: string[];
 }
 
+type IoniconType = React.ComponentProps<typeof Ionicons>["name"];
+
 // Sample Categories
 const CATEGORIES: Category[] = [
   {
@@ -1524,61 +1527,61 @@ const CATEGORIES: Category[] = [
     articleCount: 189,
     subcategories: ["Bukhari", "Muslim", "Authentication", "Science"],
   },
-  {
-    id: "prophets",
-    name: "Prophets",
-    arabicName: "الأنبياء",
-    icon: "star-and-crescent",
-    iconType: "font5",
-    color: "#8b5cf6",
-    description: "Stories of all Prophets",
-    articleCount: 125,
-    subcategories: ["Stories", "Miracles", "Lessons"],
-  },
+  // {
+  //   id: "prophets",
+  //   name: "Prophets",
+  //   arabicName: "الأنبياء",
+  //   icon: "star-and-crescent",
+  //   iconType: "font5",
+  //   color: "#8b5cf6",
+  //   description: "Stories of all Prophets",
+  //   articleCount: 125,
+  //   subcategories: ["Stories", "Miracles", "Lessons"],
+  // },
   {
     id: "history",
     name: "Islamic History",
     arabicName: "التاريخ",
-    icon: "history",
+    icon: "mosque",
     iconType: "material",
     color: "#f59e0b",
     description: "Islamic civilization and heritage",
     articleCount: 312,
     subcategories: ["Caliphates", "Battles", "Scholars", "Golden Age"],
   },
-  {
-    id: "fiqh",
-    name: "Fiqh",
-    arabicName: "الفقه",
-    icon: "scale-balance",
-    iconType: "font5",
-    color: "#06b6d4",
-    description: "Islamic jurisprudence and rulings",
-    articleCount: 278,
-    subcategories: ["Worship", "Transactions", "Family", "Ethics"],
-  },
-  {
-    id: "akhlaq",
-    name: "Akhlaq",
-    arabicName: "الأخلاق",
-    icon: "hands-praying",
-    iconType: "font5",
-    color: "#ec4899",
-    description: "Islamic ethics and character",
-    articleCount: 156,
-    subcategories: ["Character", "Manners", "Spirituality"],
-  },
-  {
-    id: "science",
-    name: "Science & Islam",
-    arabicName: "العلم",
-    icon: "atom",
-    iconType: "material",
-    color: "#14b8a6",
-    description: "Scientific miracles and discoveries",
-    articleCount: 98,
-    subcategories: ["Miracles", "Scholars", "Medicine", "Astronomy"],
-  },
+  // {
+  //   id: "fiqh",
+  //   name: "Fiqh",
+  //   arabicName: "الفقه",
+  //   icon: "scale-balance",
+  //   iconType: "font5",
+  //   color: "#06b6d4",
+  //   description: "Islamic jurisprudence and rulings",
+  //   articleCount: 278,
+  //   subcategories: ["Worship", "Transactions", "Family", "Ethics"],
+  // },
+  // {
+  //   id: "akhlaq",
+  //   name: "Akhlaq",
+  //   arabicName: "الأخلاق",
+  //   icon: "hands-praying",
+  //   iconType: "font5",
+  //   color: "#ec4899",
+  //   description: "Islamic ethics and character",
+  //   articleCount: 156,
+  //   subcategories: ["Character", "Manners", "Spirituality"],
+  // },
+  // {
+  //   id: "science",
+  //   name: "Science & Islam",
+  //   arabicName: "العلم",
+  //   icon: "chemistry",
+  //   iconType: "material",
+  //   color: "#14b8a6",
+  //   description: "Scientific miracles and discoveries",
+  //   articleCount: 98,
+  //   subcategories: ["Miracles", "Scholars", "Medicine", "Astronomy"],
+  // },
   {
     id: "contemporary",
     name: "Contemporary",
@@ -1745,304 +1748,314 @@ const IslamicEncyclopedia = () => {
   };
 
   return (
-    <Animated.View
-      className="flex-1"
-      style={{
-        backgroundColor: theme.background,
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }}
-    >
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View
-          className="rounded-2xl border p-5 mb-4"
-          style={{
-            borderColor: theme.accentLight ?? "#ffffff22",
-            backgroundColor: theme.card,
-          }}
-        >
-          <View className="flex-row items-center justify-between mb-4">
-            <View>
-              <Text
-                className="text-2xl font-bold"
-                style={{ color: theme.text }}
-              >
-                Islamic Encyclopedia
-              </Text>
-              <Text
-                className="text-sm mt-1"
-                style={{ color: theme.textSecondary }}
-              >
-                Comprehensive Islamic knowledge base
-              </Text>
-            </View>
-            <View className="flex-row items-center">
-              <TouchableOpacity
-                className="w-10 h-10 rounded-full items-center justify-center mr-2"
-                style={{
-                  backgroundColor: theme.primaryLight ?? theme.primary + "20",
-                }}
-              >
-                <Ionicons name="stats-chart" size={18} color={theme.primary} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="w-10 h-10 rounded-full items-center justify-center"
-                style={{
-                  backgroundColor: theme.primaryLight ?? theme.primary + "20",
-                }}
-              >
-                <Ionicons
-                  name="settings-outline"
-                  size={20}
-                  color={theme.primary}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Search Bar */}
+    <Container>
+      <Animated.View
+        className="flex-1"
+        style={{
+          backgroundColor: theme.background,
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Header */}
           <View
-            className="flex-row items-center px-4 py-3 rounded-xl mb-4"
-            style={{ backgroundColor: theme.background }}
+            className="rounded-2xl border p-5 mb-4"
+            style={{
+              borderColor: theme.accentLight ?? "#ffffff22",
+              backgroundColor: theme.card,
+            }}
           >
-            <Ionicons name="search" size={20} color={theme.textSecondary} />
-            <TextInput
-              className="flex-1 ml-2"
-              placeholder="Search topics, verses, or keywords..."
-              placeholderTextColor={theme.textSecondary}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={{ color: theme.text, fontSize: 14 }}
-              onSubmitEditing={handleSearch}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery("")}>
-                <Ionicons
-                  name="close-circle"
-                  size={20}
-                  color={theme.textSecondary}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Quick Stats */}
-          <View className="flex-row justify-around">
-            <QuickStat
-              icon="book-outline"
-              value="2,450+"
-              label="Articles"
-              color={theme.primary}
-              theme={theme}
-            />
-            <QuickStat
-              icon="bookmark"
-              value={bookmarkedIds.size.toString()}
-              label="Bookmarks"
-              color="#f59e0b"
-              theme={theme}
-            />
-            <QuickStat
-              icon="time-outline"
-              value={readingHistory.length.toString()}
-              label="History"
-              color="#8b5cf6"
-              theme={theme}
-            />
-            <QuickStat
-              icon="trophy"
-              value="12"
-              label="Completed"
-              color="#10b981"
-              theme={theme}
-            />
-          </View>
-        </View>
-
-        {/* Navigation Tabs */}
-        <View className="flex-row mb-4">
-          {(["explore", "bookmarks", "history"] as const).map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              onPress={() => setActiveTab(tab)}
-              className="flex-1 py-3 items-center"
-              style={{
-                borderBottomWidth: 2,
-                borderBottomColor:
-                  activeTab === tab ? theme.primary : "transparent",
-              }}
-            >
-              <Text
-                className="font-semibold capitalize"
-                style={{
-                  color:
-                    activeTab === tab ? theme.primary : theme.textSecondary,
-                }}
-              >
-                {tab}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {activeTab === "explore" && (
-          <>
-            {/* Categories Grid */}
-            <Text
-              className="text-lg font-bold mb-3"
-              style={{ color: theme.text }}
-            >
-              Browse Categories
-            </Text>
-            <View className="flex-row flex-wrap mb-6">
-              {CATEGORIES.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  theme={theme}
-                  onPress={() => setSelectedCategory(category)}
-                  isSelected={selectedCategory?.id === category.id}
-                />
-              ))}
-            </View>
-
-            {/* Featured Articles */}
-            <View className="mb-6">
-              <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-row items-center justify-between mb-4">
+              <View>
                 <Text
-                  className="text-lg font-bold"
+                  className="text-2xl font-bold"
                   style={{ color: theme.text }}
                 >
-                  Featured Articles
+                  Islamic Encyclopedia
                 </Text>
-                <TouchableOpacity className="flex-row items-center">
-                  <Text
-                    className="text-sm mr-1"
-                    style={{ color: theme.primary }}
-                  >
-                    View all
-                  </Text>
+                <Text
+                  className="text-sm mt-1"
+                  style={{ color: theme.textSecondary }}
+                >
+                  Comprehensive Islamic knowledge base
+                </Text>
+              </View>
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  className="w-10 h-10 rounded-full items-center justify-center mr-2"
+                  style={{
+                    backgroundColor: theme.primaryLight ?? theme.primary + "20",
+                  }}
+                >
                   <Ionicons
-                    name="arrow-forward"
-                    size={16}
+                    name="stats-chart"
+                    size={18}
+                    color={theme.primary}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{
+                    backgroundColor: theme.primaryLight ?? theme.primary + "20",
+                  }}
+                >
+                  <Ionicons
+                    name="settings-outline"
+                    size={20}
                     color={theme.primary}
                   />
                 </TouchableOpacity>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {articles.map((article) => (
-                  <FeaturedArticleCard
-                    key={article.id}
-                    article={article}
-                    theme={theme}
-                    onPress={() => {
-                      setSelectedArticle(article);
-                      setShowArticleModal(true);
-                      addToHistory(article.id);
-                    }}
-                    isBookmarked={bookmarkedIds.has(article.id)}
-                    onToggleBookmark={() => toggleBookmark(article.id)}
-                  />
-                ))}
-              </ScrollView>
             </View>
 
-            {/* Topic Collections */}
-            <View className="mb-6">
+            {/* Search Bar */}
+            <View
+              className="flex-row items-center px-4 py-3 rounded-xl mb-4"
+              style={{ backgroundColor: theme.background }}
+            >
+              <Ionicons name="search" size={20} color={theme.textSecondary} />
+              <TextInput
+                className="flex-1 ml-2"
+                placeholder="Search topics, verses, or keywords..."
+                placeholderTextColor={theme.textSecondary}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                style={{ color: theme.text, fontSize: 14 }}
+                onSubmitEditing={handleSearch}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchQuery("")}>
+                  <Ionicons
+                    name="close-circle"
+                    size={20}
+                    color={theme.textSecondary}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Quick Stats */}
+            <View className="flex-row justify-around">
+              <QuickStat
+                icon="book-outline"
+                value="2,450+"
+                label="Articles"
+                color={theme.primary}
+                theme={theme}
+              />
+              <QuickStat
+                icon="bookmark"
+                value={bookmarkedIds.size.toString()}
+                label="Bookmarks"
+                color="#f59e0b"
+                theme={theme}
+              />
+              <QuickStat
+                icon="time-outline"
+                value={readingHistory.length.toString()}
+                label="History"
+                color="#8b5cf6"
+                theme={theme}
+              />
+              <QuickStat
+                icon="trophy"
+                value="12"
+                label="Completed"
+                color="#10b981"
+                theme={theme}
+              />
+            </View>
+          </View>
+
+          {/* Navigation Tabs */}
+          <View className="flex-row mb-4">
+            {(["explore", "bookmarks", "history"] as const).map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => setActiveTab(tab)}
+                className="flex-1 py-3 items-center"
+                style={{
+                  borderBottomWidth: 2,
+                  borderBottomColor:
+                    activeTab === tab ? theme.primary : "transparent",
+                }}
+              >
+                <Text
+                  className="font-semibold capitalize"
+                  style={{
+                    color:
+                      activeTab === tab ? theme.primary : theme.textSecondary,
+                  }}
+                >
+                  {tab}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {activeTab === "explore" && (
+            <>
+              {/* Categories Grid */}
               <Text
                 className="text-lg font-bold mb-3"
                 style={{ color: theme.text }}
               >
-                Popular Collections
+                Browse Categories
               </Text>
-              <CollectionCard
-                title="99 Names of Allah"
-                arabicTitle="أسماء الله الحسنى"
-                description="Explore the beautiful names and attributes"
-                icon="star-and-crescent"
-                color="#10b981"
-                articleCount={99}
-                progress={45}
-                theme={theme}
-                isPremium={false}
-              />
-              <CollectionCard
-                title="Stories of the Prophets"
-                arabicTitle="قصص الأنبياء"
-                description="Complete narratives of all Prophets"
-                icon="book-quran"
-                color="#3b82f6"
-                articleCount={25}
-                progress={20}
-                theme={theme}
-                isPremium={false}
-              />
-              <CollectionCard
-                title="Quranic Sciences"
-                arabicTitle="علوم القرآن"
-                description="Deep dive into Tafsir and interpretations"
-                icon="mosque"
-                color="#8b5cf6"
-                articleCount={150}
-                progress={10}
-                theme={theme}
-                isPremium={true}
-              />
-            </View>
-          </>
-        )}
+              <View className="flex-row flex-wrap mb-6">
+                {CATEGORIES.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    category={category}
+                    theme={theme}
+                    onPress={() => setSelectedCategory(category)}
+                    isSelected={selectedCategory?.id === category.id}
+                  />
+                ))}
+              </View>
 
-        {activeTab === "bookmarks" && (
-          <BookmarksTab
-            articles={articles.filter((a) => bookmarkedIds.has(a.id))}
-            theme={theme}
-            onArticlePress={(article) => {
-              setSelectedArticle(article);
-              setShowArticleModal(true);
-            }}
-            onToggleBookmark={toggleBookmark}
-          />
-        )}
+              {/* Featured Articles */}
+              <View className="mb-6">
+                <View className="flex-row items-center justify-between mb-3">
+                  <Text
+                    className="text-lg font-bold"
+                    style={{ color: theme.text }}
+                  >
+                    Featured Articles
+                  </Text>
+                  <TouchableOpacity className="flex-row items-center">
+                    <Text
+                      className="text-sm mr-1"
+                      style={{ color: theme.primary }}
+                    >
+                      View all
+                    </Text>
+                    <Ionicons
+                      name="arrow-forward"
+                      size={16}
+                      color={theme.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="p-4"
+                >
+                  {articles.map((article) => (
+                    <FeaturedArticleCard
+                      key={article.id}
+                      article={article}
+                      theme={theme}
+                      onPress={() => {
+                        setSelectedArticle(article);
+                        setShowArticleModal(true);
+                        addToHistory(article.id);
+                      }}
+                      isBookmarked={bookmarkedIds.has(article.id)}
+                      onToggleBookmark={() => toggleBookmark(article.id)}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
 
-        {activeTab === "history" && (
-          <HistoryTab
-            articles={
-              readingHistory
-                .map((id) => articles.find((a) => a.id === id))
-                .filter(Boolean) as Article[]
-            }
-            theme={theme}
-            onArticlePress={(article) => {
-              setSelectedArticle(article);
-              setShowArticleModal(true);
-            }}
-            onClearHistory={() => {
-              setReadingHistory([]);
-              AsyncStorage.removeItem("encyclopediaHistory");
-            }}
-          />
-        )}
-      </ScrollView>
+              {/* Topic Collections */}
+              <View className="mb-6">
+                <Text
+                  className="text-lg font-bold mb-3"
+                  style={{ color: theme.text }}
+                >
+                  Popular Collections
+                </Text>
+                <CollectionCard
+                  title="99 Names of Allah"
+                  arabicTitle="أسماء الله الحسنى"
+                  description="Explore the beautiful names and attributes"
+                  // icon="right-arrow"
+                  color="#10b981"
+                  articleCount={99}
+                  progress={45}
+                  theme={theme}
+                  isPremium={false}
+                />
+                <CollectionCard
+                  title="Stories of the Prophets"
+                  arabicTitle="قصص الأنبياء"
+                  description="Complete narratives of all Prophets"
+                  // icon=""
+                  color="#3b82f6"
+                  articleCount={25}
+                  progress={20}
+                  theme={theme}
+                  isPremium={false}
+                />
+                <CollectionCard
+                  title="Quranic Sciences"
+                  arabicTitle="علوم القرآن"
+                  description="Deep dive into Tafsir and interpretations"
+                  // icon="mosque"
+                  color="#8b5cf6"
+                  articleCount={150}
+                  progress={10}
+                  theme={theme}
+                  isPremium={true}
+                />
+              </View>
+            </>
+          )}
 
-      {/* Article Detail Modal */}
-      <Modal
-        visible={showArticleModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowArticleModal(false)}
-      >
-        {selectedArticle && (
-          <ArticleDetailModal
-            article={selectedArticle}
-            theme={theme}
-            onClose={() => setShowArticleModal(false)}
-            isBookmarked={bookmarkedIds.has(selectedArticle.id)}
-            onToggleBookmark={() => toggleBookmark(selectedArticle.id)}
-          />
-        )}
-      </Modal>
-    </Animated.View>
+          {activeTab === "bookmarks" && (
+            <BookmarksTab
+              articles={articles.filter((a) => bookmarkedIds.has(a.id))}
+              theme={theme}
+              onArticlePress={(article) => {
+                setSelectedArticle(article);
+                setShowArticleModal(true);
+              }}
+              onToggleBookmark={toggleBookmark}
+            />
+          )}
+
+          {activeTab === "history" && (
+            <HistoryTab
+              articles={
+                readingHistory
+                  .map((id) => articles.find((a) => a.id === id))
+                  .filter(Boolean) as Article[]
+              }
+              theme={theme}
+              onArticlePress={(article) => {
+                setSelectedArticle(article);
+                setShowArticleModal(true);
+              }}
+              onClearHistory={() => {
+                setReadingHistory([]);
+                AsyncStorage.removeItem("encyclopediaHistory");
+              }}
+            />
+          )}
+        </ScrollView>
+
+        {/* Article Detail Modal */}
+        <Modal
+          visible={showArticleModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowArticleModal(false)}
+        >
+          {selectedArticle && (
+            <ArticleDetailModal
+              article={selectedArticle}
+              theme={theme}
+              onClose={() => setShowArticleModal(false)}
+              isBookmarked={bookmarkedIds.has(selectedArticle.id)}
+              onToggleBookmark={() => toggleBookmark(selectedArticle.id)}
+            />
+          )}
+        </Modal>
+      </Animated.View>
+    </Container>
   );
 };
 
@@ -2104,7 +2117,7 @@ const CategoryCard = ({
           backgroundColor: category.color,
           transform: [{ scale: scaleAnim }],
           opacity: isSelected ? 1 : 0.9,
-          elevation: isSelected ? 8 : 4,
+          // elevation: isSelected ? 8 : 4,
         }}
       >
         <View className="flex-row items-center justify-between mb-2">
@@ -2152,7 +2165,6 @@ const FeaturedArticleCard = ({
         backgroundColor: theme.card,
         borderWidth: 1,
         borderColor: theme.accentLight,
-        elevation: 4,
       }}
     >
       {article.isPremium && (
@@ -2289,7 +2301,7 @@ const CollectionCard = ({
   title: string;
   arabicTitle: string;
   description: string;
-  icon: string;
+  icon?: IoniconType;
   color: string;
   articleCount: number;
   progress: number;
@@ -2659,7 +2671,7 @@ const QuickStat = ({
   color,
   theme,
 }: {
-  icon: string;
+  icon: IoniconType;
   value: string;
   label: string;
   color: string;
@@ -2670,7 +2682,7 @@ const QuickStat = ({
       className="w-10 h-10 rounded-full items-center justify-center mb-1"
       style={{ backgroundColor: color + "20" }}
     >
-      <Ionicons name={icon as any} size={20} color={color} />
+      <Ionicons name={icon} size={20} color={color} />
     </View>
     <Text className="text-base font-bold" style={{ color: theme.text }}>
       {value}
@@ -2825,11 +2837,11 @@ const ArticleListItem = ({
       className="w-12 h-12 rounded-full items-center justify-center mr-3"
       style={{ backgroundColor: article.category.color + "20" }}
     >
-      <Ionicons
+      {/* <Ionicons
         name={article.category.icon as any}
         size={24}
         color={article.category.color}
-      />
+      /> */}
     </View>
     <View className="flex-1">
       <Text className="font-semibold mb-1" style={{ color: theme.text }}>

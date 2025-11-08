@@ -97,7 +97,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     icon: { name: "mosque", set: "mci" },
     tint: "#55EFC4",
     badge: "SOON",
-    locked: true,
+    route: "/(protected)/(pages)/additional-features/nearby-mosque",
     tags: [
       "mosque",
       "masjid",
@@ -209,23 +209,6 @@ export const RAW_FEATURES: FeatureItem[] = [
       "new muslim",
       "faq",
       "guidance",
-    ],
-  },
-  {
-    id: "islamic-names",
-    label: "Islamic Names",
-    subtitle: "5,000+ names with meanings and origins",
-    icon: { name: "person-outline", set: "ion" },
-    tint: "#FAB1A0", // peach
-    locked: true,
-    tags: [
-      "names",
-      "meaning",
-      "baby names",
-      "islamic",
-      "reference",
-      "offline",
-      "roots",
     ],
   },
   {
@@ -349,6 +332,45 @@ export const RAW_FEATURES: FeatureItem[] = [
       "islam",
       "knowledge",
       "terms",
+    ],
+  },
+  {
+    id: "islamic-names",
+    label: "Islamic Baby Names",
+    subtitle: "Search thousands of meaningful names and their origins.",
+    icon: { name: "book-outline", set: "ion" }, // Changed to 'book-outline' to suggest a reference/list
+    tint: "#27ae60", // A fresh, vibrant green
+    route: "/(protected)/(pages)/additional-features/islamic-names",
+    highlight: false,
+    badge: "NEW",
+    tags: [
+      "baby names",
+      "muslim names",
+      "meanings",
+      "children",
+      "family",
+      "reference",
+      "islam",
+      "names",
+    ],
+  },
+  {
+    id: "shahada",
+    label: "The Shahada (Declaration of Faith)",
+    subtitle: "Read, memorize, and understand the first Pillar of Islam.",
+    icon: { name: "create-outline", set: "ion" }, // 'create-outline' suggests writing, documenting, or making a declaration
+    tint: "#3498db", // A peaceful and profound blue
+    route: "/(protected)/(pages)/additional-features/shahada",
+    highlight: true, // Marking it as important/new
+    tags: [
+      "shahada",
+      "pillar of islam",
+      "testimony",
+      "creed",
+      "tawhid",
+      "islam",
+      "faith",
+      "reference",
     ],
   },
 ];

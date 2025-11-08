@@ -1,3 +1,4 @@
+import Container from "@/components/common/container";
 import CustomModal from "@/components/common/customModal";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,6 +10,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   Vibration,
   View,
 } from "react-native";
@@ -261,16 +263,11 @@ const TasbeehScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: theme.background }}
-    >
+    <Container>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingHorizontal: 16,
           paddingBottom: 40,
-          paddingTop: 8,
         }}
       >
         {/* Header */}
@@ -287,13 +284,16 @@ const TasbeehScreen: React.FC = () => {
             </Text>
           </View>
           <View className="flex-row gap-2">
-            <Pressable
-              onPress={() => setShowPresets(true)}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShowPresets(true);
+              }}
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: theme.card }}
             >
               <Ionicons name="add" size={24} color={theme.text} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -506,89 +506,83 @@ const TasbeehScreen: React.FC = () => {
         description="Create a new Quick/custom Counter"
         variant="bottom"
       >
-        <View>
-          <ScrollView>
-            {/* Presets */}
-            <Text
-              className="text-sm font-semibold my-3"
-              style={{ color: theme.textSecondary }}
-            >
-              Quick Presets
-            </Text>
-            {PRESETS.map((preset) => (
-              <Pressable
-                key={preset.name}
-                onPress={() => createSessionFromPreset(preset)}
-                className="p-4 rounded-xl mb-2 border flex-row gap-x-2 justify-center items-start"
-                style={{
-                  backgroundColor: theme.background,
-                  borderColor: theme.accentLight ?? "#ffffff22",
-                }}
-              >
-                <View className="flex-1 gap-y-1">
-                  <Text className="font-semibold" style={{ color: theme.text }}>
-                    {preset.name}
-                  </Text>
-                  <Text className="text-xl" style={{ color: theme.text }}>
-                    {preset.dhikr}
-                  </Text>
-                </View>
-                <Text
-                  className="text-xs"
-                  style={{ color: theme.textSecondary }}
-                >
-                  Target: {preset.target}
-                </Text>
-              </Pressable>
-            ))}
-
-            {/* Custom */}
-            <Text
-              className="text-sm font-semibold mt-4 mb-3"
-              style={{ color: theme.textSecondary }}
-            >
-              Custom Counter
-            </Text>
-            <TextInput
-              value={customName}
-              onChangeText={setCustomName}
-              placeholder="Counter name"
-              placeholderTextColor={theme.textSecondary}
-              className="p-4 rounded-xl mb-3"
-              style={{
-                backgroundColor: theme.background,
-                color: theme.text,
-                borderWidth: 1,
-                borderColor: theme.accentLight ?? "#ffffff22",
-              }}
-            />
-            <TextInput
-              value={customTarget}
-              onChangeText={setCustomTarget}
-              placeholder="Target count"
-              keyboardType="number-pad"
-              placeholderTextColor={theme.textSecondary}
-              className="p-4 rounded-xl mb-3"
-              style={{
-                backgroundColor: theme.background,
-                color: theme.text,
-                borderWidth: 1,
-                borderColor: theme.accentLight ?? "#ffffff22",
-              }}
-            />
+        <ScrollView>
+          <Text
+            className="text-sm font-semibold my-3"
+            style={{ color: theme.textSecondary }}
+          >
+            Quick Presets
+          </Text>
+          {PRESETS.map((preset) => (
             <Pressable
-              onPress={createCustomSession}
-              className="py-4 rounded-xl items-center"
-              style={{ backgroundColor: theme.primary }}
+              key={preset.name}
+              onPress={() => createSessionFromPreset(preset)}
+              className="p-4 rounded-xl mb-2 border flex-row gap-x-2 justify-center items-start"
+              style={{
+                backgroundColor: theme.background,
+                borderColor: theme.accentLight ?? "#ffffff22",
+              }}
             >
-              <Text className="font-semibold" style={{ color: "#fff" }}>
-                Create Counter
+              <View className="flex-1 gap-y-1">
+                <Text className="font-semibold" style={{ color: theme.text }}>
+                  {preset.name}
+                </Text>
+                <Text className="text-xl" style={{ color: theme.text }}>
+                  {preset.dhikr}
+                </Text>
+              </View>
+              <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                Target: {preset.target}
               </Text>
             </Pressable>
-          </ScrollView>
-        </View>
+          ))}
+
+          {/* Custom */}
+          <Text
+            className="text-sm font-semibold mt-4 mb-3"
+            style={{ color: theme.textSecondary }}
+          >
+            Custom Counter
+          </Text>
+          <TextInput
+            value={customName}
+            onChangeText={setCustomName}
+            placeholder="Counter name"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-3"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
+          <TextInput
+            value={customTarget}
+            onChangeText={setCustomTarget}
+            placeholder="Target count"
+            keyboardType="number-pad"
+            placeholderTextColor={theme.textSecondary}
+            className="p-4 rounded-xl mb-3"
+            style={{
+              backgroundColor: theme.background,
+              color: theme.text,
+              borderWidth: 1,
+              borderColor: theme.accentLight ?? "#ffffff22",
+            }}
+          />
+          <Pressable
+            onPress={createCustomSession}
+            className="py-4 rounded-xl items-center"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Text className="font-semibold" style={{ color: "#fff" }}>
+              Create Counter
+            </Text>
+          </Pressable>
+        </ScrollView>
       </CustomModal>
-    </SafeAreaView>
+    </Container>
   );
 };
 
