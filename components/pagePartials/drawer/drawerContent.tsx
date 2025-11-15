@@ -1,4 +1,5 @@
 import ConversationSkeleton from "@/components/skeletonLoaders/conversations";
+import UpdateBanner from "@/components/updates/updateBanner";
 import { useTheme } from "@/hooks/useTheme";
 import { ConversationServices } from "@/services/conversation/conversation.service";
 import { Conversation as ConversationType } from "@/services/conversation/types";
@@ -24,6 +25,7 @@ const CustomDrawerContent = (props: any) => {
   const { theme } = useTheme();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
   const user = useAuthStore((s) => s.user);
   const setActive = useConversationStore((s) => s.setActive);
   const clearActive = useConversationStore((s) => s.clearActive);
@@ -215,7 +217,6 @@ const CustomDrawerContent = (props: any) => {
 
       <View
         style={{
-          paddingBottom: insets.bottom + 16, // Use insets for dynamic safe area padding
           paddingHorizontal: 16,
           backgroundColor: theme.background,
         }}
@@ -224,6 +225,14 @@ const CustomDrawerContent = (props: any) => {
           userName={user?.user_metadata.full_name}
           profilePic={user?.user_metadata.avatar_url}
         />
+      </View>
+
+      <View
+        style={{
+          paddingBottom: insets.bottom, // Use insets for dynamic safe area padding
+        }}
+      >
+        <UpdateBanner />
       </View>
     </View>
   );

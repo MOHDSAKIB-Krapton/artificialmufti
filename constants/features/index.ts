@@ -55,7 +55,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "SOON",
     route: "/(protected)/(pages)/additional-features/tasbeeh-counter",
     tint: "#FF7675",
-    locked: false,
+    locked: true,
     tags: [
       "tasbeeh",
       "dhikr",
@@ -98,6 +98,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     tint: "#55EFC4",
     badge: "SOON",
     route: "/(protected)/(pages)/additional-features/nearby-mosque",
+    locked: true,
     tags: [
       "mosque",
       "masjid",
@@ -138,6 +139,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     icon: { name: "book", set: "ion" },
     tint: "#74B9FF", // light blue
     route: "/(protected)/(pages)/additional-features/daily-verse",
+    locked: true,
     tags: [
       "quran",
       "ayah",
@@ -158,6 +160,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "BETA",
     route: "/(protected)/(pages)/additional-features/zakaat-calculator",
     highlight: true,
+    locked: true,
     tags: [
       "zakat",
       "charity",
@@ -175,7 +178,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Track Ramadan, Qadha and Sunnah fasts",
     icon: { name: "checkmark-done-outline", set: "ion" },
     tint: "#00CEC9", // tropical sea
-    locked: false,
+    locked: true,
     route: "/(protected)/(pages)/additional-features/fasting-tracker",
     tags: [
       "fasting",
@@ -196,7 +199,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     route: "/(protected)/(pages)/additional-features/fiqh-cards",
     badge: "SOON",
     tint: "#81ECEC", // bright aqua
-    locked: false,
+    locked: true,
     highlight: false,
     tags: [
       "fiqh",
@@ -234,7 +237,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     subtitle: "Convert dates between Hijri & Gregorian instantly",
     icon: { name: "repeat-outline", set: "ion" },
     tint: "#55EFC4", // mint green
-    locked: false,
+    locked: true,
     route: "/(protected)/(pages)/additional-features/hijri-gregorian",
     tags: [
       "date",
@@ -257,7 +260,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "NEW",
     route: "/(protected)/(pages)/additional-features/sadaqah-reminder",
     highlight: true,
-    locked: false,
+    locked: true,
     tags: [
       "sadaqah",
       "charity",
@@ -301,7 +304,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "BETA",
     route: "/(protected)/(pages)/additional-features/halal-scanner",
     highlight: true,
-    locked: false,
+    locked: true,
     tags: [
       "halal",
       "food",
@@ -323,6 +326,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     badge: "SOON",
     route: "/(protected)/(pages)/additional-features/islamic-encyclopedia",
     highlight: false,
+    locked: true,
     tags: [
       "encyclopedia",
       "reference",
@@ -342,6 +346,7 @@ export const RAW_FEATURES: FeatureItem[] = [
     tint: "#27ae60", // A fresh, vibrant green
     route: "/(protected)/(pages)/additional-features/islamic-names",
     highlight: false,
+    locked: true,
     badge: "NEW",
     tags: [
       "baby names",
@@ -356,7 +361,8 @@ export const RAW_FEATURES: FeatureItem[] = [
   },
   {
     id: "shahada",
-    label: "The Shahada (Declaration of Faith)",
+    // label: "The Shahada (Declaration of Faith)",
+    label: "The Shahada",
     subtitle: "Read, memorize, and understand the first Pillar of Islam.",
     icon: { name: "create-outline", set: "ion" }, // 'create-outline' suggests writing, documenting, or making a declaration
     tint: "#3498db", // A peaceful and profound blue

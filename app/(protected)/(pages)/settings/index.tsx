@@ -145,6 +145,18 @@ export default function Settings() {
     ],
   };
 
+  const DonateSection: OptionListProps = {
+    options: [
+      {
+        type: "navigation",
+        label: "Donate / Support Us",
+        icon: "cash-outline",
+        value: "Your contributions help us improve",
+        onPress: () => router.push("/(protected)/(pages)/donation"),
+      },
+    ],
+  };
+
   return (
     <ScrollView
       className="flex-1 px-5 py-6"
@@ -207,32 +219,7 @@ export default function Settings() {
         <Feather name="chevron-right" size={24} color="gray" />
       </TouchableOpacity> */}
 
-      {/* <TouchableOpacity
-        onPress={() => router.push("/(protected)/(pages)/donation")}
-        className="flex-row items-center justify-between p-4 rounded-xl mb-6"
-        style={{ backgroundColor: theme.card }}
-      >
-        <View className="flex-row items-center flex-1 gap-x-1">
-          <Feather name="zap" size={24} color="#FFD700" />
-          <View className="ml-4 flex-1">
-            <Text
-              className="font-space-bold text-lg"
-              style={{ color: theme.text }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              Donate / Support Us
-            </Text>
-            <Text
-              className="text-sm font-space"
-              style={{ color: theme.textSecondary }}
-            >
-              Your contributions help us improve app
-            </Text>
-          </View>
-        </View>
-        <Feather name="chevron-right" size={24} color="gray" />
-      </TouchableOpacity> */}
+      <OptionList {...DonateSection} />
 
       <OptionSelector
         options={themeOptions}

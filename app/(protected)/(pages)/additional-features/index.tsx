@@ -22,7 +22,8 @@ const FeaturesScreen = () => {
 
   const features = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return RAW_FEATURES;
+    if (!q) return RAW_FEATURES.sort((a, b) => (a.locked ? 1 : -1));
+
     return RAW_FEATURES.filter((f) => {
       const hay =
         `${f.label} ${f.subtitle ?? ""} ${(f.tags ?? []).join(" ")}`.toLowerCase();
@@ -105,9 +106,10 @@ const FeaturesScreen = () => {
                   name="lock-closed-outline"
                   size={16}
                   color={theme.text}
+                  className="ml-auto"
                 />
               ) : (
-                <Ionicons name="chevron-forward" size={18} color={theme.text} />
+                <Ionicons name="chevron-forward" size={18} color={theme.text} className="ml-auto" />
               )}
             </View>
 

@@ -1,224 +1,135 @@
-// DonationPage.tsx
+
+
 import FancyButton from "@/components/common/button";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import {
-  Alert,
-  Linking,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// ======================================================================
-// Helper function to handle the payment link flow
-// This function needs a backend to create the payment order and link
-// ======================================================================
+const RAZORPAY_LINK = "https://rzp.io/rzp/YYVGtmZ5";
+const TERMS_URL = "https://artificial-mufti.vercel.app/terms";
 
-/**
- * Initiates the payment process by opening a hosted payment page.
- * @param {number} amountInPaise - The donation amount in the smallest currency unit.
- */
-const initiatePaymentLink = async (amountInPaise: number) => {
-  try {
-    // --------------------------------------------------------------------
-    // BACKEND LOGIC (This should be on your server, not in the app)
-    // 1. Send a request to your backend to create a payment link.
-    //    Example API call:
-    //    const response = await fetch('YOUR_BACKEND_API/create-payment-link', {
-    //      method: 'POST',
-    //      headers: { 'Content-Type': 'application/json' },
-    //      body: JSON.stringify({ amount: amountInPaise }),
-    //    });
-    //    const data = await response.json();
-    //    const paymentLink = data.short_url; // Get the URL from the backend response
-    //
-    // 2. The backend should use your payment gateway's API to generate a link.
-    //    Example Razorpay Node.js/Express:
-    //    const Razorpay = require('razorpay');
-    //    const instance = new Razorpay({ key_id: 'YOUR_KEY_ID', key_secret: 'YOUR_KEY_SECRET' });
-    //    const paymentLink = await instance.paymentLink.create({
-    //      amount: amountInPaise,
-    //      currency: "INR",
-    //      accept_partial: false,
-    //      expire_by: Date.now() / 1000 + 3600, // 1 hour expiration
-    //      reference_id: `donation_${Date.now()}`,
-    //      callback_url: 'YOUR_APP_SUCCESS_URL',
-    //      callback_method: 'get',
-    //    });
-    //    res.json(paymentLink);
-    // --------------------------------------------------------------------
-
-    // MOCK PAYMENT LINK FOR DEMONSTRATION
-    const paymentLink = `https://rzp.io/l/mockdonationlink?amount=${amountInPaise}`;
-
-    await Linking.openURL(paymentLink);
-  } catch (error) {
-    console.error("Payment link creation error:", error);
-    Alert.alert(
-      "Error",
-      "Could not generate the donation link. Please try again later.",
-      [{ text: "OK" }]
-    );
-  }
-};
-
-const DONATION_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
-
-const DonationPage = () => {
+export default function DonationPage() {
   const { theme } = useTheme();
-  const [selectedAmount, setSelectedAmount] = useState<number>(100);
 
-  const handleDonate = () => {
-    if (!selectedAmount) {
-      Alert.alert("Please select an amount to donate.");
-      return;
+  const openInApp = async (url: string) => {
+    try {
+      const res = await WebBrowser.openBrowserAsync(url, {
+        toolbarColor: theme.primary, // Android toolbar
+        controlsColor: theme.primary, // iOS controls
+        enableBarCollapsing: true,
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        showTitle: true,
+      });
+
+      // Optional: if user dismisses payment, you could nudge them here.
+      // if (res.type === "dismiss") { /* show toast / subtle encouragement */ }
+    } catch {
+      // Fallback to external browser if custom tab fails
+      await Linking.openURL(url);
     }
-    const amountInPaise = selectedAmount * 100;
-    initiatePaymentLink(amountInPaise);
   };
 
-  const handleOpenPrivacyPolicy = () => {
-    const url = "https://artificialmufti.com/terms";
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open URL:", err)
-    );
-  };
+  const handleDonate = () => openInApp(RAZORPAY_LINK);
+  const handleOpenTerms = () => openInApp(TERMS_URL);
 
   return (
     <SafeAreaView
       className="flex-1"
       style={{ backgroundColor: theme.background }}
     >
-      <ScrollView className="flex-1 px-6 pt-4">
-        {/* Header Section */}
-        <View className="items-center mb-8">
-          <Ionicons name="heart-circle" size={64} color={theme.primary} />
+      <ScrollView className="flex-1 px-6 pt-6">
+        {/* Header */}
+        <View className="items-center">
+          <Ionicons name="heart-circle" size={72} color={theme.primary} />
           <Text
-            className="text-2xl font-space-bold mt-2"
+            className="text-3xl font-semibold mt-3"
             style={{ color: theme.text }}
           >
-            Support Our Mission
+            Support Artificial Mufti
           </Text>
           <Text
-            className="text-center text-sm mt-2 font-space"
+            className="text-center text-base mt-2"
             style={{ color: theme.textSecondary }}
           >
-            Your support helps us keep the app running smoothly and add new,
-            useful features for everyone.
+            Help us keep faith-focused tools free, fast, and ad-free for
+            everyone.
           </Text>
         </View>
 
-        {/* What Your Donation Supports Section */}
-        <View className="mb-8">
+        {/* Trust / Social Proof */}
+        <View className="mt-8 rounded-2xl p-4 bg-black/5 dark:bg-white/5">
           <Text
-            className="text-base font-space-bold mb-3"
+            className="text-base font-semibold mb-2"
             style={{ color: theme.text }}
           >
-            What Your Support Enables:
+            Your impact at a glance
           </Text>
-          <View className="flex-row items-start mb-2">
-            <Ionicons name="flask" size={18} color={theme.accent} />
-            <Text
-              className="flex-1 ml-2 font-space"
-              style={{ color: theme.textSecondary }}
-            >
-              <Text className="font-space-bold" style={{ color: theme.text }}>
-                Innovation:
+          <View className="flex-row items-center gap-3 mt-1">
+            <Ionicons name="flash" size={18} color={theme.accent} />
+            <Text className="flex-1" style={{ color: theme.textSecondary }}>
+              Keep the app{" "}
+              <Text className="font-semibold" style={{ color: theme.text }}>
+                ad-free
               </Text>{" "}
-              Funding for new features like community forums, advanced
-              calculations, and more.
+              and fast.
             </Text>
           </View>
-          <View className="flex-row items-start mb-2">
-            <Ionicons name="bug" size={18} color={theme.accent} />
-            <Text
-              className="flex-1 ml-2 font-space"
-              style={{ color: theme.textSecondary }}
-            >
-              <Text className="font-space-bold" style={{ color: theme.text }}>
-                Maintenance:
-              </Text>{" "}
-              Covering server costs, API fees, and development tools to ensure a
-              stable experience.
+          <View className="flex-row items-center gap-3 mt-2">
+            <Ionicons name="compass-outline" size={18} color={theme.accent} />
+            <Text className="flex-1" style={{ color: theme.textSecondary }}>
+              Fund improvements like{" "}
+              <Text className="font-semibold">Qibla AR</Text>, smarter prayer
+              times, and more.
             </Text>
           </View>
-          <View className="flex-row items-start">
-            <Ionicons name="person" size={18} color={theme.accent} />
-            <Text
-              className="flex-1 ml-2 font-space"
-              style={{ color: theme.textSecondary }}
-            >
-              <Text className="font-space-bold" style={{ color: theme.text }}>
-                Support:
-              </Text>{" "}
-              Ensuring we can provide quick and helpful support to our users.
+          <View className="flex-row items-center gap-3 mt-2">
+            <Ionicons name="people" size={18} color={theme.accent} />
+            <Text className="flex-1" style={{ color: theme.textSecondary }}>
+              Sponsor access for users who can’t afford premium tools.
             </Text>
           </View>
         </View>
 
-        {/* Donation Amount Section */}
-        <View className="mb-8">
+        {/* Emotional Copy (short, high-intent) */}
+        <View className="mt-8 rounded-2xl p-4 bg-black/5 dark:bg-white/5">
           <Text
-            className="text-base font-space-bold mb-3"
+            className="text-base font-semibold mb-2"
             style={{ color: theme.text }}
           >
-            Choose an Amount:
+            A small gift, a big sadaqah jāriyah
           </Text>
-          <View className="flex-row flex-wrap justify-between gap-2">
-            {DONATION_AMOUNTS.map((amount) => (
-              <TouchableOpacity
-                key={amount}
-                className={`w-[30%] items-center justify-center p-3 rounded-xl border-2`}
-                style={{
-                  backgroundColor:
-                    selectedAmount === amount ? theme.accent : theme.card,
-                  borderColor:
-                    selectedAmount === amount ? theme.accent : theme.card,
-                }}
-                onPress={() => setSelectedAmount(amount)}
-              >
-                <Text
-                  className="font-space-bold text-lg"
-                  style={{
-                    color:
-                      selectedAmount === amount ? theme.textLight : theme.text,
-                  }}
-                >
-                  ₹{amount}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text style={{ color: theme.textSecondary }}>
+            Every contribution helps us build useful, beautiful Islamic tools
+            for millions—free from ads and distractions.
+            <Text className="font-semibold" style={{ color: theme.text }}>
+              {" "}
+              JazakAllahu khairan.
+            </Text>
+          </Text>
         </View>
       </ScrollView>
 
-      <View
-        className="px-6 py-4"
-        style={{
-          backgroundColor: theme.background,
-        }}
-      >
+      {/* Bottom CTA */}
+      <View className="px-6 py-5">
         <FancyButton
           onPress={handleDonate}
-          text={`Donate ₹${selectedAmount || "—"}`}
+          text="Donate Now"
           type="secondary"
         />
 
-        <TouchableOpacity className="mt-4" onPress={handleOpenPrivacyPolicy}>
+        <TouchableOpacity className="mt-4" onPress={handleOpenTerms}>
           <Text
-            className="text-xs text-center underline font-space-italic"
+            className="text-center underline text-xs"
             style={{ color: theme.textSecondary }}
           >
-            Privacy Policy
+            Terms & Privacy
           </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
-};
-
-export default DonationPage;
+}

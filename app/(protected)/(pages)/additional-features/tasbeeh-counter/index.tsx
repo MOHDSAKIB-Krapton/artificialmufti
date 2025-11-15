@@ -93,22 +93,22 @@ const TasbeehScreen: React.FC = () => {
 
   // Tap animation
   const animateTap = useCallback(() => {
-    Animated.sequence([
-      Animated.parallel([
+    Animated.parallel([
+      Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 0.92,
           duration: 100,
           useNativeDriver: true,
         }),
-        Animated.timing(rippleAnim, {
+        Animated.timing(scaleAnim, {
           toValue: 1,
-          duration: 600,
+          duration: 100,
           useNativeDriver: true,
         }),
       ]),
-      Animated.timing(scaleAnim, {
+      Animated.timing(rippleAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 600,
         useNativeDriver: true,
       }),
     ]).start(() => {

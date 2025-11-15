@@ -33,7 +33,7 @@ type OptionType =
     };
 
 export interface OptionListProps {
-  header: string;
+  header?: string;
   options: OptionType[];
 }
 
@@ -111,12 +111,14 @@ const OptionList: React.FC<OptionListProps> = ({ header, options }) => {
 
   return (
     <View className="mb-6">
-      <Text
-        className=" text-sm font-space-bold mb-3 ml-2"
-        style={{ color: theme.text }}
-      >
-        {header}
-      </Text>
+      {header && (
+        <Text
+          className=" text-sm font-space-bold mb-3 ml-2"
+          style={{ color: theme.text }}
+        >
+          {header}
+        </Text>
+      )}
 
       <View
         className=" rounded-2xl overflow-hidden"

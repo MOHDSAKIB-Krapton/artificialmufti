@@ -85,12 +85,16 @@ const FeaturesLayout = () => {
       }}
     >
       {FeaturesScreens.map((screen, idx) => {
+
+
+        const isExplore = screen.name === "index";
         return (
           <Stack.Screen
             key={idx}
             name={screen.name}
             options={{
               headerTitle: screen.title,
+              headerBackVisible: !isExplore, //
             }}
           />
         );

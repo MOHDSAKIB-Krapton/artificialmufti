@@ -6,7 +6,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { CalculationMethod, Madhab } from "adhan";
 import * as Linking from "expo-linking";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,15 +23,7 @@ const PrayerTimesScreen: React.FC = () => {
   const { location, permission, error } = useUserLocation();
   const { prayerTimes, sunnahTimes, today } = usePrayerTimes(location, params);
 
-  const now = new Date();
-  const [simulatedTime, setSimulatedTime] = useState(now);
-
-  // Simulate “date rollover” by adding 6 hours, 12 hours, etc.
-  const simulateNextDay = () =>
-    setSimulatedTime(new Date(now.getTime() + 24 * 60 * 60 * 1000));
-  const simulateSameDay = () => setSimulatedTime(new Date(now.getTime()));
-
-  const loading = !location || !prayerTimes;
+  const loading = !location || !prayerTimes || permission === "loading";
 
   // adhan gives direct helpers:
   const currentPrayer = useMemo(
@@ -39,10 +31,10 @@ const PrayerTimesScreen: React.FC = () => {
     [prayerTimes]
   );
 
-  const nextPrayer = useMemo(
-    () => prayerTimes?.nextPrayer() ?? null,
-    [prayerTimes]
-  );
+  const nextPrayer = useMemo(() => {
+    const np = prayerTimes?.nextPrayer();
+    return np === "none" ? "fajr" : np;
+  }, [prayerTimes]);
 
   const nextPrayerTime = useMemo(
     () => (nextPrayer ? prayerTimes?.timeForPrayer(nextPrayer) : null),
@@ -61,6 +53,17 @@ const PrayerTimesScreen: React.FC = () => {
       console.warn("Settings not supported", err);
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <ActivityIndicator color={theme.accent} />
+        <Text style={{ color: theme.textSecondary }}>
+          Loading prayer times...
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   // Permission UI
   if (permission !== "granted") {
@@ -92,16 +95,6 @@ const PrayerTimesScreen: React.FC = () => {
     );
   }
 
-  if (loading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-        <Text style={{ color: theme.textSecondary }}>
-          Loading prayer times...
-        </Text>
-      </SafeAreaView>
-    );
-  }
   return (
     <SafeAreaView
       className="flex-1"
@@ -117,7 +110,7 @@ const PrayerTimesScreen: React.FC = () => {
       >
         <HeroCard
           today={today}
-          nextLabel={nextPrayer ?? "—"}
+          nextLabel={nextPrayer ?? "Fajr"}
           nextTime={nextPrayerTime ?? null}
           prevLabel={currentPrayer ?? "—"}
           prevTime={prevPrayerTime ?? null}

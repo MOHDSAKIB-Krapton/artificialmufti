@@ -1,19 +1,36 @@
 import ChatEmpty from "@/components/chat/chatEmpty";
 import ChatComposer from "@/components/chat/composer";
+import CustomModal from "@/components/common/customModal";
 import ChatMessage from "@/components/pagePartials/drawer/chatMessage";
 import ChatMessageSkeleton from "@/components/skeletonLoaders/chatMessage";
+import UpdateBanner from "@/components/updates/updateBanner";
+import { useUpdateCheck } from "@/hooks/updates/useUpdatesCheck";
 import { useTheme } from "@/hooks/useTheme";
 import { ConversationServices } from "@/services/conversation/conversation.service";
 import { useAuthStore } from "@/store/auth.store";
 import { useConversationStore } from "@/store/conversation.store";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Platform, ToastAndroid, View } from "react-native";
+import {
+  Animated,
+  FlatList,
+  Platform,
+  Pressable,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 const Chat = () => {
   const { theme } = useTheme();
   const flatListRef = useRef<FlatList>(null);
+  const { update } = useUpdateCheck();
 
   const user = useAuthStore((s) => s.user);
   const active = useConversationStore((s) => s.active);
@@ -28,8 +45,15 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const convoMessages = active ? (messages ?? []) : [];
+
+  useEffect(() => {
+    if (update) {
+      setShowUpdateModal(true);
+    }
+  }, [update]);
 
   useEffect(() => {
     getMessagesOfConversation(active);
@@ -135,6 +159,8 @@ const Chat = () => {
           keyboardDismissMode="interactive"
         />
 
+        <FloatingSupportBanner />
+
         <View
           className="absolute bottom-[20px] left-0 right-0"
           style={{
@@ -151,9 +177,84 @@ const Chat = () => {
             textSending={sending}
           />
         </View>
+
+        {/* APP UPDATE MODAL */}
+        <CustomModal
+          visible={showUpdateModal}
+          variant="bottom"
+          heading="Update Available"
+          description={`A new version (${update?.version}) is available.`}
+          onClose={() => setShowUpdateModal(false)}
+        >
+          <View style={{ gap: 8 }}>
+            <UpdateBanner isButton />
+
+            <TouchableOpacity
+              onPress={() => setShowUpdateModal(false)}
+              style={{
+                paddingVertical: 14,
+                paddingHorizontal: 12,
+                borderRadius: 12,
+                backgroundColor: theme.card,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "600",
+                  color: theme.text,
+                }}
+              >
+                Later
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </CustomModal>
+
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
 
 export default Chat;
+
+const FloatingSupportBanner = () => {
+  const { theme } = useTheme();
+  const { top } = useSafeAreaInsets();
+
+  return (
+    <Animated.View
+      style={{
+        // opacity: fadeAnim,
+        position: "absolute",
+        top: top + 16,
+        alignSelf: "center",
+        zIndex: 999,
+        backgroundColor: theme.background,
+        borderWidth: 1,
+        borderColor: theme.accent + "33",
+        borderRadius: 999,
+        paddingHorizontal: 18,
+        paddingVertical: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+      }}
+    >
+      <Pressable onPress={() => router.push("/(protected)/(pages)/donation")}>
+        <Text
+          style={{
+            color: theme.accent,
+            fontWeight: "600",
+            fontSize: 13,
+          }}
+        >
+          Support Us ❤️
+        </Text>
+      </Pressable>
+    </Animated.View>
+  );
+};
