@@ -29,7 +29,7 @@ export async function installApk() {
         const contentUri = await FileSystem.getContentUriAsync(APK_PATH);
 
         return await IntentLauncher.startActivityAsync(
-            "android.intent.action.INSTALL_PACKAGE",
+            "android.intent.action.VIEW",
             {
                 data: contentUri,
                 flags: 1,
