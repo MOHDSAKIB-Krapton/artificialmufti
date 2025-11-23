@@ -1,93 +1,109 @@
-import { useUpdateCheck } from "@/hooks/updates/useUpdatesCheck";
 import { useTheme } from "@/hooks/useTheme";
-import { downloadAndInstallApk } from "@/utils/updates/installApk";
+import { useUpdateStore } from "@/store/update.store";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
 
-export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
-    const { update, setUpdate } = useUpdateCheck();
+export default function UpdateBanner() {
     const { theme } = useTheme();
+    // const { update, setUpdate } = useUpdateCheck();
 
-    const [downloading, setDownloading] = useState(false);
-    const [progress, setProgress] = useState(0);
+    // const [progress, setProgress] = useState(0);
+    // const [downloading, setDownloading] = useState(false);
+    // const [installing, setInstalling] = useState(false);
 
-    const handleDownload = async () => {
-        if (!update?.url) return;
 
-        setDownloading(true);
-        setProgress(0);
+    // // no update → no banner
+    // if (!update) return null;
 
-        console.log("alreadyDownloaded => ", update);
+    // const handleDownload = async () => {
+    //     setDownloading(true);
+    //     setProgress(0);
 
-        const success = await downloadAndInstallApk(update.url, update.version, (p) => {
-            setProgress(p);
-        }, () => {
-            setDownloading(false);
-            setUpdate((prev: any) => ({ ...prev, alreadyDownloaded: true }));
-        }, (e) => {
-            console.log("UPDATE FLOW ERROR:", e);
-            setDownloading(false);
-        });
+    //     const success = await downloadAPK(update.url, update.version, (p: number) => {
+    //         setProgress(p);
+    //     });
 
-        if (success) {
+    //     setDownloading(false);
+    //     if (success) {
+    //         setUpdate((u: any) => ({ ...u, alreadyDownloaded: true }));
+    //     }
+    // };
 
-        } else {
-            // failed → reset progress
-            setProgress(0);
-        }
-        setDownloading(false);
+    // const handleInstall = async () => {
+    //     setInstalling(true);
+
+    //     const ok = await installDownloadedAPK();
+    //     setInstalling(false);
+
+    //     if (ok) {
+    //         console.log("Installed successfully");
+    //     }
+    // };
+
+
+    const update = useUpdateStore((s) => s.update);
+    const downloading = useUpdateStore((s) => s.downloading);
+    const installing = useUpdateStore((s) => s.installing);
+    const progress = useUpdateStore((s) => s.progress);
+    const downloadUpdate = useUpdateStore((s) => s.downloadUpdate);
+    const installUpdate = useUpdateStore((s) => s.installUpdate);
+
+    if (!update) return null;
+
+    const isDownloaded = update.alreadyDownloaded;
+
+    const handlePress = () => {
+        if (isDownloaded) installUpdate();
+        else downloadUpdate();
     };
 
     const percent = Math.round(progress * 100);
 
-    // no update → no banner
-    if (!update) return null;
+    let label = "Download New Update";
+
+    if (downloading) label = `Downloading… ${percent}%`;
+    else if (installing) label = "Installing…";
+    else if (isDownloaded) label = "Install New Update";
+
 
     return (
-        <View style={{
-            backgroundColor: theme.primary,
-            width: isButton ? "90%" : "auto",
-            marginHorizontal: isButton ? "auto" : 0,
-            borderRadius: isButton ? 8 : 0,
-        }}>
-            <TouchableOpacity
-                disabled={downloading}
-                onPress={handleDownload}
-                style={{
-                    paddingVertical: 12,
-                    paddingHorizontal: 20,
-                    flexDirection: "row",
-                    alignItems: "center",
-                }}
+        <TouchableOpacity
+            disabled={downloading || installing}
+            onPress={handlePress}
+            style={{
+                paddingVertical: 12,
+                paddingHorizontal: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: theme.primary,
+                width: "90%",
+                marginHorizontal: "auto",
+                borderRadius: 8,
+            }}
+        >
+            {downloading ? (
+                <ActivityIndicator size="small" color={theme.text} />
+            ) : (
+                <Ionicons
+                    name={isDownloaded ? "arrow-down-circle" : "download"}
+                    color={theme.text}
+                    size={18}
+                    style={{ marginRight: 8 }}
+                />
+            )}
+
+
+            <Text
+                className="text-center"
+                style={{ color: theme.text, fontWeight: "700", }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
             >
-                {
-                    downloading ? (
-                        <ActivityIndicator size={"small"} color={theme.text} />
-                    ) : (
-                        <Ionicons
-                            name="download"
-                            color={theme.text}
-                            size={18}
-                            style={{ marginRight: 8 }}
-                        />
-                    )
-                }
-
-
-                <Text
-                    className="text-center"
-                    style={{ color: theme.text, fontWeight: "700", flex: 1 }}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                >
-                    {downloading
-                        ? `Downloading… ${percent}%`
-                        : update.alreadyDownloaded ? "Install Update" : "Download Update"
-                    }
-                </Text>
-            </TouchableOpacity>
-        </View>
+                {label}
+            </Text>
+        </TouchableOpacity>
     );
 }

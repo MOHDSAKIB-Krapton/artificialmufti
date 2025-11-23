@@ -9,7 +9,7 @@ export async function getLatestRelease() {
 
     return {
       versionName: release.versionName,
-      version: release.versionCode,
+      version: Number(release.versionCode),
       updated: release.publishedAt,
       url: release.apkUrl,
     };

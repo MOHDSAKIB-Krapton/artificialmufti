@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/context/theme";
 import AuthBootstrap from "@/providers/AuthBootstrap";
+import { UpdateProvider } from "@/providers/updateProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
@@ -41,25 +42,27 @@ export default function RootLayout() {
         <ThemeProvider>
           <KeyboardProvider>
             <AuthBootstrap>
-              <Stack
-                initialRouteName="index"
-                screenOptions={{
-                  animation: "fade",
-                  contentStyle: { backgroundColor: "#000" },
-                }}
-              >
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="onboarding/index"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(protected)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
+              <UpdateProvider>
+                <Stack
+                  initialRouteName="index"
+                  screenOptions={{
+                    animation: "fade",
+                    contentStyle: { backgroundColor: "#000" },
+                  }}
+                >
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="onboarding/index"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(protected)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </UpdateProvider>
             </AuthBootstrap>
           </KeyboardProvider>
           <StatusBar style="auto" />

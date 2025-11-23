@@ -4,11 +4,11 @@ import CustomModal from "@/components/common/customModal";
 import ChatMessage from "@/components/pagePartials/drawer/chatMessage";
 import ChatMessageSkeleton from "@/components/skeletonLoaders/chatMessage";
 import UpdateBanner from "@/components/updates/updateBanner";
-import { useUpdateCheck } from "@/hooks/updates/useUpdatesCheck";
 import { useTheme } from "@/hooks/useTheme";
 import { ConversationServices } from "@/services/conversation/conversation.service";
 import { useAuthStore } from "@/store/auth.store";
 import { useConversationStore } from "@/store/conversation.store";
+import { useUpdateStore } from "@/store/update.store";
 import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -30,7 +30,7 @@ import {
 const Chat = () => {
   const { theme } = useTheme();
   const flatListRef = useRef<FlatList>(null);
-  const { update } = useUpdateCheck();
+  const update = useUpdateStore((s) => s.update);
 
   const user = useAuthStore((s) => s.user);
   const active = useConversationStore((s) => s.active);
@@ -56,14 +56,11 @@ const Chat = () => {
   }, [update]);
 
   useEffect(() => {
-    console.log("active RAN => ", active);
-
     if (messages.length > 0) return;
     getMessagesOfConversation(active);
   }, [active]);
 
   const getMessagesOfConversation = async (conversation_id: string | null) => {
-    console.log("getMessagesOfConversation RAN => ", conversation_id);
     if (!conversation_id) return;
     try {
       setLoading(true);
@@ -117,8 +114,6 @@ const Chat = () => {
 
   const skeletonItems = Array.from({ length: 1 });
 
-  console.log("RENDERED")
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -126,7 +121,7 @@ const Chat = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -20}
     >
       <SafeAreaView
-        className="flex-1 relative "
+        className="flex-1 relative"
         edges={["bottom", "top"]}
         style={{ backgroundColor: theme.background }}
       >
@@ -194,7 +189,7 @@ const Chat = () => {
           onClose={() => setShowUpdateModal(false)}
         >
           <View style={{ gap: 8 }}>
-            <UpdateBanner isButton />
+            <UpdateBanner />
 
             <TouchableOpacity
               onPress={() => setShowUpdateModal(false)}
