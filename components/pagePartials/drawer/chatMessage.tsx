@@ -3,14 +3,14 @@ import { useTheme } from "@/hooks/useTheme";
 import { Role } from "@/services/conversation/types";
 import { formatTime } from "@/utils/time";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
+  Animated,
   Clipboard,
   Pressable,
   Text,
   ToastAndroid,
-  View,
+  View
 } from "react-native";
 
 export interface ChatMessageProps {
@@ -26,10 +26,86 @@ export interface ChatMessageProps {
   isTyping?: boolean;
 }
 
+// const TypingIndicator = () => {
+//   return (
+//     <View style={{ flexDirection: "row", gap: 6, height: 20 }}>
+//       <ActivityIndicator size={"small"} />
+//     </View>
+//   );
+// };
+
+
+
 const TypingIndicator = () => {
+
+  const { theme } = useTheme();
+
+  const dot1 = useRef(new Animated.Value(0.3)).current;
+  const dot2 = useRef(new Animated.Value(0.3)).current;
+  const dot3 = useRef(new Animated.Value(0.3)).current;
+
+  const animateDot = (dot: Animated.Value, delay: number) => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(dot, {
+          toValue: 1,
+          duration: 350,
+          delay,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dot, {
+          toValue: 0.3,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
+
+  useEffect(() => {
+    animateDot(dot1, 0);
+    animateDot(dot2, 150);
+    animateDot(dot3, 300);
+  }, []);
+
   return (
-    <View style={{ flexDirection: "row", gap: 6, height: 20 }}>
-      <ActivityIndicator size={"small"} />
+    <View
+      style={{
+        flexDirection: "row",
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        gap: 6,
+        alignItems: "center",
+        height: 22,
+      }}
+    >
+      <Animated.View
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: theme.text,
+          opacity: dot1,
+        }}
+      />
+      <Animated.View
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: theme.text,
+          opacity: dot2,
+        }}
+      />
+      <Animated.View
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: theme.text,
+          opacity: dot3,
+        }}
+      />
     </View>
   );
 };
@@ -78,14 +154,13 @@ const ChatMessage = ({ message, isTyping }: ChatMessageProps) => {
       }}
     >
       <View
-        className={`px-4 py-3 rounded-2xl ${
-          isUser ? "rounded-tr-sm" : "rounded-tl-sm"
-        }`}
+        className={`px-4 py-3 rounded-2xl ${isUser ? "rounded-tr-sm" : "rounded-tl-sm"
+          }`}
         style={{
           backgroundColor: isUser ? theme.accent : theme.card,
         }}
       >
-        {isUser ? (
+        {/* {isUser ? (
           <Text
             className="text-lg leading-relaxed"
             style={{ color: theme.textLight }}
@@ -94,20 +169,20 @@ const ChatMessage = ({ message, isTyping }: ChatMessageProps) => {
           </Text>
         ) : (
           <MarkdownMessage content={message.content || "…"} />
-        )}
+        )} */}
 
-        {/* {isUser ? (
+        {isUser ? (
           <Text
             className="text-lg leading-relaxed"
             style={{ color: theme.textLight }}
           >
-            {message.content || (isTyping ? "" : "…")}
+            {message.content}
           </Text>
         ) : isTyping ? (
           <TypingIndicator />
         ) : (
           <MarkdownMessage content={message.content || "…"} />
-        )} */}
+        )}
 
         {/* Optional metadata info */}
         {message.token_usage !== undefined && message.token_usage > 0 && (

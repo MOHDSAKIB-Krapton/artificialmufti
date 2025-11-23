@@ -31,17 +31,33 @@ jobs:
       - name: Install EAS CLI
         run: npm i -g eas-cli
 
-      - name: Run EAS Production Build and capture JSON (wait)
+      # - name: Run EAS Production Build and capture JSON (wait)
+      #   id: eas_build
+      #   run: |
+      #     set -o pipefail
+      #     # run build with JSON output and wait until complete
+      #     eas build --platform android --profile production --non-interactive --json --wait > build-output.json
+      #     cat build-output.json
+      #     # parse artifact URL and buildNumber using jq
+      #     BUILD_URL=$(jq -r '.[0].artifacts.buildUrl // empty' build-output.json)
+      #     BUILD_ID=$(jq -r '.[0].id // empty' build-output.json)
+      #     # If your build profile or EAS version uses different keys, adjust the jq path accordingly
+      #     echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
+      #     echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+
+      - name: Mock EAS Output (TEST ONLY)
         id: eas_build
         run: |
-          set -o pipefail
-          # run build with JSON output and wait until complete
-          eas build --platform android --profile production --non-interactive --json --wait > build-output.json
-          cat build-output.json
-          # parse artifact URL and buildNumber using jq
-          BUILD_URL=$(jq -r '.artifacts.buildUrl // empty' build-output.json)
-          BUILD_ID=$(jq -r '.id // empty' build-output.json)
-          # If your build profile or EAS version uses different keys, adjust the jq path accordingly
+          echo '[
+            {
+              "id": "test-build-id-001",
+              "artifacts": { "buildUrl": "https://example.com/fake.apk" }
+            }
+          ]' > build-output.json
+
+          BUILD_URL=$(jq -r '.[0].artifacts.buildUrl' build-output.json)
+          BUILD_ID=$(jq -r '.[0].id' build-output.json)
+
           echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
 

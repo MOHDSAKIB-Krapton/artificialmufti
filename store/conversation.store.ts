@@ -21,13 +21,17 @@ export const useConversationStore = create<State>((set, get) => ({
   setActive: (c) => {
     const current = get().active;
     if (current === c) return;
-    set({ active: c, messages: [] });
+    // set({ active: c, messages: [] });
+    set({ active: c });
   },
   clearActive: () => set({ active: null }),
   setMessages: (msgs) => set({ messages: msgs }),
   appendMessage: (role, content) => {
     const { active, messages } = get();
     if (!active) {
+
+
+      const tempId = `temp-${Date.now()}`;
       const newConversation: ConversationMeta = {
         id: `temp-${Date.now()}`,
         title: "New Chat",
@@ -43,7 +47,7 @@ export const useConversationStore = create<State>((set, get) => ({
         created_at: new Date().toISOString(),
       };
 
-      set({ messages: [...messages, newMessage] });
+      set({ active: tempId, messages: [...messages, newMessage] });
 
       return;
     }

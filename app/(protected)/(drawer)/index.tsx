@@ -56,10 +56,14 @@ const Chat = () => {
   }, [update]);
 
   useEffect(() => {
+    console.log("active RAN => ", active);
+
+    if (messages.length > 0) return;
     getMessagesOfConversation(active);
   }, [active]);
 
   const getMessagesOfConversation = async (conversation_id: string | null) => {
+    console.log("getMessagesOfConversation RAN => ", conversation_id);
     if (!conversation_id) return;
     try {
       setLoading(true);
@@ -81,6 +85,7 @@ const Chat = () => {
 
     setSending(true);
     appendMessage("user", text.trim());
+    setIsTyping(true);
 
     const es = await ConversationServices.streamChat(
       text,
@@ -89,12 +94,12 @@ const Chat = () => {
         if (!active) {
           setActive(conversation_id);
           setSending(false);
-          setIsTyping(true);
+          setIsTyping(false);
         }
       },
       (chunk) => {
         setSending(false);
-        setIsTyping(true);
+        setIsTyping(false);
         streamAssistantMessage(chunk.content);
       },
       (fullText) => {
@@ -112,6 +117,8 @@ const Chat = () => {
 
   const skeletonItems = Array.from({ length: 1 });
 
+  console.log("RENDERED")
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -119,7 +126,7 @@ const Chat = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -20}
     >
       <SafeAreaView
-        className="flex-1 relative"
+        className="flex-1 relative "
         edges={["bottom", "top"]}
         style={{ backgroundColor: theme.background }}
       >
