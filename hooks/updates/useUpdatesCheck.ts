@@ -12,13 +12,10 @@ export function useUpdateCheck() {
 
       if (!latest) return;
 
-      console.log("Latest version => ", latest);
-      console.log("Installed App Version Code =>", Application.nativeBuildVersion);
-
       // Basic version comparison
       if (latest.version > Number(Application.nativeBuildVersion)) {
 
-        const alreadyDownloaded = await isApkDownloaded();
+        const alreadyDownloaded = await isApkDownloaded(latest.version);
         console.log("Already Downloaded => ", alreadyDownloaded);
         setUpdate({
           ...latest,

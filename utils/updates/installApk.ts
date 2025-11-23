@@ -1,15 +1,26 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { Platform } from "react-native";
 
 const APK_NAME = "artificialmufti-update.apk";
 const APK_PATH = FileSystem.documentDirectory + APK_NAME;
+const APK_VERSION_KEY = "downloaded_apk_version";
 
 /** Check if APK file already downloaded */
-export async function isApkDownloaded() {
+export async function isApkDownloaded(remoteVersion: number) {
     try {
         const info = await FileSystem.getInfoAsync(APK_PATH);
-        return info.exists && info.size > 0;
+        if (!info.exists || info.size === 0) return false;
+
+        const savedVersion = await AsyncStorage.getItem(APK_VERSION_KEY);
+        const downloadedVersion = savedVersion ? Number(savedVersion) : 0;
+
+        console.log("Saved version => ", downloadedVersion, typeof downloadedVersion);
+        console.log("Remote version => ", remoteVersion, typeof remoteVersion);
+        console.log("Already downloaded => ", downloadedVersion === remoteVersion);
+
+        return downloadedVersion === remoteVersion;
     } catch {
         return false;
     }
@@ -45,18 +56,21 @@ export async function installApk() {
 /** Download & install with fallback to settings */
 export async function downloadAndInstallApk(
     url: string,
-    onProgress?: (p: number) => void
+    remoteVersion: number,
+    onProgress?: (p: number) => void,
+    onComplete?: () => void,
+    onError?: (e: any) => void,
 ) {
     if (Platform.OS !== "android") return false;
 
     try {
-        // const already = await isApkDownloaded();
 
-        // // STEP 1 — if file already downloaded → skip downloading
-        // if (already) {
-        //     console.log("APK already exists — skipping download");
-        //     return tryInstallationFlow();
-        // }
+        // Step 1 — If this version is already downloaded → install immediately
+        const already = await isApkDownloaded(remoteVersion);
+        if (already) {
+            console.log("APK already exists — installing directly");
+            return await tryInstallationFlow();
+        }
 
         const dl = FileSystem.createDownloadResumable(
             url,
@@ -74,11 +88,15 @@ export async function downloadAndInstallApk(
         const res = await dl.downloadAsync();
         if (!res) throw new Error("Failed to download");
 
+        await AsyncStorage.setItem(APK_VERSION_KEY, String(remoteVersion));
+        if (onComplete) onComplete();
+
         console.log("APK downloaded:", res.uri);
 
         return tryInstallationFlow();
     } catch (err) {
         console.log("UPDATE FLOW ERROR:", err);
+        if (onError) onError(err);
         return false;
     }
 }
@@ -94,7 +112,6 @@ async function tryInstallationFlow() {
 
         // Open settings so user can toggle "Allow from this source"
         await openUnknownSourcesSettings();
-
         return false;
     }
 }

@@ -19,12 +19,20 @@ export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
         setDownloading(true);
         setProgress(0);
 
-        const success = await downloadAndInstallApk(update.url, (p) => {
+        console.log("alreadyDownloaded => ", update);
+
+        const success = await downloadAndInstallApk(update.url, update.version, (p) => {
             setProgress(p);
+        }, () => {
+            setDownloading(false);
+            setUpdate((prev: any) => ({ ...prev, alreadyDownloaded: true }));
+        }, (e) => {
+            console.log("UPDATE FLOW ERROR:", e);
+            setDownloading(false);
         });
 
         if (success) {
-            setUpdate((prev: any) => ({ ...prev, alreadyDownloaded: true }));
+
         } else {
             // failed → reset progress
             setProgress(0);

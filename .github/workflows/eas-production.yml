@@ -59,7 +59,7 @@ jobs:
             {
               "id": "test-build-id-001",
               "appVersion": "1.0.0",
-              "appBuildVersion": "3", 
+              "appBuildVersion": 3, 
               "artifacts": { "buildUrl": "https://expo.dev/artifacts/eas/gvi7mJMkWcctpiX2irWbfU.apk" }
             }
           ]' > build-output.json
