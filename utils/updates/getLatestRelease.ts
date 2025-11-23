@@ -24,6 +24,8 @@ export async function getLatestRelease() {
     //   sizeMB: (apk.size / 1024 / 1024).toFixed(2),
     // };
 
+
+
     return {
       versionName: "vTEST-1.0.0",   // hardcoded version name
       version: 2,                 // hardcoded versionCode (very high → always triggers update)
