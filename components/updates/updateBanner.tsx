@@ -3,10 +3,11 @@ import { useTheme } from "@/hooks/useTheme";
 import { downloadAndInstallApk } from "@/utils/updates/installApk";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+
 
 export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
-    const { update } = useUpdateCheck();
+    const { update, setUpdate } = useUpdateCheck();
     const { theme } = useTheme();
 
     const [downloading, setDownloading] = useState(false);
@@ -18,10 +19,16 @@ export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
         setDownloading(true);
         setProgress(0);
 
-        await downloadAndInstallApk(update.url, (p) => {
+        const success = await downloadAndInstallApk(update.url, (p) => {
             setProgress(p);
         });
 
+        if (success) {
+            setUpdate((prev: any) => ({ ...prev, alreadyDownloaded: true }));
+        } else {
+            // failed → reset progress
+            setProgress(0);
+        }
         setDownloading(false);
     };
 
@@ -38,6 +45,7 @@ export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
             borderRadius: isButton ? 8 : 0,
         }}>
             <TouchableOpacity
+                disabled={downloading}
                 onPress={handleDownload}
                 style={{
                     paddingVertical: 12,
@@ -46,98 +54,32 @@ export default function UpdateBanner({ isButton }: { isButton?: boolean }) {
                     alignItems: "center",
                 }}
             >
-                <Ionicons
-                    name="download"
-                    color={theme.text}
-                    size={18}
-                    style={{ marginRight: 8 }}
-                />
+                {
+                    downloading ? (
+                        <ActivityIndicator size={"small"} color={theme.text} />
+                    ) : (
+                        <Ionicons
+                            name="download"
+                            color={theme.text}
+                            size={18}
+                            style={{ marginRight: 8 }}
+                        />
+                    )
+                }
+
 
                 <Text
+                    className="text-center"
                     style={{ color: theme.text, fontWeight: "700", flex: 1 }}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                 >
                     {downloading
                         ? `Downloading… ${percent}%`
-                        : `New Update Available • ${update?.version}`}
+                        : update.alreadyDownloaded ? "Install Update" : "Download Update"
+                    }
                 </Text>
             </TouchableOpacity>
         </View>
     );
 }
-
-
-
-
-// import { useUpdateCheck } from "@/hooks/updates/useUpdatesCheck";
-// import { useTheme } from "@/hooks/useTheme";
-// import { installApk, resumeDownload, startDownload } from "@/utils/updates/installApk";
-// import { Ionicons } from "@expo/vector-icons";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useEffect, useState } from "react";
-// import { Text, TouchableOpacity } from "react-native";
-
-// export default function UpdateBanner() {
-//     const { update } = useUpdateCheck();
-//     const { theme } = useTheme();
-
-//     const [progress, setProgress] = useState(0);
-//     const [ready, setReady] = useState(false);
-//     const [downloading, setDownloading] = useState(false);
-//     const [paused, setPaused] = useState(false);
-
-//     // Restore state on mount
-//     useEffect(() => {
-//         async function load() {
-//             const started = await AsyncStorage.getItem("UPDATE_STARTED");
-//             const readyFlag = await AsyncStorage.getItem("UPDATE_READY");
-//             const pausedFlag = await AsyncStorage.getItem("UPDATE_PAUSED");
-//             const prog = await AsyncStorage.getItem("UPDATE_PROGRESS");
-
-//             setDownloading(started === "true");
-//             setReady(readyFlag === "true");
-//             setPaused(pausedFlag === "true");
-//             setProgress(parseFloat(prog || "0"));
-//         }
-//         load();
-//     }, []);
-
-//     if (!update) return null;
-
-//     let label = `New Update Available • ${update.version}`;
-//     if (downloading) label = `Downloading… ${Math.round(progress * 100)}%`;
-//     if (paused) label = `Download paused — tap to resume`;
-//     if (ready) label = `Ready to install — tap to install`;
-
-//     const onPress = async () => {
-//         if (ready) return installApk();
-//         if (paused) return resumeDownload(setProgress);
-
-//         setDownloading(true);
-//         await startDownload(update.url, (p) => setProgress(p));
-//     };
-
-//     return (
-//         <TouchableOpacity
-//             onPress={onPress}
-//             style={{
-//                 backgroundColor: theme.primary,
-//                 paddingVertical: 12,
-//                 paddingHorizontal: 20,
-//                 flexDirection: "row",
-//                 alignItems: "center",
-//             }}
-//         >
-//             <Ionicons
-//                 name="download"
-//                 color={theme.text}
-//                 size={18}
-//                 style={{ marginRight: 8 }}
-//             />
-//             <Text style={{ color: theme.text, fontWeight: "700", flex: 1 }}>
-//                 {label}
-//             </Text>
-//         </TouchableOpacity>
-//     );
-// }

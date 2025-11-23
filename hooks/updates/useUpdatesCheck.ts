@@ -1,7 +1,7 @@
 import { getLatestRelease } from "@/utils/updates/getLatestRelease";
+import { isApkDownloaded } from "@/utils/updates/installApk";
+import * as Application from "expo-application";
 import { useEffect, useState } from "react";
-
-export const APP_VERSION = "v1.0.0-preview.2";
 
 export function useUpdateCheck() {
   const [update, setUpdate] = useState<any>(null);
@@ -12,9 +12,18 @@ export function useUpdateCheck() {
 
       if (!latest) return;
 
+      console.log("Latest version => ", latest.version);
+      console.log("Installed App Version Code =>", Application.nativeBuildVersion);
+
       // Basic version comparison
-      if (latest.version !== APP_VERSION) {
-        setUpdate(latest);
+      if (latest.version > Number(Application.nativeBuildVersion)) {
+
+        const alreadyDownloaded = await isApkDownloaded();
+        console.log("Already Downloaded => ", alreadyDownloaded);
+        setUpdate({
+          ...latest,
+          alreadyDownloaded
+        });
       }
 
     }
@@ -22,5 +31,5 @@ export function useUpdateCheck() {
     check();
   }, []);
 
-  return { update };
+  return { update, setUpdate };
 }
