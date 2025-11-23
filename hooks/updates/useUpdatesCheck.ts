@@ -12,7 +12,7 @@ export function useUpdateCheck() {
 
       if (!latest) return;
 
-      console.log("Latest version => ", latest.version);
+      console.log("Latest version => ", latest);
       console.log("Installed App Version Code =>", Application.nativeBuildVersion);
 
       // Basic version comparison
