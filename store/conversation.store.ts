@@ -21,10 +21,9 @@ export const useConversationStore = create<State>((set, get) => ({
   setActive: (c) => {
     const current = get().active;
     if (current === c) return;
-    // set({ active: c, messages: [] });
-    set({ active: c });
+    set({ active: c, messages: [] });
   },
-  clearActive: () => set({ active: null }),
+  clearActive: () => set({ active: null, messages: [] }),
   setMessages: (msgs) => set({ messages: msgs }),
   appendMessage: (role, content) => {
     const { active, messages } = get();

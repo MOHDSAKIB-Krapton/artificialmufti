@@ -60,6 +60,13 @@ const CustomModal = ({
   // 2. Internal state to control whether the Modal is mounted
   const [isModalMounted, setIsModalMounted] = useState(visible);
 
+  // Keep track of the latest visible prop value
+  const visibleRef = useRef(visible);
+
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
+
   // Use stable refs for animation values
   const animationValues = useRef({
     backdrop: new Animated.Value(0),
@@ -138,8 +145,10 @@ const CustomModal = ({
         );
       }
 
-      Animated.parallel(animations).start(() => {
-        setIsModalMounted(false); // ⬅️ KEEP THIS LINE
+      Animated.parallel(animations).start(({ finished }) => {
+        if (finished && !visibleRef.current) {
+          setIsModalMounted(false);
+        }
         if (callback) {
           callback();
         }
@@ -175,18 +184,24 @@ const CustomModal = ({
     }
   }, [visible, handleClose]);
 
-  // Animate on visibility change
+  //  Handle mounting and closing requests
   useEffect(() => {
     if (visible) {
+      // setIsModalMounted(true);
       if (!isModalMounted) {
         setIsModalMounted(true);
       }
-      animateIn();
     } else {
-      // 5. When external 'visible' prop changes to false, start the fade out animation
       animateOut();
     }
-  }, [visible, animateIn, animateOut, isModalMounted]);
+  }, [visible, animateOut]);
+
+  // Trigger open animation only after mount is confirmed
+  useEffect(() => {
+    if (isModalMounted && visible) {
+      animateIn();
+    }
+  }, [isModalMounted, visible, animateIn]);
 
   if (!isModalMounted) return null;
 
@@ -252,19 +267,19 @@ const CustomModal = ({
               },
               isBottom
                 ? {
-                    bottom: 10,
-                    transform: [{ translateY: animationValues.translate }],
-                  }
+                  bottom: 10,
+                  transform: [{ translateY: animationValues.translate }],
+                }
                 : {
-                    top: "50%",
-                    alignSelf: "center" as const,
-                    width: "90%",
-                    transform: [
-                      { translateY: -SCREEN_HEIGHT * 0.3 },
-                      { scale: animationValues.scale },
-                    ],
-                    opacity: animationValues.opacity,
-                  },
+                  top: "50%",
+                  alignSelf: "center" as const,
+                  width: "90%",
+                  transform: [
+                    { translateY: -SCREEN_HEIGHT * 0.5 },
+                    { scale: animationValues.scale },
+                  ],
+                  opacity: animationValues.opacity,
+                },
             ]}
             className={containerStyle}
           >

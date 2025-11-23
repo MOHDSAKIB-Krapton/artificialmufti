@@ -1,6 +1,9 @@
+import FancyButton from "@/components/common/button";
+import CustomModal from "@/components/common/customModal";
 import OptionList, { OptionListProps } from "@/components/common/optionList";
 import OptionSelector, { Option } from "@/components/common/optionSelector";
 import { useTheme } from "@/hooks/useTheme";
+import { AccountService } from "@/services/account/account.service";
 import { useAuthStore } from "@/store/auth.store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -18,7 +21,10 @@ export default function Settings() {
   const user = useAuthStore((s) => s.user);
 
   const [incognito, setIncognito] = useState(false);
-  const [twoFactor, setTwoFactor] = useState(false);
+  const [logoutModal, setLogoutModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const themeOptions: Option[] = [
     {
@@ -54,26 +60,6 @@ export default function Settings() {
       // },
     ],
   };
-
-  // const AdditionalFeatures: OptionListProps = {
-  //   header: "ADDITIONAL FEATURES",
-  //   options: [
-  //     {
-  //       type: "display",
-  //       label: "Qibla Direction",
-  //       value: "See Qibla direction",
-  //       icon: "compass-outline",
-  //       onPress: () => router.push("/(protected)/(pages)/kaaba"),
-  //     },
-  //     {
-  //       type: "navigation",
-  //       label: "Prayer Times",
-  //       value: "See Prayer Times",
-  //       icon: "time-outline",
-  //       onPress: () => router.push("/(protected)/(pages)/prayer-times"),
-  //     },
-  //   ],
-  // };
 
   const AccountSection: OptionListProps = {
     header: "ACCOUNT",
@@ -131,16 +117,14 @@ export default function Settings() {
         type: "display",
         label: "Logout",
         value: "Logout session from this device",
-        onPress: () => {
-          console.log("Signout called");
-          signOut();
-        },
+        onPress: () => setLogoutModal(true),
       },
       {
         type: "display",
         label: "Delete Account",
         value: "This action cannot be undone",
-        onPress: () => console.log("Delete Account pressed"),
+        onPress: () => setDeleteModal(true)
+        ,
       },
     ],
   };
@@ -155,6 +139,16 @@ export default function Settings() {
         onPress: () => router.push("/(protected)/(pages)/donation"),
       },
     ],
+  };
+
+
+  const handleDeleteAccount = async () => {
+    try {
+      await AccountService.deleteAccount();
+      signOut();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -236,6 +230,82 @@ export default function Settings() {
 
       {/* Danger Zone */}
       <OptionList {...DangerZone} />
+
+
+      {/* ======================= MODALS =================== */}
+
+      {/* LOGOUT MODAL */}
+      <CustomModal
+        visible={logoutModal}
+        onClose={() => setLogoutModal(false)}
+        heading="Logout"
+        description="Are you sure you want to logout?"
+        variant="center"
+      >
+        <View>
+          <FancyButton
+            text="Logout"
+            type="secondary"
+            loading={logoutLoading}
+            onPress={() => {
+              setLogoutLoading(true);
+              signOut();
+            }}
+          />
+        </View>
+      </CustomModal>
+
+      {/* DELETE ACCOUNT MODAL */}
+      <CustomModal
+        visible={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        heading="Delete Account"
+        description="This action is permanent. Your data cannot be recovered."
+        variant="bottom"
+      >
+        <View className="gap-5">
+          <View className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <Text className="text-red-600 font-semibold text-base mb-1">
+              This will permanently delete your account.
+            </Text>
+
+            <Text className="text-red-500/90 text-sm leading-5">
+              All your conversations, history and personal settings will be erased
+              forever. This action cannot be undone.
+            </Text>
+          </View>
+
+          {/* Consequences */}
+          <View className="gap-2">
+            <Text className="font-semibold text-[15px]">You will lose permanently:</Text>
+
+            <View className="gap-1.5 pl-1">
+              <Text className="text-muted-foreground text-sm">• All conversations & chat history</Text>
+              <Text className="text-muted-foreground text-sm">• AI preferences & personalization</Text>
+              <Text className="text-muted-foreground text-sm">• Saved data linked to your account</Text>
+              <Text className="text-muted-foreground text-sm">• Access to premium/early features</Text>
+            </View>
+          </View>
+
+          <View className="rounded-lg p-3 bg-red-600/15 border border-red-600/20">
+            <Text className="text-red-700 font-medium text-[13px] leading-5">
+              This action is immediate. Once deleted, your account cannot be restored, even by our team.
+            </Text>
+          </View>
+
+          <FancyButton
+            text="Delete Account Permanently"
+            type="secondary"
+            buttonContainerStyles={{ backgroundColor: "#b22727ff" }}
+            loading={deleteLoading}
+            onPress={() => {
+              setDeleteLoading(true);
+              handleDeleteAccount();
+            }}
+          />
+        </View>
+      </CustomModal>
+
     </ScrollView>
   );
 }

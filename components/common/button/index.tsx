@@ -22,6 +22,7 @@ type Props = {
   size?: "sm" | "normal";
   type?: "primary" | "secondary" | "tertiary";
   buttonStyles?: StyleProp<TextStyle>;
+  buttonContainerStyles?: StyleProp<ViewStyle>;
   iconStyles?: StyleProp<ViewStyle>;
   iconColor?: string;
 
@@ -39,6 +40,7 @@ const FancyButton: React.FC<Props> = ({
   size = "normal",
   type = "primary",
   buttonStyles,
+  buttonContainerStyles,
   iconStyles,
   iconColor,
 
@@ -102,7 +104,7 @@ const FancyButton: React.FC<Props> = ({
         activeOpacity={0.8}
         className="w-full max-w-md mx-auto flex-row p-3 rounded-xl justify-center items-center gap-x-2"
         disabled={loading}
-        style={{ backgroundColor: theme.primary }}
+        style={[{ backgroundColor: theme.primary }, buttonContainerStyles]}
         accessibilityLabel={accessibilityLabel}
       >
         {loading ? (

@@ -26,7 +26,7 @@ export interface UpdateStore {
     checkForUpdate: () => Promise<void>;
     downloadUpdate: () => Promise<boolean>;
     installUpdate: () => Promise<boolean>;
-    safeCleanup: () => void;
+    safeCleanup: () => Promise<void>;
 }
 
 

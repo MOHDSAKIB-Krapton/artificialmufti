@@ -194,6 +194,7 @@ const WuduStepCard = ({
         setTimer((prev) => {
           if (prev <= 1) {
             setIsRunning(false);
+            onComplete();
             return step.duration;
           }
           return prev - 1;
@@ -202,6 +203,14 @@ const WuduStepCard = ({
     }
     return () => clearInterval(interval);
   }, [isRunning, timer]);
+
+  useEffect(() => {
+    if (isActive && !isCompleted && timer === step.duration) {
+      // auto-start when it becomes the active step
+      setIsRunning(true);
+    }
+  }, [isActive]);
+
 
   const toggleTimer = () => {
     if (!isRunning && timer === step.duration) {
@@ -253,8 +262,8 @@ const WuduStepCard = ({
             </TouchableOpacity>
 
             {/* Step Number & Title */}
-            <View className="flex-1">
-              <View className="flex-row items-center">
+            <View className="flex-1 flex-row">
+              <View className="flex-row items-center flex-1">
                 <View
                   className="w-6 h-6 rounded-full items-center justify-center mr-2"
                   style={{
@@ -263,6 +272,8 @@ const WuduStepCard = ({
                 >
                   <Text
                     className="text-xs font-bold"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     style={{ color: theme.primary }}
                   >
                     {step.id}
@@ -434,6 +445,9 @@ const WuduGuide = () => {
         return prev.filter((id) => id !== stepId);
       } else {
         const newCompleted = [...prev, stepId];
+
+        setExpandedStep(stepId + 1);
+
         if (newCompleted.length === WUDU_STEPS.length) {
           setShowCompletion(true);
         }
