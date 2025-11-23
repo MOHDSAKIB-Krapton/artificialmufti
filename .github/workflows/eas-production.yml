@@ -41,6 +41,13 @@ jobs:
       #     # parse artifact URL and buildNumber using jq
       #     BUILD_URL=$(jq -r '.[0].artifacts.buildUrl // empty' build-output.json)
       #     BUILD_ID=$(jq -r '.[0].id // empty' build-output.json)
+
+      #     APP_VERSION=$(jq -r '.[0].appVersion' build-output.json)
+      #     APP_BUILD_VERSION=$(jq -r '.[0].appBuildVersion' build-output.json)
+
+      #     echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+      #     echo "app_build_version=$APP_BUILD_VERSION" >> $GITHUB_OUTPUT
+
       #     # If your build profile or EAS version uses different keys, adjust the jq path accordingly
       #     echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
       #     echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
@@ -51,47 +58,55 @@ jobs:
           echo '[
             {
               "id": "test-build-id-001",
+              "appVersion": "1.0.0",
+              "appBuildVersion": "3", 
               "artifacts": { "buildUrl": "https://example.com/fake.apk" }
             }
           ]' > build-output.json
 
           BUILD_URL=$(jq -r '.[0].artifacts.buildUrl' build-output.json)
           BUILD_ID=$(jq -r '.[0].id' build-output.json)
+          APP_VERSION=$(jq -r '.[0].appVersion' build-output.json)
+          APP_BUILD_VERSION=$(jq -r '.[0].appBuildVersion' build-output.json)
 
           echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          echo "app_build_version=$APP_BUILD_VERSION" >> $GITHUB_OUTPUT
 
       - name: Ensure jq (optional)
         run: jq --version || sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Bump package.json patch version (no git tag here)
-        id: bump
-        run: |
-          # Avoid bumping when this commit is the bump commit to prevent loop
-          if git log -1 --pretty=%B | grep -q "CI: version Bump"; then
-            echo "Skip bump (already bumped by CI)"
-            echo "new_version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          NEWVER=$(npm version patch --no-git-tag-version)
-          echo "new_version=$NEWVER" >> $GITHUB_OUTPUT
+      # - name: Bump package.json patch version (no git tag here)
+      #   id: bump
+      #   run: |
+      #     # Avoid bumping when this commit is the bump commit to prevent loop
+      #     if git log -1 --pretty=%B | grep -q "CI: version Bump"; then
+      #       echo "Skip bump (already bumped by CI)"
+      #       echo "new_version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+      #       exit 0
+      #     fi
+      #     NEWVER=$(npm version patch --no-git-tag-version)
+      #     echo "new_version=$NEWVER" >> $GITHUB_OUTPUT
 
-      - name: Create git commit + tag for release
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add package.json package-lock.json || true
-          git commit -m "CI: version Bump ${{ steps.bump.outputs.new_version }}" || echo "no changes to commit"
-          TAG="v${{ steps.bump.outputs.new_version }}"
-          git tag -a "$TAG" -m "Release $TAG"
-          git push origin HEAD:main
-          git push origin "$TAG"
+      # - name: Create git commit + tag for release
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+      #     git add package.json package-lock.json || true
+      #     git commit -m "CI: version Bump ${{ steps.bump.outputs.new_version }}" || echo "no changes to commit"
+      #     TAG="v${{ steps.bump.outputs.new_version }}"
+      #     git tag -a "$TAG" -m "Release $TAG"
+      #     git push origin HEAD:main
+      #     git push origin "$TAG"
 
       - name: Create metadata.json and upload as GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ steps.bump.outputs.new_version }}
-          name: "Build ${{ github.run_number }} - v${{ steps.bump.outputs.new_version }}"
+          tag_name: "v${{ steps.eas_build.outputs.app_version }}+${{ steps.eas_build.outputs.app_build_version }}"
+          name: "Build v${{ steps.eas_build.outputs.app_version }} (${{
+            steps.eas_build.outputs.app_build_version
+          }})"
           body: |
             Build Completed.
             Build ID: ${{ steps.eas_build.outputs.build_id }}
